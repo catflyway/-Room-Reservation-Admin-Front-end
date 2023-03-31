@@ -1,0 +1,83 @@
+.NavbarItems {
+    background:white;
+    height: 80px;
+    width:80vw ;
+    display: flex;
+    padding-left: 10px;
+    align-items: center;
+    font-size: 1.2rem;
+  }
+  
+  .nav-menu {
+    display: grid;
+    grid-template-columns: repeat(7,auto);
+    grid-gap: 10px;
+    list-style: none;
+    text-align: center;
+    width: 70vw;
+    margin-right: 2rem;
+  }
+
+  .nav-text {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 8px 0px 8px 16px;
+    list-style: none;
+    height: 60px;
+  }
+
+  .nav-log p {
+    display: flex;
+    padding: 8px 0px 8px 16px;
+  }
+  .nav-logout p {
+    text-decoration: none;
+    color: #3F478D;
+    font-size: 16px;
+    width: 80px;
+    height: 60px;
+    align-items: center;
+    text-align: center;
+    border-radius: 4px;
+  }
+  .nav-logout:focus{
+    background-color: #3F478D;
+    color: #D2D1FF;
+  }
+  
+  .nav-text a {
+    text-decoration: none;
+    color: #3F478D;
+    font-size: 16px;
+    width: 180px;
+    height: 60px;
+    align-items: center;
+    text-align: center;
+    padding: 10px 16px;
+    border-radius: 4px;
+  }
+  
+  .nav-text a:focus {
+    background-color: #3F478D;
+    color: #D2D1FF;
+  }
+
+  input{
+    width: 230px;
+    box-sizing: border-box;
+    border: 2px solid #3F478D;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: #D2D1FF;
+    padding: 8px 10px 8px 10px;
+}
+
+::placeholder{
+    color: #3F478D;
+}
+
+
+
+  
+  
