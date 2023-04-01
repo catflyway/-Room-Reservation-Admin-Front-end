@@ -102,7 +102,7 @@ const handleClose = () => setShow(false);
             preview={false} 
             width={60}
   height={60}
- src={record.image }
+ src={record.image.url}
             /> 
         );
       },

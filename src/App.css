@@ -301,7 +301,7 @@ tr:hover{
 }
 .searchroom{
   display: inline-flex;
-  padding: 0px 20% 0px 20%;
+  padding: 0px 10% 0px 20%;
 }
 .searchbuild{
   display: inline-flex;
@@ -309,7 +309,7 @@ tr:hover{
 }
 .searchgraph{
   display: inline-flex;
-  padding: 15px 20% 0px 30%;
+  padding: 15px 20% 0px 25%;
   margin-top: 20px;
 }
 .searchgraphdate{
@@ -359,7 +359,7 @@ tr:hover{
 
 .button-manageorganization{
   display: inline-flex;
-  padding: 0px 20px 0px 50%;
+  padding: 0px 20px 0px 60%;
 }
 .Profile{
   padding: 20px;
@@ -381,8 +381,14 @@ tr:hover{
   border: none;
 }
 .imgprofile{
-  border-radius: 30%;
-}
-.center{
+  display: block;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
   margin-bottom: 20px;
 }
+.imgprofilebor{
+  border-radius: 30%;
+}
+
+

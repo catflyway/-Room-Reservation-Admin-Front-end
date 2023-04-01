@@ -9,7 +9,7 @@ function Profile() {
 
   const [dataSource, setDataSource] = useState({});
   function getManageReq(){
-    axios.get('/users/userprofile',{crossdomain:true})
+    axios.get('/users/userprofile')
     .then(response=>{
       console.log(response)
       setDataSource(response.data);
@@ -49,12 +49,13 @@ function Profile() {
             onValuesChange={onFormLayoutChange}
             size={componentSize}
           >
-            {/* <Image class="center" className="imgprofile"
+          <div className="imgprofile">
+             <Image className="imgprofilebor"
             preview={false} 
             width={150}
   height={150}
- src={dataSource.image.url}
-            />  */}
+ src={dataSource.image?.url}
+            />  </div>
             <Form.Item label="Username">
               <Input placeholder="Username"  value={dataSource?.username}
               onChange={(e) => {
