@@ -5,10 +5,6 @@ import {
   } from 'antd';
   import React, { useState } from 'react';
   
-  const { Option } = Select;
-const handleChange = (value) => {
-  console.log(`selected ${value}`);
-};
 
   const AddBuild = () => {
   
@@ -24,22 +20,11 @@ const handleChange = (value) => {
         <Form.Item label="Organization Name">
           <Input placeholder='Organization Name'/>
         </Form.Item>
-        <Form.Item label="Organizationtype">
-        <Select
-          placeholder="Select a Organizationtype"
-          defaultValue="student"
-          onChange={handleChange}
-        >
-          <Option value="student">โรงพยาบาล</Option>
-          <Option value="teacher">โรงเรียน</Option>
-          <Option value="athlete">อื่นๆ</Option>
-        </Select>
+        <Form.Item label="E-mail Contributor">
+        <Input placeholder='E-mail Contributor'/>
         </Form.Item>
-        <Form.Item label="E-mail">
-        <Input placeholder='E-mail'/>
-        </Form.Item>
-        <Form.Item label="Password">
-        <Input.Password placeholder='Password'/>
+        <Form.Item label="Password Contributor">
+        <Input.Password placeholder='Password Contributor'/>
         </Form.Item>
 
         
