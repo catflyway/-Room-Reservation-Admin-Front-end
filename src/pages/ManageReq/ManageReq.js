@@ -3,6 +3,7 @@ import AddReq from "./AddReq";
 import { Modal, Table, Input, Form, Select, Switch } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
 import axios from "axios";
+import dayjs from "dayjs";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -10,11 +11,6 @@ const handleChange = (value) => {
   console.log(`selected ${value}`);
 };
 const ManageReq = () => {
-  const [componentSize, setComponentSize] = useState("default");
-
-  const onFormLayoutChange = ({ size }) => {
-    setComponentSize(size);
-  };
   const [isEditing, setIsEditing] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [dataSource, setDataSource] = useState([]);
@@ -22,53 +18,74 @@ const ManageReq = () => {
   function getManageReq() {
     axios.get("/Requests", { crossdomain: true }).then((response) => {
       console.log(response);
-      setDataSource(response.data);
-    });
+      setDataSource(response.data.map((item)=>{
+        let timerev=dayjs(item.startTime[0]).format("HH:mm")+" - "+dayjs(item.endTime[0]).format("HH:mm");
+        if(item.allDay==true){
+          timerev="Allday"
+        }
+        return {
+          ...item,
+          startTime:dayjs(item.startTime[0]).format("DD/MM/YYYY"),
+          endTime: dayjs(item.endTime[item.endTime.length-1]).format("DD/MM/YYYY"),
+          timereservation:timerev
+        }
+      }))
+    })
   }
   useEffect(() => {
     getManageReq();
   }, []);
   const columns = [
-    // {
-    //   key: "1",
-    //   title: "ID",
-    //   dataIndex: "_id",
-    // },
+    {
+      key: "1",
+      title: "StartDate",
+      dataIndex: "startTime",
+    },
     {
       key: "2",
-      title: "Date",
-      dataIndex: "Date_Reserve",
+      title: "EndDate",
+      dataIndex: "endTime",
     },
     {
       key: "3",
+      title: "TimeReservation",
+      dataIndex: "timereservation",
+    },
+    {
+      key: "4",
+      title: "Repeat",
+      dataIndex: "repeatDate",
+    },
+    {
+      key: "5",
       title: "Building",
       dataIndex: "Building",
     },
     {
-      key: "4",
-      title: "Roomname",
+      key: "6",
+      title: "Room",
       dataIndex: "Room",
     },
     {
-      key: "5",
+      key: "7",
       title: "User",
       dataIndex: "username",
     },
     {
-      key: "6",
+      key: "8",
       title: "Purpose",
       dataIndex: "Purpose",
     },
     {
-      key: "7",
+      key: "9",
       title: "Status",
       render: (value) => {
         return (
           <>
-            <Select defaultValue="wait" onChange={handleLeafIconChange}>
-              <Select.Option value="wait">Pending</Select.Option>
-              <Select.Option value="false">Confirmed</Select.Option>
-              <Select.Option value="true">Deny</Select.Option>
+            <Select defaultValue="Pending" onChange={value}>
+              <Select.Option value="Pending">Pending</Select.Option>
+              <Select.Option value="Confirmed">Confirmed</Select.Option>
+              <Select.Option value="Reject">Reject</Select.Option>
             </Select>
           </>
         );
@@ -109,18 +126,13 @@ const ManageReq = () => {
     Room: "",
     Building: "",
     UserID: "",
-    startTime: [],
+    startTime:[],
     endTime: [],
     allDay: false,
     Purpose: "",
+    repeatDate:"",
   });
-  const handleChange = (e) => {
-    const value = e.target.value;
-    setData({
-      ...data,
-      [e.target.name]: value,
-    });
-  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     axios.post("/Requests", data).then((response) => {
@@ -134,7 +146,7 @@ const ManageReq = () => {
     <div>
       <div className="Heard-ManageUser">
         <h5>ManageRequest</h5>
-        <div className="button-managereq">
+        <div className="button-manageorganization">
           <button
             className="button-user"
             type="primary"

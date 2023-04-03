@@ -62,7 +62,7 @@ function AddReq({ details, onChange }) {
   };
   
 
-  const datOfWeekString = ["MO", "TU", "WE", "TH", "FR", "SA", "SU"];
+  const datOfWeekString = ["SU","MO", "TU", "WE", "TH", "FR", "SA"];
 
   const [isAllDay, setIsAllDay] = useState(true);
   const [startDate, setStartDate] = useState();
@@ -96,6 +96,8 @@ function AddReq({ details, onChange }) {
       return [start, end];
     }
 
+  
+
     let getTimeRangeInterval = (interval) => {
       let startTime = [];
       let endTime = [];
@@ -125,7 +127,7 @@ function AddReq({ details, onChange }) {
       [startTime, endTime] = getTimeRangeInterval(7);
     }
   
-    onChange({ ...details, allDay: isAllDay, startTime, endTime });
+    onChange({ ...details, allDay: isAllDay,repeatDate:repeatPattern, startTime, endTime });
   }, [repeatPattern, startDate, endDate, timeRange]);
 
   return (
@@ -157,7 +159,6 @@ function AddReq({ details, onChange }) {
           placeholder="อาคาร/สถานที่"
           optionFilterProp="children"
           onChange={onChangebuild}
-          // onChange={(buildingID) => {onChange({ ...details, Building: buildingID })}}
           filterOption={(input, option) =>
             (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
           }
@@ -211,6 +212,7 @@ function AddReq({ details, onChange }) {
               onChange={(date) => setEndDate(date?.clone().add(1, 'day').startOf("day"))}
               placeholder="วันสิ้นการจอง"
               disabledDate={(value) => (value && value < startDate)}
+
             />
           ) : repeatPattern == "weeks" ? (
             <>
