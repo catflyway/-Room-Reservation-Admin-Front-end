@@ -50,49 +50,15 @@ const ManageRoom  = () => {
     editInputRef.current?.focus();
   }, [inputValue]);
 
-  const handleClose = (removedTag) => {
-    const newTags = tags.filter((tag) => tag !== removedTag);
-    console.log(newTags);
-    setTags(newTags);
-  };
-
-  const showInput = () => {
-    setInputVisible(true);
-  };
-
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-  };
-
-  const handleInputConfirm = () => {
-    if (inputValue && tags.indexOf(inputValue) === -1) {
-      setTags([...tags, inputValue]);
-    }
-
-    setInputVisible(false);
-    setInputValue('');
-  };
-
-  const handleEditInputChange = (e) => {
-    setEditInputValue(e.target.value);
-  };
-
-  const handleEditInputConfirm = () => {
-    const newTags = [...tags];
-    newTags[editInputIndex] = editInputValue;
-    setTags(newTags);
-    setEditInputIndex(-1);
-    setInputValue('');
-  };
   const [isEditingRoom, setIsEditingroom] = useState(false);
   const [editingdataRoom, setEditingdataRoom] = useState(null);
   const [dataSource, setDataSource] = useState([]);
   const columns = [
-    {
-      key: "1",
-      title: "ID",
-      dataIndex: "id",
-    },
+    // {
+    //   key: "1",
+    //   title: "ID",
+    //   dataIndex: "id",
+    // },
     {
       key: "2",
       title: "ImageRoom",

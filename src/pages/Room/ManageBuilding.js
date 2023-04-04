@@ -36,14 +36,10 @@ const ManageBuilding = () => {
   const showModal = () => {
     setIsModalOpen(true);
   };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
   const handleCancel = () => {
     setIsModalOpen(false);
   };
   const [isEditingBuild, setIsEditingbuild] = useState(false);
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -59,37 +55,7 @@ const ManageBuilding = () => {
       .catch((err) => console.log(err));
     setIsModalOpen(false);
   };
-
-  const onAddUser = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setOpen(false);
-    }, 3000);
-    const randomNumber = parseInt(Math.random() * 1000);
-    const newUsers = {
-      id: randomNumber,
-      name: "Name",
-    };
-    setDataSource((pre) => {
-      return [...pre, newUsers];
-    });
-  };
   const [editingDatabuild, setEditingDatabuild] = useState(null);
-  // const [datastatusSource, setDatastatusSource] = useState([
-  //     {
-  //       id:1,
-  //       buildingname:'ECC',
-  //     },
-  //     {
-  //       id:2,
-  //       buildingname:'โรงแอล',
-  //     },
-  //     {
-  //       id:3,
-  //       buildingname:'ห้องประชุมพันปี',
-  //     },
-  //   ]);
   const columnsEdit = [
     {
       key: "1",

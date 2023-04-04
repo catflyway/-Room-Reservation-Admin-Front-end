@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import BarChart from "./components/BarChart";
-import { UserData } from "./Data";
 import { Row, Col, Select, Button } from "antd";
 import { Divider, Table } from "antd";
 import axios from "axios";
 
-import { DatePicker, Space, TimePicker } from "antd";
+import { DatePicker } from "antd";
 
 const { RangePicker } = DatePicker;
 const PickerWithType = ({ type, onChange }) => {
@@ -79,8 +78,8 @@ function ShowBar() {
   return (
     <div className="ShowBar">
       <div className="searchgraph">
-        <div className="searchstatus">
-          Buildtype:{" "}
+      <div className="searchstatus">
+      Organization:{" "}
           <Select placeholder="Select a Buildtype" onChange={handleChange}>
             <Option value="student">โรงพยาบาล</Option>
             <Option value="teacher">โรงเรียน</Option>
@@ -88,7 +87,15 @@ function ShowBar() {
           </Select>
         </div>
         <div className="searchstatus">
-          Building:{" "}
+        Building:{" "}
+          <Select placeholder="Select a Buildtype" onChange={handleChange}>
+            <Option value="student">โรงพยาบาล</Option>
+            <Option value="teacher">โรงเรียน</Option>
+            <Option value="athlete">อื่นๆ</Option>
+          </Select>
+        </div>
+        <div className="searchstatus">
+          Buildtype:{" "}
           <Select
             showSearch
             style={{

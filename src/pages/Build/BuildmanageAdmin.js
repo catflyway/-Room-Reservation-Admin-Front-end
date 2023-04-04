@@ -34,6 +34,7 @@ const BuildmanageAdmin = () => {
       useEffect(() => {
         getOrg();
        }, []); 
+       
   const columns = [
     // {
     //   key: "1",

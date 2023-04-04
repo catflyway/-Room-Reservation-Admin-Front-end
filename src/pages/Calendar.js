@@ -21,7 +21,7 @@ function Calendar() {
   function getManageCalendar(){
     axios.get('/calendar')
     .then(response=>{
-      console.log('iiiiiii',response)
+      console.log(response)
       setIsevents(response.data.map((item)=>{
         return {title:item.Room+"   "+ item.Purpose,start:item.startTime,end:item.endTime,allDay:item.allDay/*,timeZone:'UTC'*/}  
       }))
@@ -30,7 +30,7 @@ function Calendar() {
   
   
   const [isModalVisible, setIsModalVisible] = useState(false);
-    const [values, setValues] = useState({
+  const [values, setValues] = useState({
       title: '',
       start: '',
       end: '',
@@ -63,6 +63,7 @@ const handleCancel = () => {
   return (
     <div>
       <Row justify="center">
+      <Col span={24}>
         <div className="Heard-ManageCa">
         <h2>Dashboard</h2>
         </div>
@@ -81,9 +82,6 @@ const handleCancel = () => {
         </button>
         
         </div>
-      </Row>
-      <Row>
-        <Col span={24}>
         <div className="searchgraph">
         <div className="searchstatus">
         Organization:{" "}
@@ -124,8 +122,12 @@ const handleCancel = () => {
           </Select>
         </div>
         </div>
+        </Col>
+      </Row>
+      <Row justify="center">
+        <Col span={20}>
           <Row justify="center">
-            <Col span={16}>
+            <Col span={18}>
               <div>
                 <label>
                   <h2>ตารางการใช้งานห้อง</h2>
@@ -141,10 +143,15 @@ const handleCancel = () => {
                   selectable={true}
                   select={handleSelect}
                 />
-                <Modal title="รายละเอียดการจอง" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+                <Modal title="ทำการจอง" open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
                        
                     </Modal>
               </div>
+            </Col>
+            <Col justify="center" span={4}>
+            <h2>
+              รายละเอียดการจอง
+            </h2>
             </Col>
           </Row>
         </Col>

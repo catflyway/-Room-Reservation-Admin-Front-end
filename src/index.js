@@ -6,8 +6,8 @@ import reportWebVitals from './reportWebVitals';
 import 'antd/dist/antd.css'; // or 'antd/dist/antd.less'
 import axios from 'axios';
 
-axios.defaults.baseURL = "https://roomreserve1.herokuapp.com";
-// axios.defaults.baseURL = "http://localhost:3001";
+// axios.defaults.baseURL = "https://roomreserve1.herokuapp.com";
+axios.defaults.baseURL = "http://localhost:3001";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

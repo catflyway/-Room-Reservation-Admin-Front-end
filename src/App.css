@@ -272,6 +272,15 @@ tr:hover{
   font-size: calc(10px + 2vmin);
   color: white;
 }
+.User-list-heard-req {
+  display: flex;
+  width: 80%;
+  padding: 0px 0px 10% 15%;
+  flex-direction: column;
+  align-items: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
 .button-manageroom{
   display: inline-flex;
   padding: 0px 20px 0px 35%;

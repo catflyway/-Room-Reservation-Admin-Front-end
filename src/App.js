@@ -55,7 +55,7 @@ function App() {
                   if (!item.role.includes(user.role)) {
                     return undefined;
                   }
-                  return <Route path={item.path} element={item.element} />;
+                  return <Route key={index} path={item.path} element={item.element} />;
                 })}
                 <Route
                   path="*"
