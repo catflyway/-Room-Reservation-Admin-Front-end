@@ -1,14 +1,9 @@
 import React, { useState ,useEffect} from "react";
-import { Button, Modal, Table, Input, Form, Image,Select } from "antd";
+import { Button, Modal, Table, Input, Form, Image,Select , message,Upload, } from "antd";
 import Usermem from "./Usermem";
 import "antd/dist/antd.css";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from 'axios';
-
-import {
-  message, 
-  Upload,
-} from 'antd';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 const getBase64 = (img, callback) => {
   const reader = new FileReader();
@@ -34,12 +29,48 @@ const beforeUpload = (file) => {
 
 const { Search } = Input;
 const { Option } = Select;
-const handleChanges = (value) => {
-  console.log(`selected ${value}`);
-};
-const onSearch = (value) => console.log(value);
 
 const ManageUser = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    priority:"",
+    org:"",
+  });
+  const [orgList, setOrgList] = useState([]);
+  function getOrg() {
+    axios.get("/org").then((response) => {
+      console.log(response);
+      setOrgList(response.data);
+    });
+  }
+  const [dataUsers, setUsers] = useState([]);
+  function getBuildtype(id) {
+    axios.get("/org/users/"+id, { crossdomain: true }).then((response) => {
+      console.log(response);
+      setUsers(response.data);
+    });
+  }
+  const [status, setstatus] = useState([]);
+  function getStatus(id) {
+    axios.get("/org/status/"+id, { crossdomain: true }).then((response) => {
+      console.log(response);
+      setstatus(response.data);
+    });
+  }
+  useEffect(() => {
+    getOrg();
+  }, []);
+  const [idOrg, setIdorg] = useState();
+  const onChangeorg = (value) => {
+    console.log(`selected ${value}`);
+    setFormData({ ...formData, org: value})
+    setIdorg(value);
+    getStatus(value);
+  };
+  const onSearch = (value) => {
+    console.log("search:", value);
+
+  };
   const [show, setShow] = useState(false);
 const handleShow = () => setShow(true);
 const handleClose = () => setShow(false);
@@ -85,7 +116,7 @@ const handleClose = () => setShow(false);
     axios.get('/users',{crossdomain:true})
     .then(response=>{
       console.log(response)
-      setDataSource(response.data);
+      setUsers(response.data);
     })
   }
   useEffect(() => {
@@ -154,37 +185,14 @@ const handleClose = () => setShow(false);
       },
     },
   ];
-  const [isEditingstatus, setIsEditingstatus] = useState(false);
-  const [datastatusSource, setDatastatusSource] = useState([
-    {
-      id:1,
-      statusname:'Student',
-      priority:'3'
-    },
-    {
-      id:2,
-      statusname:'Teacher',
-      priority:'1'
-    },
-    {
-      id:3,
-      statusname:'Athlete',
-      priority:'2'
-    },
-  ]);
-  const columnsEdit = [
+  const columnsstatus = [
     {
       key: "1",
       title: "Status",
-      dataIndex: "statusname",
+      dataIndex: "name",
     },
     {
       key: "2",
-      title: "Priority",
-      dataIndex: "priority",
-    },
-    {
-      key: "3",
       title: "Actions",
       render: (record1) => {
         return (
@@ -193,30 +201,13 @@ const handleClose = () => setShow(false);
               onClick={() => {
                 onEditStatus(record1);
               }}
-              style={{ color: "yellow", marginLeft: 12 }}/>
-          </>
-        );
-      },
-    },
-  ];
-  const columnsDelete = [
-    {
-      key: "1",
-      title: "Status",
-      dataIndex: "statusname",
-    },
-    {
-      key: "2",
-      title: "Actions",
-      render: (record1) => {
-        return (
-          <>
+              style={{ color: "blue", marginLeft: 12 }}/>
               <DeleteOutlined
               onClick={() => {
-                onDeleteStatus(record1);
+                onDeleteUser(record1);
               }}
-              style={{ color: "red", marginLeft: 12 }}/>
-            
+              style={{ color: "red", marginLeft: 12 }}
+            />
           </>
         );
       },
@@ -265,18 +256,6 @@ const handleClose = () => setShow(false);
       },
     });
   };
-  const onDeleteStatus = (record1) => {
-    Modal.confirm({
-      title: "Are you sure, you want to delete this status record?",
-      okText: "Yes",
-      okType: "danger",
-      onOk: () => {
-        setDatastatusSource((pre) => {
-          return pre.filter((status) => status.id !== record1.id);
-        });
-      },
-    });
-  };
   const onEditUser = (record) => {
     setIsEditing(true);
     setEditingUser({ ...record });
@@ -286,43 +265,23 @@ const handleClose = () => setShow(false);
     setEditingUser(null);
   };
   const onEditStatus = (record1) => {
-    setIsEditingstatus(true);
     setEditingUser({ ...record1 });
-  };
-  const resetEditingstatus = () => {
-    setIsEditingstatus(false);
-    setEditingUser(null);
   };
   
   const [isModalOpen1, setIsModalOpen1] = useState(false);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [open, setOpen] = useState(false);
-  const [EditStatusU, setIsEditStatusUser] = useState(false);
   const [AddStatusU, setIsAddStatusUser] = useState(false);
-  const [DeleteStatusU, setIsDeleteStatusUser] = useState(false);
 
   const showAdd = () => {
     setIsAddOpen(true);
   };
-  const showAddstatus = () => {
+  const openaddstatus = () => {
     setIsAddStatusUser(true);
   };
   const Canceladdstatus = () => {
     setIsAddStatusUser(false);
   };
-  const showDeletestatus = () => {
-    setIsDeleteStatusUser(true);
-  };
-  const Canceldeletestatus = () => {
-    setIsDeleteStatusUser(false);
-  };
-  const showEditstatus = () => {
-    setIsEditStatusUser(true);
-  };
-  const Canceleditstatus = () => {
-    setIsEditStatusUser(false);
-  };
-
   const handleCancelAdd = () => {
     setIsAddOpen(false);
   };
@@ -341,6 +300,16 @@ const handleClose = () => setShow(false);
 
   const handleCancel = () => {
     setOpen(false);
+  };
+  const handleSubmit = () => {
+    console.log(formData)
+    // axios
+    //   .post("/org/status/", formData)
+    //   .then((res) => {
+    //     getstatus(idOrg);
+    //   })
+    //   .catch((err) => console.log(err));
+    //   handleCancel1(false);
   };
 
   return (
@@ -364,15 +333,32 @@ const handleClose = () => setShow(false);
               onCancel={handleCancel1}
               footer={[]}
             >
-              <button className="button-user-mana1" id="1" type="primary" onClick={showAddstatus}>
+              <button className="button-submit1" id="1" type="primary" onClick={openaddstatus}>
                 AddStatus
               </button>
+              <Form.Item label="หน่วยงาน">
+        <Select
+          showSearch
+          placeholder="หน่วยงาน"
+          optionFilterProp="children"
+          onChange={onChangeorg}
+          onSearch={onSearch}
+          filterOption={(input, option) =>
+            (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
+          }
+          fieldNames={
+            { label: "name", value: "_id" }
+          }
+          options={orgList}
+        />
+      </Form.Item>
               <Modal
             title="AddStatus"
             open={AddStatusU}
-            onOk={Canceladdstatus}
+            onOk={handleSubmit}
             onCancel={Canceladdstatus}
           >
+
           <Form
       
       labelCol={{
@@ -391,146 +377,19 @@ const handleClose = () => setShow(false);
             <Form.Item label="Username">
           <Input placeholder='Username'/>
         </Form.Item>
-        <Form.Item label="Pririty">
-        <Select
-    showSearch
-    style={{
-      width: 200,
-    }}
-    placeholder="Select pririty status"
-    optionFilterProp="children"
-    filterOption={(input, option) => option.children.includes(input)}
-    filterSort={(optionA, optionB) =>
-      optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
-    }
-  >
-    <Option value="1">1</Option>
-    <Option value="2">2</Option>
-    <Option value="3">3</Option>
-    <Option value="4">4</Option>
-    <Option value="5">5</Option>
-  </Select>
-  </Form.Item>
   </Form>
+  
           </Modal>
-              <button className="button-user-mana2" type="primary"  onClick={showEditstatus}>
-                EditStatus
-              </button>
-              <Modal
-            title="EditStatus"
-            open={EditStatusU}
-            onCancel={Canceleditstatus}
-            onOk={false}
-          >
-            <div className="User-list">
-        <header className="User-list-heard">
-          <Table columns={columnsEdit} dataSource={datastatusSource}></Table>
-          <Modal
-            title="Edit Status"
-            visible={isEditingstatus}
-            okText="Save"
-            onCancel={() => {
-              resetEditingstatus();
-            }}
-            onOk={() => {
-              setDatastatusSource((pre) => {
-                return pre.map((users) => {
-                  if (users.id === editingUser.id) {
-                    return editingUser;
-                  } else {
-                    return users;
-                  }
-                });
-              });
-              resetEditingstatus();
-            }}
-          >
-           <Form
-      
-      labelCol={{
-        span: 4,
-      }}
-      wrapperCol={{
-        span: 14,
-      }}
-      layout="horizontal"
-      initialValues={{
-        size: componentSize,
-      }}
-      onValuesChange={onFormLayoutChange}
-      size={componentSize}
-    >
-           <Form.Item label="Username">
-          <Input value={editingUser?.statusname}
-              onChange={(e) => {
-                setEditingUser((pre) => {
-                  return { ...pre, statusname: e.target.value };
-                });
-              }}/>
-        </Form.Item>
-            <Form.Item label="Pririty">
-        <Select
-    showSearch
-    style={{
-      width: 200,
-    }}
-    placeholder="Select pririty status"
-    optionFilterProp="children"
-    filterOption={(input, option) => option.children.includes(input)}
-    filterSort={(optionA, optionB) =>
-      optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
-    }
-  >
-    <Option value="1">1</Option>
-    <Option value="2">2</Option>
-    <Option value="3">3</Option>
-    <Option value="4">4</Option>
-    <Option value="5">5</Option>
-  </Select>
-  </Form.Item>
-  </Form>
-          </Modal>
-        </header>
-        </div>
-          </Modal>
-              <button className="button-user-mana3" type="primary" onClick={showDeletestatus}>
-                DeleteStatus
-              </button>
+          <header className="User-list-heard">
+          <Table
+            columns={columnsstatus}
+            dataSource={status}
+            pagination={false}
+          ></Table>
+          </header>
             </Modal>
-            <Modal
-            title="DeleteStatus"
-            open={DeleteStatusU}
-            onCancel={Canceldeletestatus}
-            onOk={false}
-          >
-            <div className="User-list">
-        <header className="User-list-heard">
-          <Table columns={columnsDelete} dataSource={datastatusSource}></Table>
-          <Modal
-            title="Delete Status"
-            visible={isEditingstatus}
-            okText="Save"
-            onCancel={() => {
-              resetEditingstatus();
-            }}
-            onOk={() => {
-              setDatastatusSource((pre) => {
-                return pre.map((users) => {
-                  if (users.id === editingUser.id) {
-                    return editingUser;
-                  } else {
-                    return users;
-                  }
-                });
-              });
-              resetEditingstatus();
-            }}
-          >
-          </Modal>
-        </header>
-        </div>
-          </Modal>
           </div>
+          
 
           <button
             className="button-user"
@@ -678,7 +537,7 @@ const handleClose = () => setShow(false);
       </div>
       <div className="User-list">
         <header className="User-list-heard">
-          <Table columns={columns} dataSource={dataSource}></Table>
+          <Table columns={columns} dataSource={dataUsers}></Table>
           <Modal
             title="Edit Users"
             visible={isEditing}
