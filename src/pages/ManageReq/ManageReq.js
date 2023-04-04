@@ -5,50 +5,63 @@ import { CheckOutlined } from "@ant-design/icons";
 import axios from "axios";
 import dayjs from "dayjs";
 
-const { Search } = Input;
-const { Option } = Select;
-const handleChange = (value) => {
-  console.log(`selected ${value}`);
-};
 const ManageReq = () => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
   const [dataSource, setDataSource] = useState([]);
 
   function getManageReq() {
     axios.get("/Requests", { crossdomain: true }).then((response) => {
       console.log(response);
-      setDataSource(response.data.map((item)=>{
-        let timerev=dayjs(item.startTime[0]).format("HH:mm")+" - "+dayjs(item.endTime[0]).format("HH:mm");
-        if(item.allDay==true){
-          timerev="Allday"
-        }
-        return {
-          ...item,
-          startTime:dayjs(item.startTime[0]).format("DD/MM/YYYY"),
-          endTime: dayjs(item.endTime[item.endTime.length-1]).format("DD/MM/YYYY"),
-          timereservation:timerev
-        }
-      }))
-    })
+      setDataSource(
+        response.data.map((item) => {
+          let timerev =
+            dayjs(item.startTime[0]).format("HH:mm") +
+            " - " +
+            dayjs(item.endTime[0]).format("HH:mm");
+          if (item.allDay == true) {
+            timerev = "Allday";
+          }
+          return {
+            ...item,
+            startTime: dayjs(item.startTime[0]),
+            endTime: dayjs(item.endTime[item.endTime.length - 1]),
+            timereservation: timerev,
+          };
+        })
+      );
+    });
   }
+
   useEffect(() => {
     getManageReq();
   }, []);
+
+  function onChangeStatus(request, status) {
+    console.log("Change", request, status);
+    setData({...data,Status_Approve:request, status})
+  }
+
   const columns = [
     {
-      key: "1",
+      key: "startTime",
       title: "StartDate",
       dataIndex: "startTime",
+      sorter: (a, b) => a.startTime - b.startTime,
+      render: (value) => {
+        return value.format("DD/MM/YYYY");
+      },
     },
     {
       key: "2",
       title: "EndDate",
       dataIndex: "endTime",
+      sorter: (a, b) => a.startTime - b.startTime,
+      render: (value) => {
+        return value.format("DD/MM/YYYY");
+      },
     },
     {
       key: "3",
-      title: "TimeReservation",
+      title: "TimeReserve",
       dataIndex: "timereservation",
     },
     {
@@ -75,69 +88,58 @@ const ManageReq = () => {
       key: "8",
       title: "Purpose",
       dataIndex: "Purpose",
+      width: 250,
     },
     {
       key: "9",
       title: "Status",
-      render: (value) => {
+      dataIndex: "Status_Approve",
+      width: 200,
+      render: (value, record) => {
         return (
           <>
-            <Select defaultValue="Pending" onChange={value}>
+            <Select
+              value={value}
+              onChange={(newValue) => onChangeStatus(record, newValue)}
+            >
               <Select.Option value="Pending">Pending</Select.Option>
-              <Select.Option value="Confirmed">Confirmed</Select.Option>
+              <Select.Option value="Approved">Approved</Select.Option>
               <Select.Option value="Reject">Reject</Select.Option>
+              <Select.Option value="Cancled ">Cancled</Select.Option>
             </Select>
           </>
         );
       },
     },
   ];
-  const [showLeafIcon, setShowLeafIcon] = useState(true);
-  const onSelect = (selectedKeys, info) => {
-    console.log("selected", selectedKeys, info);
-  };
-  const handleLeafIconChange = (value) => {
-    if (value === "custom") {
-      return setShowLeafIcon(<CheckOutlined />);
-    }
-    if (value === "true") {
-      return setShowLeafIcon(true);
-    }
-    return setShowLeafIcon(false);
-  };
-
-  const resetEditing = () => {
-    setIsEditing(false);
-    setEditingUser(null);
-  };
 
   const [isAddOpen, setIsAddOpen] = useState(false);
 
   const showAddReq = () => {
     setIsAddOpen(true);
   };
-  const handAddReq = () => {
-    setIsAddOpen(false);
-  };
+
   const handCancelAddReq = () => {
     setIsAddOpen(false);
   };
+
   const [data, setData] = useState({
     Room: "",
     Building: "",
     UserID: "",
-    startTime:[],
+    startTime: [],
     endTime: [],
     allDay: false,
     Purpose: "",
-    repeatDate:"",
+    repeatDate: "",
+    Status_Approve:"",
   });
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    axios.post("/Requests", data).then((response) => {
-      console.log(response.data);
-    });
+    // e.preventDefault();
+    // axios.post("/Requests", data).then((response) => {
+    //   console.log(response.data);
+    // });
     console.log(data);
     setIsAddOpen(false);
   };
@@ -163,17 +165,20 @@ const ManageReq = () => {
               onOk={handleSubmit}
               onCancel={handCancelAddReq}
             >
-              <AddReq details={data} onChange={(value) => {
-                console.log("Set data =>", value);
-                setData(value);
-              }} />
+              <AddReq
+                details={data}
+                onChange={(value) => {
+                  console.log("Set data =>", value);
+                  setData(value);
+                }}
+              />
             </Modal>
           </div>
         </div>
       </div>
       <div className="User-list">
-        <header className="User-list-heard">
-          <Table columns={columns} dataSource={dataSource}></Table>
+        <header className="User-list-heard-req">
+          <Table columns={columns} dataSource={dataSource} rowKey={(record) => record._id}></Table>
         </header>
       </div>
     </div>
