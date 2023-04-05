@@ -36,8 +36,15 @@ const ManageReq = () => {
   }, []);
 
   function onChangeStatus(request, status) {
+    let data = {
+      "Status_Approve": status,
+    }
+    axios.put("/Requests/"+ request._id, data)
+    .then((response) => {
+      getManageReq()
+      console.log(response.data);
+    });
     console.log("Change", request, status);
-    setData({...data,Status_Approve:request, status})
   }
 
   const columns = [
@@ -132,14 +139,14 @@ const ManageReq = () => {
     allDay: false,
     Purpose: "",
     repeatDate: "",
-    Status_Approve:"",
   });
 
   const handleSubmit = (e) => {
-    // e.preventDefault();
-    // axios.post("/Requests", data).then((response) => {
-    //   console.log(response.data);
-    // });
+    e.preventDefault();
+    axios.post("/Requests", data).then((response) => {
+      getManageReq();
+      console.log(response.data);
+    });
     console.log(data);
     setIsAddOpen(false);
   };
