@@ -1,30 +1,24 @@
-import React, { useState ,useEffect} from "react";
-import { Button, Modal, Table, Input, Form, Image,Select , message,Upload, } from "antd";
+import React, { useState, useEffect } from "react";
+import {
+  Button,
+  Modal,
+  Table,
+  Input,
+  Form,
+  Image,
+  Select,
+  message,
+  Upload,
+} from "antd";
 import Usermem from "./Usermem";
 import "antd/dist/antd.css";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import axios from 'axios';
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import axios from "axios";
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 const getBase64 = (img, callback) => {
   const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result));
+  reader.addEventListener("load", () => callback(reader.result));
   reader.readAsDataURL(img);
-};
-
-const beforeUpload = (file) => {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-
-  if (!isJpgOrPng) {
-    message.error('You can only upload JPG/PNG file!');
-  }
-
-  const isLt2M = file.size / 1024 / 1024 < 2;
-
-  if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
-  }
-
-  return isJpgOrPng && isLt2M;
 };
 
 const { Search } = Input;
@@ -33,8 +27,7 @@ const { Option } = Select;
 const ManageUser = () => {
   const [formData, setFormData] = useState({
     name: "",
-    priority:"",
-    org:"",
+    org: "",
   });
   const [orgList, setOrgList] = useState([]);
   function getOrg() {
@@ -45,14 +38,14 @@ const ManageUser = () => {
   }
   const [dataUsers, setUsers] = useState([]);
   function getBuildtype(id) {
-    axios.get("/org/users/"+id, { crossdomain: true }).then((response) => {
+    axios.get("/org/users/" + id, { crossdomain: true }).then((response) => {
       console.log(response);
       setUsers(response.data);
     });
   }
   const [status, setstatus] = useState([]);
   function getStatus(id) {
-    axios.get("/org/status/"+id, { crossdomain: true }).then((response) => {
+    axios.get("/org/status/" + id, { crossdomain: true }).then((response) => {
       console.log(response);
       setstatus(response.data);
     });
@@ -63,65 +56,31 @@ const ManageUser = () => {
   const [idOrg, setIdorg] = useState();
   const onChangeorg = (value) => {
     console.log(`selected ${value}`);
-    setFormData({ ...formData, org: value})
+    setFormData({ ...formData, org: value });
     setIdorg(value);
     getStatus(value);
   };
   const onSearch = (value) => {
     console.log("search:", value);
-
   };
-  const [show, setShow] = useState(false);
-const handleShow = () => setShow(true);
-const handleClose = () => setShow(false);
 
-  const [componentSize, setComponentSize] = useState('default');
-  
-    const onFormLayoutChange = ({ size }) => {
-      setComponentSize(size);
-    };
-    const [loading, setLoading] = useState(false);
-    const [imageUrl, setImageUrl] = useState();
-  
-    const handleChange = (info) => {
-      if (info.file.status === 'uploading') {
-        setLoading(true);
-        return;
-      }
-  
-      if (info.file.status === 'done') {
-        getBase64(info.file.originFileObj, (url) => {
-          setLoading(false);
-          setImageUrl(url);
-        });
-      }
-    };
-  
-    const uploadButton = (
-      <div>
-        {loading ? <LoadingOutlined /> : <PlusOutlined />}
-        <div
-          style={{
-            marginTop: 8,
-          }}
-        >
-          Upload
-        </div>
-      </div>
-    );
-    
+  const [componentSize, setComponentSize] = useState("default");
+
+  const onFormLayoutChange = ({ size }) => {
+    setComponentSize(size);
+  };
+
   const [isEditing, setIsEditing] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
-  function getManageReq(){
-    axios.get('/users',{crossdomain:true})
-    .then(response=>{
-      console.log(response)
+  function getAllUser() {
+    axios.get("/users", { crossdomain: true }).then((response) => {
+      console.log(response);
       setUsers(response.data);
-    })
+    });
   }
   useEffect(() => {
-    getManageReq();
-   }, []); 
+    getAllUser();
+  }, []);
   const [dataSource, setDataSource] = useState([]);
   const columns = [
     {
@@ -129,12 +88,13 @@ const handleClose = () => setShow(false);
       title: "Profile",
       render: (record) => {
         return (
-            <Image className="imgprofile"
-            preview={false} 
+          <Image
+            className="imgprofile"
+            preview={false}
             width={60}
-  height={60}
- src={record.image.url}
-            /> 
+            height={60}
+            src={record.image.url}
+          />
         );
       },
     },
@@ -149,22 +109,22 @@ const handleClose = () => setShow(false);
       dataIndex: "firstname",
     },
     {
-      key: "3",
+      key: "4",
       title: "Email",
       dataIndex: "email",
     },
     {
-      key: "4",
+      key: "5",
       title: "Status",
       dataIndex: "status",
     },
     {
-      key: "5",
+      key: "6",
       title: "Role",
       dataIndex: "role",
     },
     {
-      key: "6",
+      key: "7",
       title: "Actions",
       render: (record) => {
         return (
@@ -197,12 +157,13 @@ const handleClose = () => setShow(false);
       render: (record1) => {
         return (
           <>
-             <EditOutlined
+            <EditOutlined
               onClick={() => {
                 onEditStatus(record1);
               }}
-              style={{ color: "blue", marginLeft: 12 }}/>
-              <DeleteOutlined
+              style={{ color: "blue", marginLeft: 12 }}
+            />
+            <DeleteOutlined
               onClick={() => {
                 onDeleteUser(record1);
               }}
@@ -214,36 +175,6 @@ const handleClose = () => setShow(false);
     },
   ];
 
-  const onAddUser = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setOpen(false);
-    }, 3000);
-    const randomNumber = parseInt(Math.random() * 1000);
-    const newUsers = {
-     id: randomNumber,
-      name: 'Name',
-      username:'Username',
-      email: "Email",
-      status: <Select
-      placeholder="Select a Status"
-      defaultValue="student"
-      onChange={handleChange}
-    >
-      <Option value="student">Student</Option>
-      <Option value="teacher">Teacher</Option>
-      <Option value="athlete">Athlete</Option>
-    </Select>,
-      role: <Select placeholder="Select a Role"  defaultValue="user">
-      <Select.Option value="user">User</Select.Option>
-      <Select.Option value="admin">Admin</Select.Option>
-    </Select>,
-    }; 
-    setDataSource((pre) => {
-      return [...pre, newUsers];
-    });
-  };
   const onDeleteUser = (record) => {
     Modal.confirm({
       title: "Are you sure, you want to delete this user record?",
@@ -267,23 +198,15 @@ const handleClose = () => setShow(false);
   const onEditStatus = (record1) => {
     setEditingUser({ ...record1 });
   };
-  
+
   const [isModalOpen1, setIsModalOpen1] = useState(false);
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [open, setOpen] = useState(false);
   const [AddStatusU, setIsAddStatusUser] = useState(false);
 
-  const showAdd = () => {
-    setIsAddOpen(true);
-  };
   const openaddstatus = () => {
     setIsAddStatusUser(true);
   };
   const Canceladdstatus = () => {
     setIsAddStatusUser(false);
-  };
-  const handleCancelAdd = () => {
-    setIsAddOpen(false);
   };
 
   const showModal1 = () => {
@@ -298,18 +221,15 @@ const handleClose = () => setShow(false);
     setIsModalOpen1(false);
   };
 
-  const handleCancel = () => {
-    setOpen(false);
-  };
   const handleSubmit = () => {
-    console.log(formData)
-    // axios
-    //   .post("/org/status/", formData)
-    //   .then((res) => {
-    //     getstatus(idOrg);
-    //   })
-    //   .catch((err) => console.log(err));
-    //   handleCancel1(false);
+    console.log(formData);
+    axios
+      .post("/org/status/", formData)
+      .then((res) => {
+        getStatus(idOrg);
+      })
+      .catch((err) => console.log(err));
+    setIsAddStatusUser(false);
   };
 
   return (
@@ -333,211 +253,112 @@ const handleClose = () => setShow(false);
               onCancel={handleCancel1}
               footer={[]}
             >
-              <button className="button-submit1" id="1" type="primary" onClick={openaddstatus}>
+              <button
+                className="button-submit1"
+                id="1"
+                type="primary"
+                onClick={openaddstatus}
+              >
                 AddStatus
               </button>
               <Form.Item label="หน่วยงาน">
-        <Select
-          showSearch
-          placeholder="หน่วยงาน"
-          optionFilterProp="children"
-          onChange={onChangeorg}
-          onSearch={onSearch}
-          filterOption={(input, option) =>
-            (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
-          }
-          fieldNames={
-            { label: "name", value: "_id" }
-          }
-          options={orgList}
-        />
-      </Form.Item>
+                <Select
+                  showSearch
+                  placeholder="หน่วยงาน"
+                  optionFilterProp="children"
+                  onChange={onChangeorg}
+                  onSearch={onSearch}
+                  filterOption={(input, option) =>
+                    (option?.name ?? "")
+                      .toLowerCase()
+                      .includes(input.toLowerCase())
+                  }
+                  fieldNames={{ label: "name", value: "_id" }}
+                  options={orgList}
+                />
+              </Form.Item>
               <Modal
-            title="AddStatus"
-            open={AddStatusU}
-            onOk={handleSubmit}
-            onCancel={Canceladdstatus}
-          >
-
-          <Form
-      
-      labelCol={{
-        span: 4,
-      }}
-      wrapperCol={{
-        span: 14,
-      }}
-      layout="horizontal"
-      initialValues={{
-        size: componentSize,
-      }}
-      onValuesChange={onFormLayoutChange}
-      size={componentSize}
-    >
-            <Form.Item label="Username">
-          <Input placeholder='Username'/>
-        </Form.Item>
-  </Form>
-  
-          </Modal>
-          <header className="User-list-heard">
-          <Table
-            columns={columnsstatus}
-            dataSource={status}
-            pagination={false}
-          ></Table>
-          </header>
+                title="AddStatus"
+                open={AddStatusU}
+                onOk={handleSubmit}
+                onCancel={Canceladdstatus}
+              >
+                <Form
+                  labelCol={{
+                    span: 4,
+                  }}
+                  wrapperCol={{
+                    span: 14,
+                  }}
+                  layout="horizontal"
+                  initialValues={{
+                    size: componentSize,
+                  }}
+                  onValuesChange={onFormLayoutChange}
+                  size={componentSize}
+                >
+                  <Form.Item label="Statusname">
+                    <Input placeholder="Statusname" />
+                  </Form.Item>
+                </Form>
+              </Modal>
+              <header className="User-list-heard">
+                <Table
+                  columns={columnsstatus}
+                  dataSource={status}
+                  pagination={false}
+                ></Table>
+              </header>
             </Modal>
           </div>
-          
 
-          <button
-            className="button-user"
-            type="primary"
-            size={20}
-            onClick={showAdd}
-          >
-            AddUser
-          </button>
-          
-            <Modal
-              open={isAddOpen}
-              onCancel={handleCancelAdd}
-              onOk={onAddUser}
-              footer={[
-                <Button
-                  className="button-back"
-                  key="back"
-                  onClick={handleCancel}
-                >
-                  ยกเลิก
-                </Button>,
-
-                <Button
-                  className="button-submit"
-                  key="submit"
-                  type="primary"
-                  loading={loading}
-                  onClick={onAddUser}
-                >
-                  ตกลง
-                </Button>,
-              ]}
-            ><Usermem/>
-             {/*<Form
-      
-      labelCol={{
-        span: 4,
-      }}
-      wrapperCol={{
-        span: 14,
-      }}
-      layout="horizontal"
-      initialValues={{
-        size: componentSize,
-      }}
-      onValuesChange={onFormLayoutChange}
-      size={componentSize}
-    >
-      <div className='picture'>
-      <Upload
-    name="avatar"
-    listType="picture-card"
-    className="avatar-uploader"
-    showUploadList={false}
-    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-    beforeUpload={beforeUpload}
-    onChange={handleChange}
-  >
-    {imageUrl ? (
-      <img
-        src={imageUrl}
-        alt="avatar"
-        style={{
-          width: '100%',
-        }}
-      />
-    ) : (
-      uploadButton
-    )}
-  </Upload>
-  </div>
-      <Form.Item label="Username">
-        <Input placeholder='Username'/>
-      </Form.Item>
-      <Form.Item label="Name">
-        <Input placeholder='Name'/>
-      </Form.Item>
-      <Form.Item label="Lastname">
-      <Input placeholder='Lastname'/>
-      </Form.Item>
-      <Form.Item label="E-mail">
-      <Input placeholder='E-mail'/>
-      </Form.Item>
-      <Form.Item label="Password">
-      <Input.Password placeholder='Password'/>
-      </Form.Item>
-      
-      <Form.Item label="Status">
-        <Select placeholder="Select a Status">
-          <Select.Option value="student">Student</Select.Option>
-          <Select.Option value="teacher">Teacher</Select.Option>
-          <Select.Option value="athlete">Athlete</Select.Option>
-        </Select>
-      </Form.Item>
-      <Form.Item label="Role">
-        <Select placeholder="Select a Role">
-          <Select.Option value="user">User</Select.Option>
-          <Select.Option value="admin">Admin</Select.Option>
-        </Select>
-      </Form.Item>
-    </Form>*/}
-            </Modal>
-
+          <Usermem onSuccess={getAllUser}/>
         </div>
       </div>
       <div className="searchall">
-      <div className="searchstatus">
-              Organization: <Select
-      placeholder="Select a Building"
-      onChange={handleChange}
-    >
-      <Option value="student">ECC</Option>
-      <Option value="teacher">โรงแอล</Option>
-      <Option value="athlete">ห้องประชุมพันปี</Option>
-    </Select>
-    </div>
         <div className="searchstatus">
-      Status: <Select
-      placeholder="Select a Status"
-      onChange={handleChange}
-    >
-      <Option value="student">Student</Option>
-      <Option value="teacher">Teacher</Option>
-      <Option value="athlete">Athlete</Option>
-    </Select>
-    </div>
-    <div className="searchstatus">
-      Role: <Select placeholder="Select a Role">
-      <Select.Option value="user">User</Select.Option>
-      <Select.Option value="admin">Admin</Select.Option>
-    </Select>
-    </div>
-    <div className="searchstatus">
-    <Search
-      placeholder="Search Users"
-      allowClear
-      onSearch={onSearch}
-      style={{
-        width: 200,
-      }}
-    />
-    </div>
-    
+          Organization:{" "}
+          <Select placeholder="Select a Building">
+            <Option value="student">ECC</Option>
+            <Option value="teacher">โรงแอล</Option>
+            <Option value="athlete">ห้องประชุมพันปี</Option>
+          </Select>
+        </div>
+        <div className="searchstatus">
+          Status:{" "}
+          <Select placeholder="Select a Status">
+            <Option value="student">Student</Option>
+            <Option value="teacher">Teacher</Option>
+            <Option value="athlete">Athlete</Option>
+          </Select>
+        </div>
+        <div className="searchstatus">
+          Role:{" "}
+          <Select placeholder="Select a Role">
+          <Select.Option value="User">User</Select.Option>
+              <Select.Option value="Room Contributor">Room Contributor</Select.Option>
+              <Select.Option value="Contributor">Contributor</Select.Option>
+              <Select.Option value="Administrator">Administrator</Select.Option>
+          </Select>
+        </div>
+        <div className="searchstatus">
+          <Search
+            placeholder="Search Users"
+            allowClear
+            onSearch={onSearch}
+            style={{
+              width: 200,
+            }}
+          />
+        </div>
       </div>
       <div className="User-list">
         <header className="User-list-heard">
-          <Table columns={columns} dataSource={dataUsers}></Table>
+          <Table
+            columns={columns}
+            dataSource={dataUsers}
+            rowKey={(record) => record._id}
+          ></Table>
           <Modal
             title="Edit Users"
             visible={isEditing}
@@ -558,97 +379,105 @@ const handleClose = () => setShow(false);
               resetEditing();
             }}
           >
-          <Form
-      
-        labelCol={{
-          span: 4,
-        }}
-        wrapperCol={{
-          span: 14,
-        }}
-        layout="horizontal"
-        initialValues={{
-          size: componentSize,
-        }}
-        onValuesChange={onFormLayoutChange}
-        size={componentSize}
-      >
-          <Form.Item label="Username">
-          <Input placeholder='Username'
-            value={editingUser?.username}
-              onChange={(e) => {
-                setEditingUser((pre) => {
-                  return { ...pre, username: e.target.value };
-                });
+            <Form
+              labelCol={{
+                span: 4,
               }}
-          />
-        </Form.Item>
-        <Form.Item label="Name">
-          <Input placeholder='Name'
-          value={editingUser?.name}
-              onChange={(e) => {
-                setEditingUser((pre) => {
-                  return { ...pre, name: e.target.value };
-                });
+              wrapperCol={{
+                span: 14,
               }}
-              />
-        </Form.Item>
-        <Form.Item label="Lastname">
-        <Input placeholder='Lastname'
-          value={editingUser?.email}
-              onChange={(e) => {
-                setEditingUser((pre) => {
-                  return { ...pre, email: e.target.value };
-                });
+              layout="horizontal"
+              initialValues={{
+                size: componentSize,
               }}
-        />
-        </Form.Item>
-        <Form.Item label="E-mail">
-        <Input placeholder='E-mail'
-        value={editingUser?.email}
-              onChange={(e) => {
-                setEditingUser((pre) => {
-                  return { ...pre, email: e.target.value };
-                });
-              }}
-        />
-        </Form.Item>
-        <Form.Item label="Password">
-       <Input.Password value={editingUser?.pass}
-              onChange={(e) => {
-                setEditingUser((pre) => {
-                  return { ...pre, pass: e.target.value };
-                });
-              }}/>
-              </Form.Item>
-        
-            <Form.Item label="Status"
-             value={editingUser?.status}
-              onChange={(e) => {
-                setEditingUser((pre) => {
-                  return { ...pre, status: e.target.value };
-                });
-              }}>
-              <Select placeholder="Select a Status">
-                <Select.Option value="student">Student</Select.Option>
-                <Select.Option value="teacher">Teacher</Select.Option>
-                <Select.Option value="athlete">Athlete</Select.Option>
-              </Select>
-            </Form.Item>
-
-            <Form.Item label="Role"
-              value={editingUser?.role}
-              onChange={(e) => {
-                setEditingUser((pre) => {
-                  return { ...pre, role: e.target.value };
-                });
-              }}
+              onValuesChange={onFormLayoutChange}
+              size={componentSize}
             >
-              <Select placeholder="Select a Role">
-                <Select.Option value="user">User</Select.Option>
-                <Select.Option value="admin">Admin</Select.Option>
-              </Select>
-            </Form.Item>
+              <Form.Item label="Username">
+                <Input
+                  placeholder="Username"
+                  value={editingUser?.username}
+                  onChange={(e) => {
+                    setEditingUser((pre) => {
+                      return { ...pre, username: e.target.value };
+                    });
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="Name">
+                <Input
+                  placeholder="Name"
+                  value={editingUser?.name}
+                  onChange={(e) => {
+                    setEditingUser((pre) => {
+                      return { ...pre, name: e.target.value };
+                    });
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="Lastname">
+                <Input
+                  placeholder="Lastname"
+                  value={editingUser?.email}
+                  onChange={(e) => {
+                    setEditingUser((pre) => {
+                      return { ...pre, email: e.target.value };
+                    });
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="E-mail">
+                <Input
+                  placeholder="E-mail"
+                  value={editingUser?.email}
+                  onChange={(e) => {
+                    setEditingUser((pre) => {
+                      return { ...pre, email: e.target.value };
+                    });
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="Password">
+                <Input.Password
+                  value={editingUser?.pass}
+                  onChange={(e) => {
+                    setEditingUser((pre) => {
+                      return { ...pre, pass: e.target.value };
+                    });
+                  }}
+                />
+              </Form.Item>
+
+              <Form.Item
+                label="Status"
+                value={editingUser?.status}
+                onChange={(e) => {
+                  setEditingUser((pre) => {
+                    return { ...pre, status: e.target.value };
+                  });
+                }}
+              >
+                <Select placeholder="Select a Status">
+                  <Select.Option value="student">Student</Select.Option>
+                  <Select.Option value="teacher">Teacher</Select.Option>
+                  <Select.Option value="athlete">Athlete</Select.Option>
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                label="Role"
+                value={editingUser?.role}
+                onChange={(e) => {
+                  setEditingUser((pre) => {
+                    return { ...pre, role: e.target.value };
+                  });
+                }}
+              >
+                <Select placeholder="Select a Role">
+                  <Select.Option value="user">User</Select.Option>
+                  <Select.Option value="admin">Admin</Select.Option>
+                </Select>
+              </Form.Item>
             </Form>
           </Modal>
         </header>

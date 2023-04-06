@@ -400,4 +400,8 @@ tr:hover{
   border-radius: 30%;
 }
 
-
+.form-upload-picture {
+  width: 100%;
+  display: block;
+  text-align: center;
+}
