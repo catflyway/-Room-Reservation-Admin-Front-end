@@ -9,7 +9,7 @@ const ManageReq = () => {
   const [dataSource, setDataSource] = useState([]);
 
   function getManageReq() {
-    axios.get("/Requests", { crossdomain: true }).then((response) => {
+    axios.get("/Requests/searchby?Status_Approve=Pending", { crossdomain: true }).then((response) => {
       console.log(response);
       setDataSource(
         response.data.map((item) => {
