@@ -9,13 +9,17 @@ import axios from "axios";
 import { UserContext, UserDefaultPage } from "./user-context";
 
 function App() {
+  const allowRole = ["Contributor", "Room Contributor" ,"Administrator"];
   const [user, setUser] = useState(() => {
     let userProfle = localStorage.getItem("userData");
     if (userProfle) {
       let toto = JSON.parse(userProfle);
+      if (allowRole.includes(toto.role)) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${toto.token}`;
       return toto;
     }
+    localStorage.removeItem("userData");
+  }
     return { email: "" };
   });
 
@@ -27,7 +31,10 @@ function App() {
       .post("/auth/login", details)
       .then((response) => {
         console.log(response);
-        if (response.status == 200) {
+        if (response.status != 200) {
+          throw "Response not 200";
+        }
+        if (allowRole.includes(response.data.role)) {
           console.log("Logged in");
           localStorage.setItem("userData", JSON.stringify(response.data));
           axios.defaults.headers.common[
