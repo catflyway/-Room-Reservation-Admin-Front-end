@@ -1,24 +1,35 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Form, Input, Select, Image, Button, Row, Col } from "antd";
-import axios from 'axios';
+import axios from "axios";
+import { UserContext } from "./user-context";
 
 function Profile() {
+  const user = useContext(UserContext);
   const OnButtonClick = (e) => {
     console.log("Button clicked");
   };
 
   const [dataSource, setDataSource] = useState({});
-  function getManageReq(){
-    axios.get('/users/userprofile')
-    .then(response=>{
-      console.log(response)
+  function getUserprofile() {
+    axios.get("/users/userprofile").then((response) => {
+      console.log(response);
       setDataSource(response.data);
-    })
+    });
+  }
+  const [statuslist, setstatuslist] = useState([]);
+  function getStatus() {
+    axios
+      .get("/org/status/" + user.org.id, { crossdomain: true })
+      .then((response) => {
+        console.log(response);
+        setstatuslist(response.data);
+      });
   }
   useEffect(() => {
-    getManageReq();
-   }, []); 
-   const [editingProfile, setEditingProfile] = useState(null);
+    getUserprofile();
+    getStatus();
+  }, []);
+  const [editingProfile, setEditingProfile] = useState(null);
   const Logout = () => {
     localStorage.removeItem("userData");
     document.location.reload(true);
@@ -49,50 +60,70 @@ function Profile() {
             onValuesChange={onFormLayoutChange}
             size={componentSize}
           >
-          <div className="imgprofile">
-             <Image className="imgprofilebor"
-            preview={false} 
-            width={150}
-  height={150}
- src={dataSource.image?.url}
-            />  </div>
+            <div className="imgprofile">
+              <Image
+                className="imgprofilebor"
+                preview={false}
+                width={150}
+                height={150}
+                src={dataSource.image?.url}
+              />{" "}
+            </div>
             <Form.Item label="Username">
-              <Input placeholder="Username"  value={dataSource?.username}
-              onChange={(e) => {
-                setEditingProfile((pre) => {
-                  return { ...pre, username: e.target.value };
-                });
-              }} />
+              <Input
+                placeholder="Username"
+                value={dataSource?.username}
+                onChange={(e) => {
+                  setEditingProfile((pre) => {
+                    return { ...pre, username: e.target.value };
+                  });
+                }}
+              />
             </Form.Item>
             <Form.Item label="Name">
               <Input placeholder="Name" value={dataSource?.firstname} />
             </Form.Item>
-            <Form.Item label="Lastname" >
+            <Form.Item label="Lastname">
               <Input placeholder="Lastname" value={dataSource?.lastname} />
             </Form.Item>
-            <Form.Item label="E-mail" >
+            <Form.Item label="E-mail">
               <Input placeholder="E-mail" value={dataSource?.email} />
             </Form.Item>
             <Form.Item label="Password">
-              <Input.Password placeholder="Password"  value={dataSource?.password} />
+              <Input.Password
+                placeholder="Password"
+                value={dataSource?.password}
+              />
             </Form.Item>
-            <Form.Item label="Status">
-              <Select placeholder="Select a Status">
-                <Select.Option value="student">Student</Select.Option>
-                <Select.Option value="teacher">Teacher</Select.Option>
-                <Select.Option value="athlete">Athlete</Select.Option>
-              </Select>
+            <Form.Item label="Status" value={dataSource?.status}>
+              <Select
+                showSearch
+                placeholder="Status"
+                optionFilterProp="children"
+                value={dataSource?.status?.name}
+                filterOption={(input, option) =>
+                  (option?.name ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                fieldNames={{ label: "name", value: "_id" }}
+                options={statuslist}
+              />
             </Form.Item>
           </Form>
         </Col>
       </Row>
-      
+
       <Row justify="center">
         <Col>
-          <Button className='button-logout' onClick={OnButtonClick}>
+          <Button className="button-logout" onClick={OnButtonClick}>
             Reset
           </Button>
-          <Button className='button-logout'  type="primary" onClick={OnButtonClick}>
+          <Button
+            className="button-logout"
+            type="primary"
+            onClick={OnButtonClick}
+          >
             Save
           </Button>
         </Col>

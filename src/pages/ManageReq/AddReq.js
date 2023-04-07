@@ -225,7 +225,7 @@ function AddReq({ details, onChange }) {
               <DatePicker
                 onChange={(date) => setEndDate(date?.clone().add(1, 'day').startOf("day"))}
                 placeholder="วันสิ้นสุดสัปดาห์"
-                disabledDate={(value) => (value && (value < startDate || value.day() != startDate.day()))}
+                disabledDate={(value) => (value && startDate && (value < startDate || value.day() != startDate.day()))}
               />
             </>
           ) : (

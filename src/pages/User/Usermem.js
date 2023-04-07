@@ -117,7 +117,7 @@ const Usermem = ({ onSuccess }) => {
         setLoading(false);
         setIsModalOpen(false);
         message.success("เพิ่มผู้ใช้สำเร็จ");
-        if (onSuccess) {
+        if (typeof onSuccess === 'function') {
           onSuccess();
         }
       })
@@ -230,7 +230,7 @@ const Usermem = ({ onSuccess }) => {
           <Form.Item
             label="Firstname"
             name="firstname"
-            rules={[{ min: 6, max: 25, required: true, whitespace: true }]}
+            rules={[{ min: 4, max: 25, required: true, whitespace: true }]}
           >
             <Input placeholder="Firstname" />
           </Form.Item>

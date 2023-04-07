@@ -111,7 +111,7 @@ const ManageReq = () => {
             >
               <Select.Option value="Pending">Pending</Select.Option>
               <Select.Option value="Approved">Approved</Select.Option>
-              <Select.Option value="Reject">Reject</Select.Option>
+              <Select.Option value="Rejected">Rejected</Select.Option>
               <Select.Option value="Cancled ">Cancled</Select.Option>
             </Select>
           </>

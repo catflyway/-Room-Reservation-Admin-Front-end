@@ -149,7 +149,7 @@ function Calendar() {
                   headerToolbar={{
                     left: "prevYear,nextYear prev,next today",
                     center: "title",
-                    right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
+                    right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
                   }}
                   events={events}
                   // selectable={true}
@@ -169,7 +169,7 @@ function Calendar() {
                   plugins={[
                     listPlugin,
                   ]}
-                  initialView="listWeek"
+                  initialView="listMonth"
                   headerToolbar={{
                     left: "",
                     center: "",

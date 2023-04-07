@@ -7,7 +7,7 @@ import Calendar from "../pages/Calendar";
 import ManageUser from "../pages/User/ManageUser";
 import ManageRoom from "../pages/Room/ManageRoom";
 import ManageReq from "../pages/ManageReq/ManageReq";
-import BuildmanageAdmin from "../pages/Build/BuildmanageAdmin";
+import ManageOrganization from "../pages/Build/ManageOrganization";
 import Chart from "../pages/Chart/ShowBar";
 import Profile from "../Profile";
 
@@ -44,7 +44,7 @@ export const MenuItems = [
     title: "การจัดการหน่วยงาน",
     path: "/BuildmanageAdmin",
     icon: <FaIcons.FaBuilding size={25} />,
-    element: <BuildmanageAdmin />,
+    element: <ManageOrganization />,
     role: ["Administrator"],
   },
   {

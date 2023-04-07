@@ -95,7 +95,7 @@ function ShowBar() {
           </Select>
         </div>
         <div className="searchstatus">
-          Buildtype:{" "}
+          Roomtype:{" "}
           <Select
             showSearch
             style={{

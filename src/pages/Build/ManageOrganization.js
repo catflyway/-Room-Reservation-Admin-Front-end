@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from "react";
-import AddBuild from "./AddBuild";
+import AddOrganization from "./AddOrg";
 import { Button, Modal, Table, Input, Form, Select } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
@@ -12,7 +12,7 @@ const handleChange = (value) => {
   console.log(`selected ${value}`);
 };
 
-const BuildmanageAdmin = () => {
+const ManageOrganization = () => {
   const [componentSize, setComponentSize] = useState('default');
   
     const onFormLayoutChange = ({ size }) => {
@@ -29,6 +29,14 @@ const BuildmanageAdmin = () => {
           setOrgID(response.data.map((item)=>{
             return {...item,member:item.userID.length}  
           }));
+        })
+      }
+      const [UserContributorOrg, setUserContributorOrg] = useState([]);
+      function getUserContributorOrg(id){
+        axios.get('users/searchby?OrgID='+id,{crossdomain:true})
+        .then(response=>{
+          console.log(response)
+          setUserContributorOrg(response.data);
         })
       }
       useEffect(() => {
@@ -122,37 +130,8 @@ const BuildmanageAdmin = () => {
     <div>
       <div className="Heard-ManageUser">
         <h5>ManageOrganization</h5>
-
         <div className="button-manageorganization">
-
-          <button
-            className="button-user"
-            type="primary"
-            size={20}
-            onClick={showAdd}
-          >
-            AddOrganization
-          </button>
-
-          <Modal
-          title='AddOrganization'
-            open={isAddOpen}
-            onCancel={handleCancelAdd}
-            footer={[
-              <Button className="button-back" key="back" onClick={handleCancel}>
-                ยกเลิก
-              </Button>,
-
-              <Button
-                className="button-submit"
-                key="submit"
-                type="primary"
-                loading={loading}
-              >
-                ตกลง
-              </Button>,
-            ]}
-          > <AddBuild/> </Modal>
+          <AddOrganization  onSuccess={getOrg}/>
         </div>
       </div>
       <div className="User-list">
@@ -230,4 +209,4 @@ const BuildmanageAdmin = () => {
   );
 };
 
-export default BuildmanageAdmin;
+export default ManageOrganization;

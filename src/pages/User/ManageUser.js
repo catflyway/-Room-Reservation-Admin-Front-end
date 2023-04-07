@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from "react";
 import {
-  Button,
   Modal,
   Table,
   Input,
   Form,
   Image,
   Select,
-  message,
-  Upload,
 } from "antd";
 import Usermem from "./Usermem";
 import "antd/dist/antd.css";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 const getBase64 = (img, callback) => {
   const reader = new FileReader();
   reader.addEventListener("load", () => callback(reader.result));
