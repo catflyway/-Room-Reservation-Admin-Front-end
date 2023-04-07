@@ -224,7 +224,7 @@ const ManageUser = () => {
   const handleSubmit = () => {
     console.log(formData);
     axios
-      .post("/org/status/", formData)
+      .post("/users/status", formData)
       .then((res) => {
         getStatus(idOrg);
       })
@@ -298,7 +298,10 @@ const ManageUser = () => {
                   size={componentSize}
                 >
                   <Form.Item label="Statusname">
-                    <Input placeholder="Statusname" />
+                    <Input placeholder="Statusname"
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    value={formData.name}
+                     />
                   </Form.Item>
                 </Form>
               </Modal>
