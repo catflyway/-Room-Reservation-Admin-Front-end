@@ -175,6 +175,12 @@ const Usermem = ({ onSuccess }) => {
           <Form.Item
             name="image"
             label=""
+            rules={[
+              {
+                required: true,
+                message: "Please upload your picture!",
+              },
+            ]}
             valuePropName="fileList"
             getValueFromEvent={normFile}
             wrapperCol={{ span: 24 }}
@@ -263,7 +269,7 @@ const Usermem = ({ onSuccess }) => {
                     }, 1000);
                   })
                 },
-                
+
                 message: "มีคนใช้แล้ว นะจ่ะ"
               },
             ]}

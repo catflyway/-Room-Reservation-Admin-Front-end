@@ -60,7 +60,7 @@ function AddReq({ details, onChange }) {
 
     onChange({ ...details, buildingID: buildingID })
   };
-  
+
 
   const datOfWeekString = ["SU","MO", "TU", "WE", "TH", "FR", "SA"];
 
@@ -96,7 +96,7 @@ function AddReq({ details, onChange }) {
       return [start, end];
     }
 
-  
+
 
     let getTimeRangeInterval = (interval) => {
       let startTime = [];
@@ -114,7 +114,7 @@ function AddReq({ details, onChange }) {
 
     let startTime = [];
     let endTime = [];
-  
+
     if (startDate && timeRange && repeatPattern == "norepeat") {
       let range = getTimeRange(startDate);
       startTime = [range[0]];
@@ -126,7 +126,7 @@ function AddReq({ details, onChange }) {
     else if (startDate && endDate && timeRange && repeatPattern == "weeks") {
       [startTime, endTime] = getTimeRangeInterval(7);
     }
-  
+
     onChange({ ...details, allDay: isAllDay,repeatDate:repeatPattern, startTime, endTime });
   }, [repeatPattern, startDate, endDate, timeRange]);
 
@@ -247,7 +247,7 @@ function AddReq({ details, onChange }) {
         />
         </Form.Item>
       <Form.Item label="วัตถุประสงค์">
-        <Input
+        <Input.TextArea
           placeholder="วัตถุประสงค์"
           onChange={(e) => onChange({ ...details, Purpose: e.target.value })}
           value={details?.Purpose}

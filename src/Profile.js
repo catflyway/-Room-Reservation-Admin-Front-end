@@ -63,7 +63,6 @@ function Profile() {
             <div className="imgprofile">
               <Image
                 className="imgprofilebor"
-                preview={false}
                 width={150}
                 height={150}
                 src={dataSource.image?.url}

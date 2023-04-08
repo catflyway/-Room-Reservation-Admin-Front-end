@@ -85,8 +85,7 @@ const ManageUser = () => {
       render: (record) => {
         return (
           <Image
-            className="imgprofile"
-            preview={false}
+            className="imgprofilebor"
             width={60}
             height={60}
             src={record.image.url}

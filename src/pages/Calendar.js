@@ -42,19 +42,6 @@ function Calendar() {
     end: "",
     color: "",
   });
-  const onChangeValues = (e) => {
-    console.log(e.target.value);
-    setValues({ ...values, [e.target.name]: e.target.value });
-  };
-  const handleSelect = (info) => {
-    showModal();
-    console.log(info);
-    setValues({
-      ...values,
-      start: info.startStr,
-      end: info.endStr,
-    });
-  };
   const showModal = () => {
     setIsModalVisible(true);
   };
