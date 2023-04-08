@@ -25,6 +25,9 @@ const ManageReq = () => {
             startTime: dayjs(item.startTime[0]),
             endTime: dayjs(item.endTime[item.endTime.length - 1]),
             timereservation: timerev,
+            Building:item.Building.name,
+            Room:item.Room.name,
+            User:item.User.username,
           };
         })
       );
@@ -89,7 +92,7 @@ const ManageReq = () => {
     {
       key: "7",
       title: "User",
-      dataIndex: "username",
+      dataIndex: "User",
     },
     {
       key: "8",
