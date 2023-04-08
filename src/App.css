@@ -24,7 +24,7 @@
    height: 100vh;
    text-align: center;
    justify-content: center;
-   display: flex; 
+   display: flex;
    padding-top: 90px;
    padding-bottom: 90px;
    background-color: #CDD2F6;
@@ -36,7 +36,7 @@
    margin-bottom: 30px;
  }
  .container-image {
- background-color: rgb(223, 221, 221); 
+ background-color: rgb(223, 221, 221);
  border-radius: 150px;
  align-items: center;
  display: flex;
@@ -48,26 +48,26 @@
    height: 230px;
    width: 230px;
    border-radius: 130px;
- } 
- 
+ }
+
  form{
    display: block;
    position: relative;
  }
- 
+
  form .form-inner h2{
    color: #3F478D;
    font-size: 28px;
    font-weight: 500;
    margin-bottom: 30px;
  }
- 
+
  form .form-inner .form-group{
    display: block;
    width: 300px;
    margin-bottom: 15px;
  }
- 
+
  .form-inner .form-group label h4{
    display: block;
    text-align: left;
@@ -76,13 +76,13 @@
    margin-bottom: 5px;
    transition: 0.4s;
  }
- 
- 
+
+
  .form-inner .form-group:focus-within label h4{
    color: #8789D6;
  }
- 
- 
+
+
  form .form-inner .form-group input{
    display: block;
    width: 100%;
@@ -91,18 +91,18 @@
    border-radius: 8px;
    transition: 0.4s;
  }
- 
+
  form .form-inner .form-group .login-icon{
    position: absolute;
    font-size: 20px;
    color: #3F478D;
    padding: 15px 0 0 5px;
  }
- 
+
  form .form-inner .form-group input:focus{
    box-shadow: 0px 0px 3px rgba(0,0,0,0.2);
  }
- 
+
  form .form-inner input[type="submit"]{
    display: inline-block;
    width: 150px;
@@ -116,11 +116,11 @@
    transition: 0.4s;
    color: #fff;
  }
- 
+
  .error{
    color: red;
  }
- 
+
 
 .Heard-ManageUser {
   width: 100%;
@@ -330,11 +330,10 @@ tr:hover{
   margin-bottom: 20px;
 }
 
-.col-1{
+/* .col-1{
   padding: 0px 15% 0px 25%;
-}
+} */
 .col-1-1{
-  margin-right: 150px;
   width: 150px;
   height: 100px;
   border-radius: 10px;

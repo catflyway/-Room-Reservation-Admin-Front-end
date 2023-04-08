@@ -7,8 +7,8 @@
     align-items: center;
     font-size: 1.2rem;
   }
-  
-  .nav-menu {
+
+  /* .nav-menu {
     display: grid;
     grid-template-columns: repeat(7,auto);
     grid-gap: 10px;
@@ -16,7 +16,7 @@
     text-align: center;
     width: 70vw;
     margin-right: 2rem;
-  }
+  } */
 
   .nav-text {
     display: flex;
@@ -45,7 +45,7 @@
     background-color: #3F478D;
     color: #D2D1FF;
   }
-  
+
   .nav-text a {
     text-decoration: none;
     color: #3F478D;
@@ -57,7 +57,7 @@
     padding: 10px 16px;
     border-radius: 4px;
   }
-  
+
   .nav-text a:focus {
     background-color: #3F478D;
     color: #D2D1FF;
@@ -76,8 +76,3 @@
 ::placeholder{
     color: #3F478D;
 }
-
-
-
-  
-  

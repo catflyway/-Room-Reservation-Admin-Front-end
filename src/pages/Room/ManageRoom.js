@@ -24,6 +24,7 @@ const ManageRoom = () => {
   const onFormLayoutChange = ({ size }) => {
     setComponentSize(size);
   };
+
   function getManageRooms() {
     axios.get("/rooms/room", { crossdomain: true }).then((response) => {
       console.log(response);
@@ -41,18 +42,12 @@ const ManageRoom = () => {
   useEffect(() => {
     getManageRooms();
   }, []);
-  const [inputVisible, setInputVisible] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const inputRef = useRef(null);
-  const editInputRef = useRef(null);
-  useEffect(() => {
-    if (inputVisible) {
-      inputRef.current?.focus();
-    }
-  }, [inputVisible]);
-  useEffect(() => {
-    editInputRef.current?.focus();
-  }, [inputValue]);
+
+  // function deleteRoom(id) {
+  //   axios.delete("/rooms/room/" + id).then((res) => {
+  //     getManageRooms();
+  //   });
+  // }
 
   const [isEditingRoom, setIsEditingroom] = useState(false);
   const [editingdataRoom, setEditingdataRoom] = useState(null);
@@ -126,9 +121,7 @@ const ManageRoom = () => {
       okText: "Yes",
       okType: "danger",
       onOk: () => {
-        setDataSource((pre) => {
-          return pre.filter((student) => student.id !== record.id);
-        });
+        // deleteRoom(record._id);
       },
     });
   };
