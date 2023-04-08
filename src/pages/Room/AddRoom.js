@@ -1,221 +1,353 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Tag, Input, Form, Select,  Checkbox, Col, Row } from "antd";
-import { PlusOutlined,LoadingOutlined } from "@ant-design/icons";
 import {
-  message, 
+  Modal,
+  Input,
+  InputNumber,
+  Form,
+  Select,
+  Checkbox,
+  Col,
+  Row,
+  message,
   Upload,
-} from 'antd';
-const onChange = (checkedValues) => {
-  console.log('checked = ', checkedValues);
-};
+  Button,
+  Space,
+} from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import axios from "axios";
+
 const getBase64 = (img, callback) => {
   const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result));
+  reader.addEventListener("load", () => callback(reader.result));
   reader.readAsDataURL(img);
 };
 
-const beforeUpload = (file) => {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+const AddRoom = ({ onSuccess }) => {
+  const [form] = Form.useForm();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState();
 
-  if (!isJpgOrPng) {
-    message.error('You can only upload JPG/PNG file!');
+  const [orgList, setOrgList] = useState([]);
+  function getOrg() {
+    axios.get("/org").then((response) => {
+      console.log(response);
+      setOrgList(response.data);
+    });
   }
-
-  const isLt2M = file.size / 1024 / 1024 < 2;
-
-  if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
+  const [buildingList, setBuildingList] = useState([]);
+  function getBuildingInOrgID(id) {
+    axios.get("/org/building/" + id).then((response) => {
+      console.log(response);
+      setBuildingList(response.data);
+    });
   }
+  const [roomsList, setRoomsList] = useState([]);
+  function getRoomtpye(id) {
+    axios.get("/org/roomtype/" + id, { crossdomain: true }).then((response) => {
+      console.log(response);
+      setRoomsList(response.data);
+    });
+  }
+  const [usersList, setUsersList] = useState([]);
+  function getUsersInOrgID(id) {
+    axios.get("/org/user/" + id).then((response) => {
+      console.log(response);
+      setUsersList(response.data);
+    });
+  }
+  const beforeUpload = (file) => {
+    const isLt10M = file.size / 1024 / 1024 < 10;
 
-  return isJpgOrPng && isLt2M;
-};
-
-const AddRoom = () => {
-  const [componentSize, setComponentSize] = useState("default");
-
-  const onFormLayoutChange = ({ size }) => {
-    setComponentSize(size);
-  };
-  const { Option } = Select;
-const handleChange = (value) => {
-  console.log(`selected ${value}`);
-};
-const { Search } = Input;
-
-const [loading, setLoading] = useState(false);
-const [imageUrl, setImageUrl] = useState();
-const uploadButton = (
-  <div>
-    {loading ? <LoadingOutlined /> : <PlusOutlined />}
-    <div
-      style={{
-        marginTop: 8,
-      }}
-    >
-      Upload
-    </div>
-  </div>
-);
-  const [tags, setTags] = useState([ ]);
-  const [inputVisible, setInputVisible] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-  const [editInputIndex, setEditInputIndex] = useState(-1);
-  const [editInputValue, setEditInputValue] = useState('');
-  const inputRef = useRef(null);
-  const editInputRef = useRef(null);
-  useEffect(() => {
-    if (inputVisible) {
-      inputRef.current?.focus();
-    }
-  }, [inputVisible]);
-  useEffect(() => {
-    editInputRef.current?.focus();
-  }, [inputValue]);
-
-  const handleClose = (removedTag) => {
-    const newTags = tags.filter((tag) => tag !== removedTag);
-    console.log(newTags);
-    setTags(newTags);
-  };
-
-  const showInput = () => {
-    setInputVisible(true);
-  };
-
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-  };
-
-  const handleInputConfirm = () => {
-    if (inputValue && tags.indexOf(inputValue) === -1) {
-      setTags([...tags, inputValue]);
+    if (!isLt10M) {
+      message.error("Image must smaller than 10MB!");
+      return false;
     }
 
-    setInputVisible(false);
-    setInputValue('');
+    getBase64(file, (url) => {
+      setImageUrl(url);
+    });
+    return false;
   };
 
-  const handleEditInputChange = (e) => {
-    setEditInputValue(e.target.value);
+  const normFile = (e) => {
+    console.log("Upload event:", e);
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e?.fileList;
+  };
+  const onChangebuild = (buildingID) => {
+    console.log(`selected ${buildingID}`);
+  };
+  const onChangeroomtype = (roomtypeID) => {
+    console.log(`selected ${roomtypeID}`);
   };
 
-  const handleEditInputConfirm = () => {
-    const newTags = [...tags];
-    newTags[editInputIndex] = editInputValue;
-    setTags(newTags);
-    setEditInputIndex(-1);
-    setInputValue('');
+  const onAddUser = (e) => {
+    form.submit();
   };
+  const onCancelAdd = () => {
+    setIsModalOpen(false);
+  };
+
+  const showModal = () => {
+    form.resetFields();
+    setImageUrl(undefined);
+    setLoading(false);
+    setIsModalOpen(true);
+  };
+
+  const onChangeorg = (orgID) => {
+    console.log(`selected ${orgID}`);
+    getBuildingInOrgID(orgID);
+    getRoomtpye(orgID);
+    getUsersInOrgID(orgID);
+  };
+  useEffect(() => {
+    getOrg();
+  }, []);
+
+  const onFormFinish = (value) => {
+    console.log("finish", value);
+    value = {
+      ...value,
+      image: value.image[0].originFileObj,
+      Size: value.width + " x " + value.long + " เมตร",
+    };
+
+    delete value.width;
+    delete value.long;
+
+    console.log("finish2", value);
+
+    setLoading(true);
+
+    axios
+      .postForm("/rooms/room", value)
+      .then((response) => {
+        console.log("res", response);
+        setLoading(false);
+        setIsModalOpen(false);
+        message.success("เพิ่มห้องสำเร็จ");
+        if (typeof onSuccess === 'function') {
+          onSuccess();
+        }
+      })
+      .catch((err) => {
+        console.log("err", err);
+        setLoading(false);
+        message.error("ERROR");
+      });
+  };
+
   return (
-    <Form
-      labelCol={{
-        span: 6,
-      }}
-      wrapperCol={{
-        span: 14,
-      }}
-      layout="horizontal"
-      initialValues={{
-        size: componentSize,
-      }}
-      onValuesChange={onFormLayoutChange}
-      size={componentSize}
-    > 
-    
-    <div className='picture'>
-        <Upload
-      name="avatar"
-      listType="picture-card"
-      className="avatar-uploader"
-      showUploadList={false}
-      action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-      beforeUpload={beforeUpload}
-      onChange={handleChange}
-    >
-      {imageUrl ? (
-        <img
-          src={imageUrl}
-          alt="avatar"
-          style={{
-            width: '100%',
+    <React.Fragment>
+      <button
+        className="button-room"
+        type="primary"
+        size={20}
+        onClick={showModal}
+      >
+        AddRoom
+      </button>
+      <Modal
+        title="Add Room"
+        open={isModalOpen}
+        onOk={onAddUser}
+        onCancel={onCancelAdd}
+      >
+        <Form
+          form={form}
+          labelCol={{
+            span: 7,
           }}
-        />
-      ) : (
-        uploadButton
-      )}
-    </Upload>
-    </div>
-      <Form.Item label="อาคาร"> 
-        <Select placeholder="Select a Building">
-          <Select.Option value="student">ECC</Select.Option>
-          <Select.Option value="teacher">โรงแอล</Select.Option>
-          <Select.Option value="athlete">ห้องประชุมพันปี</Select.Option>
-        </Select>
-      </Form.Item>
-      <Form.Item label="ประเภทห้อง">
-        <Select placeholder="Select a Status">
-          <Select.Option value="student">ECC</Select.Option>
-          <Select.Option value="teacher">โรงแอล</Select.Option>
-          <Select.Option value="athlete">ห้องประชุมพันปี</Select.Option>
-        </Select>
-      </Form.Item>
-      <Form.Item label="ชื่อห้อง">
-        <Input placeholder="ชื่อห้อง" />
-      </Form.Item>
-      <Form.Item label="จำนวนที่จอง">
-        <Input placeholder="จำนวนที่จอง" />
-      </Form.Item>
-      <Form.Item label="ขนาดของห้อง">
-        <Input placeholder="ขนาดห้อง" />
-      </Form.Item>
-      <Form.Item label="อุปกรณ์ภายในห้อง">
-      <Checkbox.Group
-    style={{
-      width: '100%',
-    }}
-    onChange={onChange}
-  >
-    <Row>
-      <Col span={12}>
-        <Checkbox value="A">พัดลม/แอร์</Checkbox>
-      </Col>
-      <Col span={12}>
-        <Checkbox value="B">ปลั๊กไฟ</Checkbox>
-      </Col>
-      <Col span={12}>
-        <Checkbox value="C">เครื่องเสียง/ไมค์</Checkbox>
-      </Col>
-      <Col span={12}>
-        <Checkbox value="D">คอมพิวเตอร์</Checkbox>
-      </Col>
-      <Col span={12}>
-        <Checkbox value="E">โปรเจคเตอร์</Checkbox>
-      </Col>
-    </Row>
-  </Checkbox.Group>
-      </Form.Item>
-      <Form.Item label="รายละเอียด">
-        <Input placeholder="รายละเอียด" />
-      </Form.Item>
-      <Form.Item label="Contributor">
-        <Select
-            showSearch
-            placeholder="Search to Select"
-            optionFilterProp="children"
-            filterOption={(input, option) => option.children.includes(input)}
-            filterSort={(optionA, optionB) =>
-              optionA.children
-                .toLowerCase()
-                .localeCompare(optionB.children.toLowerCase())
-            }
+          wrapperCol={{
+            span: 19,
+          }}
+          layout="horizontal"
+          onFinish={onFormFinish}
+          disabled={loading}
+        >
+          <Form.Item
+            name="image"
+            rules={[{ required: true }]}
+            label=""
+            valuePropName="fileList"
+            getValueFromEvent={normFile}
+            wrapperCol={{ span: 24 }}
           >
-            <Option value="1">โรงพยาบาลA</Option>
-            <Option value="2">โรงเรียนA</Option>
-            <Option value="3">โรงเรียนB</Option>
-            <Option value="4">ตึกB</Option>
-          </Select>
-      </Form.Item>
-    </Form>
+            <Upload
+              accept="image/*"
+              showUploadList={false}
+              beforeUpload={beforeUpload}
+              maxCount={1}
+              className="form-upload-picture"
+            >
+              {imageUrl ? (
+                <div style={{ width: "100%" }}>
+                  <img
+                    src={imageUrl}
+                    alt="avatar"
+                    style={{
+                      maxHeight: "150px",
+                      marginBottom: "8px",
+                    }}
+                  />
+                </div>
+              ) : null}
+              <Button icon={<UploadOutlined />}>Click to upload</Button>
+            </Upload>
+          </Form.Item>
+          <Form.Item
+            label="หน่วยงาน"
+            name="Org"
+            rules={[{ required: true, whitespace: true }]}
+          >
+            <Select
+              showSearch
+              placeholder="หน่วยงาน"
+              optionFilterProp="children"
+              onChange={onChangeorg}
+              filterOption={(input, option) =>
+                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
+              }
+              fieldNames={{ label: "name", value: "_id" }}
+              options={orgList}
+            />
+          </Form.Item>
+          <Form.Item
+            label="อาคาร/สถานที่"
+            name="Building"
+            rules={[{ required: true, whitespace: true }]}
+          >
+            <Select
+              showSearch
+              placeholder="อาคาร/สถานที่"
+              optionFilterProp="children"
+              onChange={onChangebuild}
+              filterOption={(input, option) =>
+                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
+              }
+              fieldNames={{ label: "name", value: "_id" }}
+              options={buildingList}
+            />
+          </Form.Item>
+          <Form.Item
+            label="ประเภทห้อง"
+            name="RoomType"
+            rules={[{ required: true, whitespace: true }]}
+          >
+            <Select
+              showSearch
+              placeholder="ประเภทห้อง"
+              optionFilterProp="children"
+              onChange={onChangeroomtype}
+              filterOption={(input, option) =>
+                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
+              }
+              fieldNames={{ label: "name", value: "_id" }}
+              options={roomsList}
+            />
+          </Form.Item>
+          <Form.Item
+            label="ชื่อห้อง"
+            name="Name"
+            rules={[{ min: 4, max: 25, required: true, whitespace: true }]}
+          >
+            <Input placeholder="ชื่อห้อง" />
+          </Form.Item>
+          <Form.Item
+            label="ความจุห้อง"
+            name="Seat"
+            rules={[{ type: "integer", min: 1, required: true }]}
+          >
+            <InputNumber
+              placeholder="ความจุห้อง"
+              addonAfter="ที่นั่ง"
+              type="number"
+              min={1}
+            />
+          </Form.Item>
+          <Form.Item label="ขนาดของห้อง" required={true}>
+            <Space.Compact>
+              <Form.Item
+                name="width"
+                style={{ marginBottom: 0 }}
+                rules={[{ type: "number", min: 0.01, required: true }]}
+              >
+                <InputNumber
+                  addonAfter="x"
+                  placeholder="ความกว้าง"
+                  type="number"
+                  min={0.01}
+                />
+              </Form.Item>
+              <Form.Item
+                name="long"
+                style={{ marginBottom: 0 }}
+                rules={[{ type: "number", min: 0.01, required: true }]}
+              >
+                <InputNumber
+                  addonAfter="เมตร"
+                  placeholder="ความยาว"
+                  type="number"
+                  min={0.01}
+                />
+              </Form.Item>
+            </Space.Compact>
+          </Form.Item>
+          <Form.Item label="อุปกรณ์ภายในห้อง" name="Object">
+            <Checkbox.Group
+              style={{
+                width: "100%",
+              }}
+            >
+              <Row>
+                <Col span={12}>
+                  <Checkbox value="พัดลม/แอร์">พัดลม/แอร์</Checkbox>
+                </Col>
+                <Col span={12}>
+                  <Checkbox value="ปลั๊กไฟ">ปลั๊กไฟ</Checkbox>
+                </Col>
+                <Col span={12}>
+                  <Checkbox value="เครื่องเสียง/ไมค์">
+                    เครื่องเสียง/ไมค์
+                  </Checkbox>
+                </Col>
+                <Col span={12}>
+                  <Checkbox value="คอมพิวเตอร์">คอมพิวเตอร์</Checkbox>
+                </Col>
+                <Col span={12}>
+                  <Checkbox value="โปรเจคเตอร์">โปรเจคเตอร์</Checkbox>
+                </Col>
+              </Row>
+            </Checkbox.Group>
+          </Form.Item>
+          <Form.Item label="รายละเอียด">
+            <Input.TextArea placeholder="รายละเอียด" name="Detail" />
+          </Form.Item>
+          <Form.Item
+            label="Room Contributor"
+            name="Contributor"
+            rules={[{ required: true, whitespace: true }]}
+          >
+            <Select
+              showSearch
+              placeholder="ผู้ขอจอง"
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                (option?.email ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              fieldNames={{ label: "email", value: "_id" }}
+              options={usersList}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </React.Fragment>
   );
 };
 
