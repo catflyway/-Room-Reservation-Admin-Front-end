@@ -6,18 +6,10 @@ import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClic
 import listPlugin from "@fullcalendar/list";
 import axios from "axios";
 
-import { Row, Col, Card, Modal, Button, Select } from "antd";
+import { Row, Col, Modal, Select } from "antd";
 
 function Calendar() {
-  const { Option } = Select;
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-  };
   const [events, setIsevents] = useState([]);
-
-  useEffect(() => {
-    getManageCalendar();
-  }, []);
 
   function getManageCalendar() {
     axios.get("/calendar").then((response) => {
@@ -28,12 +20,52 @@ function Calendar() {
             title: item.Room + "   " + item.Purpose,
             start: item.startTime,
             end: item.endTime,
-            allDay: item.allDay /*,timeZone:'UTC'*/,
+            allDay: item.allDay,
           };
         })
       );
     });
   }
+
+  const [orgList, setOrgList] = useState([]);
+  function getOrg() {
+    axios.get("/org").then((response) => {
+      console.log(response);
+      setOrgList(response.data);
+    });
+  }
+
+  const [buildingList, setBuildingList] = useState([]);
+  function getBuildingInOrgID(id) {
+    axios.get("/org/building/" + id).then((response) => {
+      console.log(response);
+      setBuildingList(response.data);
+    });
+  }
+
+  const [roomsList, setRoomsList] = useState([]);
+  function getRoomsInOrgID(id) {
+    axios.get("/rooms/buildingroom/" + id).then((response) => {
+      console.log(response);
+      setRoomsList(response.data);
+    });
+  }
+
+  const onChangeorg = (orgID) => {
+    console.log(`selected ${orgID}`);
+    getBuildingInOrgID(orgID)
+  };
+
+  const onChangebuild = (buildingID) => {
+    console.log(`selected ${buildingID}`);
+    getRoomsInOrgID(buildingID)
+  };
+
+  useEffect(() => {
+    getManageCalendar();
+    getOrg();
+  }, []);
+
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [values, setValues] = useState({
@@ -60,60 +92,80 @@ function Calendar() {
           <div className="Heard-ManageCa">
             <h2>Dashboard</h2>
           </div>
-          <div className="col-1">
+
+            <Row justify="center">
+          <Col span={4} offset={2}>
             <button className="col-1-1">
               <h5>1</h5>
               คำขอที่ยังไม่ได้ดำเนินการ
             </button>
+            </Col>
+
+            <Col span={4} offset={2}>
             <button className="col-1-1">
               <h5>1</h5>
               คำขอที่อนุมัติแล้ว
             </button>
+            </Col>
+
+            <Col span={4} offset={2}>
             <button className="col-1-1">
               <h5>1</h5>
               คำขอที่สำเร็จแล้ว
             </button>
-          </div>
+            </Col>
+            </Row>
           <div className="searchgraph">
             <div className="searchstatus">
               Organization:{" "}
-              <Select placeholder="Select a Buildtype" onChange={handleChange}>
-                <Option value="student">โรงพยาบาล</Option>
-                <Option value="teacher">โรงเรียน</Option>
-                <Option value="athlete">อื่นๆ</Option>
-              </Select>
+              <Select
+                    style={{
+                      width: '200px',
+                    }}
+          showSearch
+          placeholder="หน่วยงาน"
+          optionFilterProp="children"
+          onChange={onChangeorg}
+          filterOption={(input, option) =>
+            (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
+          }
+          fieldNames={{ label: "name", value: "_id" }}
+          options={orgList}
+        />
             </div>
             <div className="searchstatus">
               Building:{" "}
-              <Select placeholder="Select a Buildtype" onChange={handleChange}>
-                <Option value="student">โรงพยาบาล</Option>
-                <Option value="teacher">โรงเรียน</Option>
-                <Option value="athlete">อื่นๆ</Option>
-              </Select>
+              <Select
+                    style={{
+                      width: '200px',
+                    }}
+          showSearch
+          placeholder="อาคาร/สถานที่"
+          optionFilterProp="children"
+          onChange={onChangebuild}
+          filterOption={(input, option) =>
+            (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
+          }
+          fieldNames={{ label: "name", value: "_id" }}
+          options={buildingList}
+        />
             </div>
             <div className="searchstatus">
               Room:{" "}
               <Select
-                showSearch
-                style={{
-                  width: 200,
-                }}
-                placeholder="Search to Select"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  option.children.includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  optionA.children
-                    .toLowerCase()
-                    .localeCompare(optionB.children.toLowerCase())
-                }
-              >
-                <Option value="1">โรงพยาบาลA</Option>
-                <Option value="2">โรงเรียนA</Option>
-                <Option value="3">โรงเรียนB</Option>
-                <Option value="4">ตึกB</Option>
-              </Select>
+              style={{
+                width: '200px',
+              }}
+          showSearch
+          placeholder="ห้อง"
+          optionFilterProp="children"
+          // onChange={value => onChange({ ...details, Room: value })}
+          filterOption={(input, option) =>
+            (option?.Name ?? "").toLowerCase().includes(input.toLowerCase())
+          }
+          fieldNames={{ label: "Name", value: "_id" }}
+          options={roomsList}
+        />
             </div>
           </div>
         </Col>
