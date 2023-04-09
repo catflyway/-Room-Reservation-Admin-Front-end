@@ -7,19 +7,21 @@ import LoginForm from "./conponents/LoginForm";
 import { MenuItems } from "./conponents/MenuItems";
 import axios from "axios";
 import { UserContext, UserDefaultPage } from "./user-context";
+import { Layout, ConfigProvider } from "antd";
+const { Header, Content, Footer } = Layout;
 
 function App() {
-  const allowRole = ["Contributor", "Room Contributor" ,"Administrator"];
+  const allowRole = ["Contributor", "Room Contributor", "Administrator"];
   const [user, setUser] = useState(() => {
     let userProfle = localStorage.getItem("userData");
     if (userProfle) {
       let toto = JSON.parse(userProfle);
       if (allowRole.includes(toto.role)) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${toto.token}`;
-      return toto;
+        axios.defaults.headers.common["Authorization"] = `Bearer ${toto.token}`;
+        return toto;
+      }
+      localStorage.removeItem("userData");
     }
-    localStorage.removeItem("userData");
-  }
     return { email: "" };
   });
 
@@ -31,8 +33,8 @@ function App() {
       .post("/auth/login", details)
       .then((response) => {
         console.log(response);
-        if (response.status != 200) {
-          throw "Response not 200";
+        if (response.status !== 200) {
+          throw new Error("Response not 200");
         }
         if (allowRole.includes(response.data.role)) {
           console.log("Logged in");
@@ -52,29 +54,67 @@ function App() {
 
   return (
     <UserContext.Provider value={user}>
-      <div className="App">
-        {user.email != "" ? (
-          <>
-            <BrowserRouter>
-              <Navbar />
-              <Routes>
-                {MenuItems.map((item, index) => {
-                  if (!item.role.includes(user.role)) {
-                    return undefined;
-                  }
-                  return <Route key={index} path={item.path} element={item.element} />;
-                })}
-                <Route
-                  path="*"
-                  element={<Navigate to={UserDefaultPage[user.role]} replace />}
-                />
-              </Routes>
-            </BrowserRouter>
-          </>
+      <ConfigProvider
+        theme={{
+          components: {
+            Button: {
+              colorPrimary: "#3F478D",
+              colorPrimaryActive: "#29306e",
+              colorPrimaryBorder: "#8e96e0",
+              colorPrimaryHover: "#5d65b0",
+            },
+          },
+        }}
+      >
+        {user.email !== "" ? (
+          <BrowserRouter>
+            <Layout className="layout">
+              <Header>
+                <Navbar />
+              </Header>
+              <Content
+                style={{
+                  padding: "0 50px",
+                }}
+              >
+                <div
+                  className="site-layout-content"
+                  style={{ background: "#FFF" }}
+                >
+                  <Routes>
+                    {MenuItems.map((item, index) => {
+                      if (!item.role.includes(user.role)) {
+                        return undefined;
+                      }
+                      return (
+                        <Route
+                          key={index}
+                          path={item.path}
+                          element={item.element}
+                        />
+                      );
+                    })}
+                    <Route
+                      path="*"
+                      element={
+                        <Navigate to={UserDefaultPage[user.role]} replace />
+                      }
+                    />
+                  </Routes>
+                </div>
+              </Content>
+
+              <Footer
+                style={{
+                  textAlign: "center",
+                }}
+              ></Footer>
+            </Layout>
+          </BrowserRouter>
         ) : (
           <LoginForm Login={Login} error={error} />
         )}
-      </div>
+      </ConfigProvider>
     </UserContext.Provider>
   );
 }

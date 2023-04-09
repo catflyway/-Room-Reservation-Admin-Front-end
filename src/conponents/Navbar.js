@@ -1,48 +1,31 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
+import { Menu } from "antd";
+import { Link, useLocation } from "react-router-dom";
 import { MenuItems } from "./MenuItems";
-import LoginForm from "./LoginForm";
-import "./Navbar.css";
 import { UserContext } from "../user-context";
 
-class Navbar extends Component {
-  state = { clicked: false };
+const Navbar = () => {
+  let user = useContext(UserContext);
+  let location = useLocation();
 
-  handleClick = () => {
-    this.setState({ clicked: !this.state.clicked });
-  };
-
-  Logout = () => {
-    <LoginForm />;
-  };
-
-  render() {
-    let user = this.context;
-    return (
-      <nav className="NavbarItems">
-        <ul className={this.state.clicked ? "nav-menu active" : "nav-menu"}>
-          {MenuItems.map((item, index) => {
-            if (!item.role.includes(user.role)) {
-              return undefined;
-            }
-
-            return (
-              <li key={index} className="nav-text">
-                <Link to={item.path}>
-                  <span>
-                    {item.icon} <br />
-                    {item.title}
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-    );
-  }
-}
-
-Navbar.contextType = UserContext;
+  return (
+    <Menu
+      theme="dark"
+      mode="horizontal"
+      style={{ justifyContent: "center" }}
+      defaultSelectedKeys={[location.pathname]}
+      items={MenuItems.map((item, _) => {
+        if (!item.role.includes(user.role)) {
+          return undefined;
+        }
+        return {
+          key: item.path,
+          label: <Link to={item.path}>{item.title}</Link>,
+          icon: item.icon,
+        };
+      })}
+    />
+  );
+};
 
 export default Navbar;
