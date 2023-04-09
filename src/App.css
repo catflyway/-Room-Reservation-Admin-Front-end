@@ -257,14 +257,7 @@ table{
   display: inline-flex;
   padding: 0px 10% 0px 25%;
 }
-.searchstatus{
-  margin-right: 20px;
-  margin-bottom: 20px;
-}
-.searchroom{
-  display: inline-flex;
-  padding: 0px 10% 0px 20%;
-}
+
 .searchbuild{
   display: inline-flex;
   padding: 0px 20% 0px 35%;

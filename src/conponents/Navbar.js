@@ -10,7 +10,7 @@ const Navbar = () => {
 
   return (
     <Menu
-      theme="dark"
+      // theme="dark"
       mode="horizontal"
       style={{ justifyContent: "center" }}
       defaultSelectedKeys={[location.pathname]}

@@ -130,14 +130,13 @@ const Usermem = ({ onSuccess }) => {
 
   return (
     <React.Fragment>
-      <button
-        className="button-user"
+      <Button
         type="primary"
-        size={20}
+        size="large"
         onClick={showModal}
       >
         AddUser
-      </button>
+      </Button>
 
       <Modal
         open={isModalOpen}

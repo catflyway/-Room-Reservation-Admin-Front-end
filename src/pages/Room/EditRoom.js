@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Modal,
   Input,
@@ -22,37 +22,42 @@ const getBase64 = (img, callback) => {
   reader.readAsDataURL(img);
 };
 
-const AddRoom = ({ onSuccess }) => {
+const EditRoom = ({ value, open, onCancel, onSuccess }) => {
   const [form] = Form.useForm();
+  const formRef = useRef(form);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState();
 
+  useEffect(() => {
+    formRef.current = form;
+  }, [form]);
+
   const [orgList, setOrgList] = useState([]);
   function getOrg() {
     axios.get("/org").then((response) => {
-      console.log(response);
+      console.log("orgList", response.data);
       setOrgList(response.data);
     });
   }
   const [buildingList, setBuildingList] = useState([]);
   function getBuildingInOrgID(id) {
     axios.get("/org/building/" + id).then((response) => {
-      console.log(response);
+      console.log("buildingList", response.data);
       setBuildingList(response.data);
     });
   }
   const [roomsList, setRoomsList] = useState([]);
   function getRoomtpye(id) {
     axios.get("/org/roomtype/" + id, { crossdomain: true }).then((response) => {
-      console.log(response);
+      console.log("roomsList", response.data);
       setRoomsList(response.data);
     });
   }
   const [usersList, setUsersList] = useState([]);
   function getUsersInOrgID(id) {
     axios.get("/org/user/" + id).then((response) => {
-      console.log(response);
+      console.log("usersList", response.data);
       setUsersList(response.data);
     });
   }
@@ -88,6 +93,9 @@ const AddRoom = ({ onSuccess }) => {
     form.submit();
   };
   const onCancelAdd = () => {
+    if (onCancel) {
+      onCancel();
+    }
     setIsModalOpen(false);
   };
 
@@ -108,20 +116,51 @@ const AddRoom = ({ onSuccess }) => {
     getOrg();
   }, []);
 
-  const onFormFinish = (value) => {
-    value = {
-      ...value,
-      image: value.image[0].originFileObj,
-      Size: value.width + " x " + value.long + " เมตร",
+  useEffect(() => {
+    if (open) {
+      setLoading(false);
+      setIsModalOpen(true);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    formRef.current.resetFields();
+    if (value) {
+      setImageUrl(value.image.url);
+      const dimention = value.Size.match(/(\d+) x (\d+)/);
+      formRef.current.setFieldsValue({
+        ...value,
+        Org: value.Org.id,
+        Building: value.Building.id,
+        RoomType: value.RoomType.id,
+        Contributor: value.Contributor.id,
+        image: [{
+          originFileObj: null
+        }],
+        width: Number(dimention[1]), // match index 0 will all of match eg. '55 x 55'
+        long: Number(dimention[2]),
+      });
+
+      onChangeorg(value.Org.id)
+    }
+  }, [value]);
+
+  const onFormFinish = (formValue) => {
+    formValue = {
+      ...formValue,
+      image: formValue.image[0].originFileObj,
+      Size: formValue.width + " x " + formValue.long + " เมตร",
     };
 
-    delete value.width;
-    delete value.long;
+    delete formValue.width;
+    delete formValue.long;
+
+    console.log("Finish", formValue);
 
     setLoading(true);
 
     axios
-      .postForm("/rooms/room", value)
+      .putForm("/rooms/room/" + value._id, formValue)
       .then((response) => {
         console.log("res", response);
         setLoading(false);
@@ -140,17 +179,17 @@ const AddRoom = ({ onSuccess }) => {
 
   return (
     <React.Fragment>
-      <Button
+      {/* <Button
         className="button-room"
         type="primary"
         onClick={showModal}
         size="large"
       >
-        AddRoom
-      </Button>
+        EditRoom
+      </Button> */}
       <Modal
-        title="Add Room"
-        open={isModalOpen}
+        title="Edit Room"
+        open={open || isModalOpen}
         onOk={onAddUser}
         onCancel={onCancelAdd}
         confirmLoading={loading}
@@ -349,4 +388,4 @@ const AddRoom = ({ onSuccess }) => {
   );
 };
 
-export default AddRoom;
+export default EditRoom;

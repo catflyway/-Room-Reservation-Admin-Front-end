@@ -10,6 +10,7 @@ import {
   Col,
   Space,
   Typography,
+  Button,
 } from "antd";
 import Usermem from "./Usermem";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
@@ -239,25 +240,23 @@ const ManageUser = () => {
 
   return (
     <div className="ManageUser">
-      <Row justify="space-between">
+      <Row justify="space-between" align="middle">
         <Col>
           <Title style={{ color: " #3F478D" }}>ManageUser</Title>
         </Col>
         <Col>
-          <button
-            className="button-user"
-            type="primary"
-            size={20}
-            onClick={showModal1}
-          >
-            ManageStatus
-          </button>
-          <Usermem onSuccess={getAllUser} />
+          <Space wrap>
+            <Button type="primary" size="large" onClick={showModal1}>
+              ManageStatus
+            </Button>
+            <Usermem onSuccess={getAllUser} />
+          </Space>
         </Col>
       </Row>
 
-      <Row justify="center" gutter={[16, 16]} style={{ paddingTop: "24px" }}>
-        <Col>
+      <br />
+      <Row justify="center">
+        <Space wrap>
           <Form.Item label="Organization">
             <Select placeholder="Select a Building">
               <Option value="student">ECC</Option>
@@ -265,8 +264,7 @@ const ManageUser = () => {
               <Option value="athlete">ห้องประชุมพันปี</Option>
             </Select>
           </Form.Item>
-        </Col>
-        <Col>
+
           <Form.Item label="Status">
             <Select placeholder="Select a Status">
               <Option value="student">Student</Option>
@@ -274,8 +272,7 @@ const ManageUser = () => {
               <Option value="athlete">Athlete</Option>
             </Select>
           </Form.Item>
-        </Col>
-        <Col>
+
           <Form.Item label="Role">
             <Select placeholder="Select a Role">
               <Select.Option value="User">User</Select.Option>
@@ -286,8 +283,7 @@ const ManageUser = () => {
               <Select.Option value="Administrator">Administrator</Select.Option>
             </Select>
           </Form.Item>
-        </Col>
-        <Col>
+
           <Form.Item>
             <Search
               placeholder="Search Users"
@@ -298,17 +294,15 @@ const ManageUser = () => {
               }}
             />
           </Form.Item>
-        </Col>
+        </Space>
       </Row>
-      <Row>
-        <Col span={24}>
-          <Table
-            columns={columns}
-            dataSource={dataUsers}
-            rowKey={(record) => record._id}
-          ></Table>
-        </Col>
-      </Row>
+
+      <br />
+      <Table
+        columns={columns}
+        dataSource={dataUsers}
+        rowKey={(record) => record._id}
+      ></Table>
 
       <Modal
         title="ManageStatus"
