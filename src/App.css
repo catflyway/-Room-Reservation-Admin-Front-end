@@ -1,11 +1,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
-@import 'antd/dist/antd.css';
 
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
   font-family: 'Lato', sans-serif;
 }
 
@@ -121,14 +117,12 @@
    color: red;
  }
 
-
-.Heard-ManageUser {
-  width: 100%;
-  display: inline-flex;
+ h1 {
   font-size: 2rem;
-  color: #3F478D;
-  padding: 20px 20px 20px 70px;
-}
+ }
+ h5 {
+  font-size: 3rem;
+ }
 .button-user{
   margin-right: 20px;
   width: 150px;
@@ -208,22 +202,6 @@ table{
   margin-left: auto;
   margin-right: auto;
 }
-th{
-  padding: 15px;
-  font-weight: bold;
-  color: #8789D6;
-  text-align: center;
-  margin-right: 2rem;
-}
-td{
-  padding: 15px;
-  color: #3F478D;
-  text-align: center;
-  border-bottom: 2px solid #ddd;
-}
-tr:hover{
-  background-color: rgb(196, 216, 241);
-}
 
 .button-back{
   width: 120px;
@@ -260,42 +238,17 @@ tr:hover{
 .button-submit1:disabled {
   background-color: gray;
 }
-.User-list{
-  align-items: center;
-}
-.User-list-heard {
-  display: flex;
-  width: 80%;
-  padding: 0px 0px 20% 20%;
-  flex-direction: column;
-  align-items: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-.User-list-heard-req {
-  display: flex;
-  width: 80%;
-  padding: 0px 0px 10% 15%;
-  flex-direction: column;
-  align-items: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
+
 .button-manageroom{
   display: inline-flex;
   padding: 0px 20px 0px 35%;
 }
 
-.button-room{
-  margin-right: 20px;
-  width: 220px;
-  height: 40px;
-  border-radius: 10px;
+/* .button-room{
   background-color: #3F478D;
   color: #D2D1FF;
   font-size: 18px;
-  border: none;
-}
+} */
 .button-managereq{
   display: inline-flex;
   padding: 0px 20px 0px 75%;
@@ -403,4 +356,9 @@ tr:hover{
   width: 100%;
   display: block;
   text-align: center;
+}
+
+.site-layout-content {
+  min-height: 280px;
+  padding: 36px;
 }
