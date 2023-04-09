@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import AddRoom from "./AddRoom";
 import EditRoom from "./EditRoom";
 import ManageBuilding from "./ManageBuilding";
 import ManageRoomtpye from "./ManageRoomtype";
@@ -170,7 +169,17 @@ const ManageRoom = ({ onSuccess }) => {
             <ManageRoomtpye />
 
             {/* ButtonAddRoom */}
-            <AddRoom onSuccess={getManageRooms} />
+            <EditRoom
+              value={editingData}
+              openEdit={isEditing}
+              onCancel={() => {
+                setIsEditing(false);
+              }}
+              onSuccess={() => {
+                getManageRooms();
+                setIsEditing(false);
+              }}
+            />
           </Space>
         </Col>
       </Row>
@@ -221,18 +230,6 @@ const ManageRoom = ({ onSuccess }) => {
         dataSource={dataSource}
         rowKey={(record) => record._id}
       ></Table>
-
-      <EditRoom
-        open={isEditing}
-        onCancel={() => {
-          setIsEditing(false);
-        }}
-        value={editingData}
-        onSuccess={() => {
-          getManageRooms();
-          setIsEditing(false);
-        }}
-      />
     </div>
   );
 };

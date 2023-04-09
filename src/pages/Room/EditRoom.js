@@ -22,7 +22,7 @@ const getBase64 = (img, callback) => {
   reader.readAsDataURL(img);
 };
 
-const EditRoom = ({ value, open, onCancel, onSuccess }) => {
+const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
   const [form] = Form.useForm();
   const formRef = useRef(form);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -117,11 +117,11 @@ const EditRoom = ({ value, open, onCancel, onSuccess }) => {
   }, []);
 
   useEffect(() => {
-    if (open) {
+    if (openEdit) {
       setLoading(false);
       setIsModalOpen(true);
     }
-  }, [open]);
+  }, [openEdit]);
 
   useEffect(() => {
     formRef.current.resetFields();
@@ -130,18 +130,20 @@ const EditRoom = ({ value, open, onCancel, onSuccess }) => {
       const dimention = value.Size.match(/(\d+) x (\d+)/);
       formRef.current.setFieldsValue({
         ...value,
-        Org: value.Org.id,
-        Building: value.Building.id,
-        RoomType: value.RoomType.id,
-        Contributor: value.Contributor.id,
-        image: [{
-          originFileObj: null
-        }],
+        Org: value.Org?.id,
+        Building: value.Building?.id,
+        RoomType: value.RoomType?.id,
+        Contributor: value.Contributor?.id,
+        image: [
+          {
+            originFileObj: null,
+          },
+        ],
         width: Number(dimention[1]), // match index 0 will all of match eg. '55 x 55'
         long: Number(dimention[2]),
       });
 
-      onChangeorg(value.Org.id)
+      onChangeorg(value.Org.id);
     }
   }, [value]);
 
@@ -159,14 +161,20 @@ const EditRoom = ({ value, open, onCancel, onSuccess }) => {
 
     setLoading(true);
 
-    axios
-      .putForm("/rooms/room/" + value._id, formValue)
+    let req;
+    if (openEdit) {
+      req = axios.putForm("/rooms/room/" + value._id, formValue);
+    } else {
+      req = axios.postForm("/rooms/room", formValue);
+    }
+
+    req
       .then((response) => {
         console.log("res", response);
         setLoading(false);
         setIsModalOpen(false);
         message.success("เพิ่มห้องสำเร็จ");
-        if (typeof onSuccess === 'function') {
+        if (typeof onSuccess === "function") {
           onSuccess();
         }
       })
@@ -179,17 +187,17 @@ const EditRoom = ({ value, open, onCancel, onSuccess }) => {
 
   return (
     <React.Fragment>
-      {/* <Button
+      <Button
         className="button-room"
         type="primary"
         onClick={showModal}
         size="large"
       >
-        EditRoom
-      </Button> */}
+        AddRoom
+      </Button>
       <Modal
-        title="Edit Room"
-        open={open || isModalOpen}
+        title={openEdit ? "Edit " + value.Name : "Add Room"}
+        open={openEdit || isModalOpen}
         onOk={onAddUser}
         onCancel={onCancelAdd}
         confirmLoading={loading}
