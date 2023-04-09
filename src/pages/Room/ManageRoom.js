@@ -4,9 +4,11 @@ import ManageBuilding from "./ManageBuilding";
 import ManageRoomtpye from "./ManageRoomtype";
 import { Checkbox, Col, Row, Image } from "antd";
 
-import { Modal, Table, Input, Form, Select } from "antd";
+import { Modal, Table, Input, Form, Select, Space, Typography } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
+
+const { Title } = Typography;
 
 const onChange = (checkedValues) => {
   console.log("checked = ", checkedValues);
@@ -60,8 +62,8 @@ const ManageRoom = () => {
         return (
           <Image
             className="imgprofilebor"
-            width={60}
-            height={60}
+            width={100}
+            height={100}
             src={record.image?.url}
           />
         );
@@ -134,51 +136,35 @@ const ManageRoom = () => {
     setEditingdataRoom(null);
   };
 
-  const [isModalOpen1, setIsModalOpen1] = useState(false);
-
-  const showModal1 = () => {
-    setIsModalOpen1(true);
-  };
-
-  const handleOk1 = () => {
-    setIsModalOpen1(false);
-  };
-  const handleCancel1 = () => {
-    setIsModalOpen1(false);
-  };
   return (
     <div>
-      <div className="Heard-ManageUser">
-        <h5>ManageRoom</h5>
+      <Row justify="space-between" align="middle">
+        <Col>
+          <Title style={{ color: " #3F478D" }}>ManageRoom</Title>
+        </Col>
+        <Col>
 
-        <div className="button-manageroom">
-          <button
-            className="button-room"
-            type="primary"
-            size={20}
-            onClick={showModal1}
-          >
-            ManageBuilding
-          </button>
-          <div className="managestatus">
-            <Modal
-              title="ManageBuilding"
-              open={isModalOpen1}
-              onOk={handleOk1}
-              onCancel={handleCancel1}
-              footer={[]}
-            >
+          <Row gutter={[16, 16]}>
+            {/* ButtonManageBuilding */}
+            <Col>
               <ManageBuilding />
-            </Modal>
-          </div>
+            </Col>
 
-          {/* ButtonManageRoomtpye */}
-          <ManageRoomtpye />
+            {/* ButtonManageRoomtpye */}
+            <Col>
+              <ManageRoomtpye />
+            </Col>
 
-          {/* ButtonAddRoom */}
-          <AddRoom onSuccess={getManageRooms} />
-        </div>
-      </div>
+            {/* ButtonAddRoom */}
+            <Col>
+              <AddRoom onSuccess={getManageRooms} />
+            </Col>
+          </Row>
+
+        </Col>
+      </Row>
+
+      <br/>
       <div className="searchroom">
         <div className="searchstatus">
           Organization:{" "}
@@ -220,7 +206,7 @@ const ManageRoom = () => {
           <Table columns={columns} dataSource={dataSource}></Table>
           <Modal
             title="Edit Room"
-            visible={isEditingRoom}
+            open={isEditingRoom}
             okText="Save"
             onCancel={() => {
               resetEditingRoom();

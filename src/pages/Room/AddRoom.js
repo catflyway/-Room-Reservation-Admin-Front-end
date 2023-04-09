@@ -109,7 +109,6 @@ const AddRoom = ({ onSuccess }) => {
   }, []);
 
   const onFormFinish = (value) => {
-    console.log("finish", value);
     value = {
       ...value,
       image: value.image[0].originFileObj,
@@ -118,8 +117,6 @@ const AddRoom = ({ onSuccess }) => {
 
     delete value.width;
     delete value.long;
-
-    console.log("finish2", value);
 
     setLoading(true);
 
@@ -143,19 +140,20 @@ const AddRoom = ({ onSuccess }) => {
 
   return (
     <React.Fragment>
-      <button
+      <Button
         className="button-room"
         type="primary"
-        size={20}
         onClick={showModal}
+        size="large"
       >
         AddRoom
-      </button>
+      </Button>
       <Modal
         title="Add Room"
         open={isModalOpen}
         onOk={onAddUser}
         onCancel={onCancelAdd}
+        confirmLoading={loading}
       >
         <Form
           form={form}
@@ -324,8 +322,8 @@ const AddRoom = ({ onSuccess }) => {
               </Row>
             </Checkbox.Group>
           </Form.Item>
-          <Form.Item label="รายละเอียด">
-            <Input.TextArea placeholder="รายละเอียด" name="Detail" />
+          <Form.Item label="รายละเอียด" name="Detail">
+            <Input.TextArea placeholder="รายละเอียด" />
           </Form.Item>
           <Form.Item
             label="Room Contributor"
@@ -334,7 +332,7 @@ const AddRoom = ({ onSuccess }) => {
           >
             <Select
               showSearch
-              placeholder="ผู้ขอจอง"
+              placeholder="ผู้ดูแล"
               optionFilterProp="children"
               filterOption={(input, option) =>
                 (option?.email ?? "")

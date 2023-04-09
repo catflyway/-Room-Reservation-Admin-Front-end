@@ -53,19 +53,18 @@ function Calendar() {
 
   const onChangeorg = (orgID) => {
     console.log(`selected ${orgID}`);
-    getBuildingInOrgID(orgID)
+    getBuildingInOrgID(orgID);
   };
 
   const onChangebuild = (buildingID) => {
     console.log(`selected ${buildingID}`);
-    getRoomsInOrgID(buildingID)
+    getRoomsInOrgID(buildingID);
   };
 
   useEffect(() => {
     getManageCalendar();
     getOrg();
   }, []);
-
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [values, setValues] = useState({
@@ -89,85 +88,94 @@ function Calendar() {
     <div>
       <Row justify="center">
         <Col span={24}>
-          <div className="Heard-ManageCa">
-            <h2>Dashboard</h2>
-          </div>
+        <Row justify="center">
+          <h5 style={{ color: " #3F478D" }}>Dashboard</h5>
+          </Row>
 
-            <Row justify="center">
-          <Col span={4} offset={2}>
-            <button className="col-1-1">
-              <h5>1</h5>
-              คำขอที่ยังไม่ได้ดำเนินการ
-            </button>
+          <Row justify="center" gutter={[16, 16]}>
+            <Col>
+              <button className="col-1-1">
+                <h5>1</h5>
+                คำขอที่ยังไม่ได้ดำเนินการ
+              </button>
             </Col>
 
             <Col span={4} offset={2}>
-            <button className="col-1-1">
-              <h5>1</h5>
-              คำขอที่อนุมัติแล้ว
-            </button>
+              <button className="col-1-1">
+                <h5>1</h5>
+                คำขอที่อนุมัติแล้ว
+              </button>
             </Col>
 
             <Col span={4} offset={2}>
-            <button className="col-1-1">
-              <h5>1</h5>
-              คำขอที่สำเร็จแล้ว
-            </button>
+              <button className="col-1-1">
+                <h5>1</h5>
+                คำขอที่สำเร็จแล้ว
+              </button>
             </Col>
-            </Row>
-          <div className="searchgraph">
-            <div className="searchstatus">
+          </Row>
+
+          <Row justify="center" gutter={[16, 16]} style={{ paddingTop: "24px" }}>
+            <Col>
               Organization:{" "}
               <Select
-                    style={{
-                      width: '200px',
-                    }}
-          showSearch
-          placeholder="หน่วยงาน"
-          optionFilterProp="children"
-          onChange={onChangeorg}
-          filterOption={(input, option) =>
-            (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
-          }
-          fieldNames={{ label: "name", value: "_id" }}
-          options={orgList}
-        />
-            </div>
-            <div className="searchstatus">
+                style={{
+                  width: "200px",
+                }}
+                showSearch
+                placeholder="หน่วยงาน"
+                optionFilterProp="children"
+                onChange={onChangeorg}
+                filterOption={(input, option) =>
+                  (option?.name ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                fieldNames={{ label: "name", value: "_id" }}
+                options={orgList}
+              />
+            </Col>
+
+            <Col>
               Building:{" "}
               <Select
-                    style={{
-                      width: '200px',
-                    }}
-          showSearch
-          placeholder="อาคาร/สถานที่"
-          optionFilterProp="children"
-          onChange={onChangebuild}
-          filterOption={(input, option) =>
-            (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
-          }
-          fieldNames={{ label: "name", value: "_id" }}
-          options={buildingList}
-        />
-            </div>
-            <div className="searchstatus">
+                style={{
+                  width: "200px",
+                }}
+                showSearch
+                placeholder="อาคาร/สถานที่"
+                optionFilterProp="children"
+                onChange={onChangebuild}
+                filterOption={(input, option) =>
+                  (option?.name ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                fieldNames={{ label: "name", value: "_id" }}
+                options={buildingList}
+              />
+            </Col>
+
+            <Col>
               Room:{" "}
               <Select
-              style={{
-                width: '200px',
-              }}
-          showSearch
-          placeholder="ห้อง"
-          optionFilterProp="children"
-          // onChange={value => onChange({ ...details, Room: value })}
-          filterOption={(input, option) =>
-            (option?.Name ?? "").toLowerCase().includes(input.toLowerCase())
-          }
-          fieldNames={{ label: "Name", value: "_id" }}
-          options={roomsList}
-        />
-            </div>
-          </div>
+                style={{
+                  width: "200px",
+                }}
+                showSearch
+                placeholder="ห้อง"
+                optionFilterProp="children"
+                // onChange={value => onChange({ ...details, Room: value })}
+                filterOption={(input, option) =>
+                  (option?.Name ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                fieldNames={{ label: "Name", value: "_id" }}
+                options={roomsList}
+              />
+            </Col>
+          </Row>
         </Col>
       </Row>
       <Row justify="center">
@@ -205,18 +213,16 @@ function Calendar() {
             <Col span={5} offset={1}>
               <h2>รายละเอียดการจอง</h2>
               <FullCalendar
-                  plugins={[
-                    listPlugin,
-                  ]}
-                  initialView="listMonth"
-                  headerToolbar={{
-                    left: "",
-                    center: "",
-                    right: "",
-                  }}
-                  events={events}
-                  height={"80%"}
-                />
+                plugins={[listPlugin]}
+                initialView="listMonth"
+                headerToolbar={{
+                  left: "",
+                  center: "",
+                  right: "",
+                }}
+                events={events}
+                height={"80%"}
+              />
             </Col>
           </Row>
         </Col>

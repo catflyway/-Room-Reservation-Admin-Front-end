@@ -6,7 +6,7 @@ import axios from "axios";
 const ManageBuilding = () => {
   const [dataSource, setDataSource] = useState([]);
   function getBuildtype(id) {
-    axios.get("/org/building/"+id, { crossdomain: true }).then((response) => {
+    axios.get("/org/building/" + id, { crossdomain: true }).then((response) => {
       console.log(response);
       setDataSource(response.data);
     });
@@ -24,13 +24,12 @@ const ManageBuilding = () => {
   const [idOrg, setIdorg] = useState();
   const onChangeorg = (value) => {
     console.log(`selected ${value}`);
-    setFormData({ ...formData, org: value})
+    setFormData({ ...formData, org: value });
     setIdorg(value);
     getBuildtype(value);
   };
   const onSearch = (value) => {
     console.log("search:", value);
-
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -39,14 +38,25 @@ const ManageBuilding = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+  const [isModalOpen1, setIsModalOpen1] = useState(false);
+
+  const showModal1 = () => {
+    setIsModalOpen1(true);
+  };
+  const handleOk1 = () => {
+    setIsModalOpen1(false);
+  };
+  const handleCancel1 = () => {
+    setIsModalOpen1(false);
+  };
   const [isEditingBuild, setIsEditingbuild] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    org:"",
+    org: "",
   });
   const handleSubmit = () => {
-    console.log(formData)
+    console.log(formData);
     axios
       .post("/rooms/building", formData)
       .then((res) => {
@@ -106,8 +116,22 @@ const ManageBuilding = () => {
     setEditingDatabuild(null);
   };
   return (
-    <div>
-      <div className="User-list">
+    <React.Fragment>
+      <Button
+        className="button-room"
+        type="primary"
+        onClick={showModal1}
+        size="large"
+      >
+        ManageBuilding
+      </Button>
+      <Modal
+        title="ManageBuilding"
+        open={isModalOpen1}
+        onOk={handleOk1}
+        onCancel={handleCancel1}
+        footer={[]}
+      >
         <button
           className="button-submit1"
           key="submit"
@@ -119,21 +143,19 @@ const ManageBuilding = () => {
           AddBuild
         </button>
         <Form.Item label="หน่วยงาน">
-        <Select
-          showSearch
-          placeholder="หน่วยงาน"
-          optionFilterProp="children"
-          onChange={onChangeorg}
-          onSearch={onSearch}
-          filterOption={(input, option) =>
-            (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
-          }
-          fieldNames={
-            { label: "name", value: "_id" }
-          }
-          options={dataOrg}
-        />
-      </Form.Item>
+          <Select
+            showSearch
+            placeholder="หน่วยงาน"
+            optionFilterProp="children"
+            onChange={onChangeorg}
+            onSearch={onSearch}
+            filterOption={(input, option) =>
+              (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+            fieldNames={{ label: "name", value: "_id" }}
+            options={dataOrg}
+          />
+        </Form.Item>
         <Modal
           title="AddBuild"
           open={isModalOpen}
@@ -146,45 +168,44 @@ const ManageBuilding = () => {
             value={formData.name}
           />
         </Modal>
-        <header className="User-list-heard">
-          <Table
-            columns={columnsEdit}
-            dataSource={dataSource}
-            pagination={false}
-          ></Table>
-          <Modal
-            title="EditBuilding"
-            visible={isEditingBuild}
-            okText="Save"
-            onCancel={() => {
-              resetEditingbuild();
-            }}
-            onOk={() => {
-              setDataSource((pre) => {
-                return pre.map((student) => {
-                  if (student._id === editingDatabuild._id) {
-                    return editingDatabuild;
-                  } else {
-                    return student;
-                  }
-                });
-              });
-              resetEditingbuild();
-            }}
-          >
-            <Input
-              placeholder="Buildiding"
-              value={editingDatabuild?.name}
-              onChange={(e) => {
-                setEditingDatabuild((pre) => {
-                  return { ...pre, name: e.target.value };
-                });
-              }}
-            />
-          </Modal>
-        </header>
-      </div>
-    </div>
+        <Table
+          columns={columnsEdit}
+          dataSource={dataSource}
+          pagination={false}
+        ></Table>
+      </Modal>
+
+      <Modal
+        title="EditBuilding"
+        open={isEditingBuild}
+        okText="Save"
+        onCancel={() => {
+          resetEditingbuild();
+        }}
+        onOk={() => {
+          setDataSource((pre) => {
+            return pre.map((student) => {
+              if (student._id === editingDatabuild._id) {
+                return editingDatabuild;
+              } else {
+                return student;
+              }
+            });
+          });
+          resetEditingbuild();
+        }}
+      >
+        <Input
+          placeholder="Buildiding"
+          value={editingDatabuild?.name}
+          onChange={(e) => {
+            setEditingDatabuild((pre) => {
+              return { ...pre, name: e.target.value };
+            });
+          }}
+        />
+      </Modal>
+    </React.Fragment>
   );
 };
 export default ManageBuilding;

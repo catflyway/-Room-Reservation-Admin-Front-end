@@ -1,37 +1,40 @@
 import React, { useState, useEffect } from "react";
 import AddReq from "./AddReq";
-import { Modal, Table, Input, Form, Select, Switch } from "antd";
+import { Modal, Table, Input, Form, Select, Row, Col, Typography } from "antd";
 import { CheckOutlined } from "@ant-design/icons";
 import axios from "axios";
 import dayjs from "dayjs";
 
+const { Title } = Typography;
 const ManageReq = () => {
   const [dataSource, setDataSource] = useState([]);
 
   function getManageReq() {
-    axios.get("/Requests/searchby?Status_Approve=Pending", { crossdomain: true }).then((response) => {
-      console.log(response);
-      setDataSource(
-        response.data.map((item) => {
-          let timerev =
-            dayjs(item.startTime[0]).format("HH:mm") +
-            " - " +
-            dayjs(item.endTime[0]).format("HH:mm");
-          if (item.allDay == true) {
-            timerev = "Allday";
-          }
-          return {
-            ...item,
-            startTime: dayjs(item.startTime[0]),
-            endTime: dayjs(item.endTime[item.endTime.length - 1]),
-            timereservation: timerev,
-            Building:item.Building.name,
-            Room:item.Room.name,
-            User:item.User.username,
-          };
-        })
-      );
-    });
+    axios
+      .get("/Requests/searchby?Status_Approve=Pending", { crossdomain: true })
+      .then((response) => {
+        console.log(response);
+        setDataSource(
+          response.data.map((item) => {
+            let timerev =
+              dayjs(item.startTime[0]).format("HH:mm") +
+              " - " +
+              dayjs(item.endTime[0]).format("HH:mm");
+            if (item.allDay == true) {
+              timerev = "Allday";
+            }
+            return {
+              ...item,
+              startTime: dayjs(item.startTime[0]),
+              endTime: dayjs(item.endTime[item.endTime.length - 1]),
+              timereservation: timerev,
+              Building: item.Building.name,
+              Room: item.Room.name,
+              User: item.User.username,
+            };
+          })
+        );
+      });
   }
 
   useEffect(() => {
@@ -40,11 +43,10 @@ const ManageReq = () => {
 
   function onChangeStatus(request, status) {
     let data = {
-      "Status_Approve": status,
-    }
-    axios.put("/Requests/"+ request._id, data)
-    .then((response) => {
-      getManageReq()
+      Status_Approve: status,
+    };
+    axios.put("/Requests/" + request._id, data).then((response) => {
+      getManageReq();
       console.log(response.data);
     });
     console.log("Change", request, status);
@@ -156,9 +158,11 @@ const ManageReq = () => {
 
   return (
     <div>
-      <div className="Heard-ManageUser">
-        <h5>ManageRequest</h5>
-        <div className="button-manageorganization">
+      <Row justify="space-between" align="middle">
+        <Col>
+          <Title style={{ color: " #3F478D" }}>ManageRequest</Title>
+        </Col>
+        <Col>
           <button
             className="button-user"
             type="primary"
@@ -167,28 +171,34 @@ const ManageReq = () => {
           >
             AddReservation
           </button>
-          <div className="managestatus">
-            <Modal
-              title="AddReq"
-              open={isAddOpen}
-              //  footer={null}
-              onOk={handleSubmit}
-              onCancel={handCancelAddReq}
-            >
-              <AddReq
-                details={data}
-                onChange={(value) => {
-                  console.log("Set data =>", value);
-                  setData(value);
-                }}
-              />
-            </Modal>
-          </div>
+        </Col>
+        </Row>
+
+        <div className="managestatus">
+          <Modal
+            title="AddReq"
+            open={isAddOpen}
+            //  footer={null}
+            onOk={handleSubmit}
+            onCancel={handCancelAddReq}
+          >
+            <AddReq
+              details={data}
+              onChange={(value) => {
+                console.log("Set data =>", value);
+                setData(value);
+              }}
+            />
+          </Modal>
         </div>
-      </div>
+
       <div className="User-list">
         <header className="User-list-heard-req">
-          <Table columns={columns} dataSource={dataSource} rowKey={(record) => record._id}></Table>
+          <Table
+            columns={columns}
+            dataSource={dataSource}
+            rowKey={(record) => record._id}
+          ></Table>
         </header>
       </div>
     </div>
