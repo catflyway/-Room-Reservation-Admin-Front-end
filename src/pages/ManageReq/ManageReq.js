@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AddReq from "./AddReq";
-import { Modal, Table, Input, Form, Select, Row, Col, Typography } from "antd";
-import { CheckOutlined } from "@ant-design/icons";
+import HistoryReq from "./Historyreq";
+import { Modal, Table, Space, Select, Row, Col, Typography, Button } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 
@@ -162,17 +162,24 @@ const ManageReq = () => {
         <Col>
           <Title style={{ color: " #3F478D" }}>ManageRequest</Title>
         </Col>
+
+        <Space wrap>
         <Col>
-          <button
+        <HistoryReq/>
+        </Col>
+        <Col>
+          <Button
             className="button-user"
             type="primary"
-            size={20}
+            size="large"
             onClick={showAddReq}
           >
             AddReservation
-          </button>
+          </Button>
         </Col>
+        </Space>
         </Row>
+
 
         <div className="managestatus">
           <Modal
