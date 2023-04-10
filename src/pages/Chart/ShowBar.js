@@ -52,7 +52,11 @@ function ShowBar() {
     ],
   });
   function getManageReq() {
-    axios.get("/static").then((response) => {
+    axios.get("/static",{
+      params: {
+        per_page: 5
+       }})
+       .then((response) => {
       console.log(response);
       setDataSource(response.data);
       setuserData({

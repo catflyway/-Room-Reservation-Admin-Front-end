@@ -13,6 +13,7 @@ import {
   Button,
   Space,
 } from "antd";
+import ImgCrop from 'antd-img-crop';
 import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 
@@ -139,7 +140,7 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
             originFileObj: null,
           },
         ],
-        width: Number(dimention[1]), // match index 0 will all of match eg. '55 x 55'
+        width: Number(dimention[1]),
         long: Number(dimention[2]),
       });
 
@@ -173,9 +174,13 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
         console.log("res", response);
         setLoading(false);
         setIsModalOpen(false);
-        message.success("เพิ่มห้องสำเร็จ");
         if (typeof onSuccess === "function") {
           onSuccess();
+        }
+        if (openEdit) {
+          message.success("แก้ไขห้องสำเร็จ");
+        } else {
+          message.success("เพิ่มห้องสำเร็จ");
         }
       })
       .catch((err) => {

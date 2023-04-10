@@ -41,14 +41,14 @@ const AddOrganization = ({ onSuccess }) => {
 
   return (
     <React.Fragment>
-      <button
+      <Button
         className="button-user"
         type="primary"
-        size={20}
+        size="large"
         onClick={showModal}
       >
         AddOrganization
-      </button>
+      </Button>
       <Modal
         title="AddOrganization"
         open={isModalOpen}

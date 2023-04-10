@@ -10,14 +10,15 @@ import axios from "axios";
 
 const { Title } = Typography;
 
-const { Option } = Select;
-const handleChange = (value) => {
-  console.log(`selected ${value}`);
-};
 const { Search } = Input;
 const onSearch = (value) => console.log(value);
 
 const ManageRoom = ({ onSuccess }) => {
+  const onChangeorg = (orgID) => {
+    console.log(`selected ${orgID}`);
+    getBuildingInOrgID(orgID);
+    getRoomtpye(orgID);
+  };
   const onChangebuild = (buildingID) => {
     console.log(`selected ${buildingID}`);
   };
@@ -44,13 +45,6 @@ const ManageRoom = ({ onSuccess }) => {
     axios.get("/org/roomtype/" + id, { crossdomain: true }).then((response) => {
       console.log(response);
       setRoomsList(response.data);
-    });
-  }
-  const [usersList, setUsersList] = useState([]);
-  function getUsersInOrgID(id) {
-    axios.get("/org/user/" + id).then((response) => {
-      console.log(response);
-      setUsersList(response.data);
     });
   }
   function getManageRooms() {
@@ -188,27 +182,54 @@ const ManageRoom = ({ onSuccess }) => {
       <Row justify="center" gutter={[16, 16]}>
         <Space wrap>
           <Form.Item label="Organization">
-            <Select placeholder="Select a Building" onChange={handleChange}>
-              <Option value="student">ECC</Option>
-              <Option value="teacher">โรงแอล</Option>
-              <Option value="athlete">ห้องประชุมพันปี</Option>
-            </Select>
+            <Select
+              style={{
+                width: "200px",
+              }}
+              showSearch
+              placeholder="หน่วยงาน"
+              optionFilterProp="children"
+              onChange={onChangeorg}
+              filterOption={(input, option) =>
+                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
+              }
+              fieldNames={{ label: "name", value: "_id" }}
+              options={orgList}
+            />
           </Form.Item>
 
           <Form.Item label="Building">
-            <Select placeholder="Select a Building" onChange={handleChange}>
-              <Option value="student">ECC</Option>
-              <Option value="teacher">โรงแอล</Option>
-              <Option value="athlete">ห้องประชุมพันปี</Option>
-            </Select>
+            <Select
+              style={{
+                width: "200px",
+              }}
+              showSearch
+              placeholder="อาคาร/สถานที่"
+              optionFilterProp="children"
+              onChange={onChangebuild}
+              filterOption={(input, option) =>
+                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
+              }
+              fieldNames={{ label: "name", value: "_id" }}
+              options={buildingList}
+            />
           </Form.Item>
 
           <Form.Item label="Roomtype">
-            <Select placeholder="Select a Roomtype">
-              <Select.Option value="1">ห้องเรียน</Select.Option>
-              <Select.Option value="2">ห้องปฏิบัติการ</Select.Option>
-              <Select.Option value="3">อื่นๆ</Select.Option>
-            </Select>
+            <Select
+              style={{
+                width: "200px",
+              }}
+              showSearch
+              placeholder="ประเภทห้อง"
+              optionFilterProp="children"
+              onChange={onChangeroomtype}
+              filterOption={(input, option) =>
+                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
+              }
+              fieldNames={{ label: "name", value: "_id" }}
+              options={roomsList}
+            />
           </Form.Item>
 
           <Form.Item>

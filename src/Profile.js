@@ -115,7 +115,7 @@ function Profile() {
 
       <Row justify="center">
         <Col>
-          <Button className="button-logout" onClick={OnButtonClick}>
+          <Button className="button-reset" onClick={OnButtonClick}>
             Reset
           </Button>
           <Button
