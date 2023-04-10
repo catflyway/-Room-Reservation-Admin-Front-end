@@ -12,7 +12,7 @@ import {
   Typography,
   Button,
 } from "antd";
-import Usermem from "./Usermem";
+import EditUser from "./EditUser";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 
@@ -29,21 +29,15 @@ const ManageUser = () => {
   const [orgList, setOrgList] = useState([]);
   function getOrg() {
     axios.get("/org").then((response) => {
-      console.log(response);
+      console.log("org", response.data);
       setOrgList(response.data);
     });
   }
-  const [dataUsers, setUsers] = useState([]);
-  function getBuildtype(id) {
-    axios.get("/org/users/" + id, { crossdomain: true }).then((response) => {
-      console.log(response);
-      setUsers(response.data);
-    });
-  }
+  const [dataUsers, setDataUsers] = useState([]);
   const [status, setstatus] = useState([]);
   function getStatus(id) {
     axios.get("/org/status/" + id, { crossdomain: true }).then((response) => {
-      console.log(response);
+      console.log("org", "status", id, response.data);
       setstatus(response.data);
     });
   }
@@ -67,15 +61,13 @@ const ManageUser = () => {
     setComponentSize(size);
   };
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
   function getAllUser() {
     axios.get("/users", { crossdomain: true }).then((response) => {
-      console.log(response);
-      setUsers(
+      console.log("users", response.data);
+      setDataUsers(
         response.data.map((value) => ({
           ...value,
-          status: value.status.name,
+          statusName: value.status?.name,
         }))
       );
     });
@@ -120,7 +112,7 @@ const ManageUser = () => {
     {
       key: "5",
       title: "Status",
-      dataIndex: "status",
+      dataIndex: "statusName",
     },
     {
       key: "6",
@@ -160,18 +152,18 @@ const ManageUser = () => {
     {
       key: "2",
       title: "Actions",
-      render: (record1) => {
+      render: (record) => {
         return (
           <>
             <EditOutlined
               onClick={() => {
-                onEditStatus(record1);
+                onEditUser(record);
               }}
               style={{ color: "blue", marginLeft: 12 }}
             />
             <DeleteOutlined
               onClick={() => {
-                onDeleteUser(record1);
+                onDeleteUser(record);
               }}
               style={{ color: "red", marginLeft: 12 }}
             />
@@ -193,16 +185,12 @@ const ManageUser = () => {
       },
     });
   };
+  const [isEditing, setIsEditing] = useState(false);
+  // const [editingUser, setEditingUser] = useState(null);
+  const [editingData, setEditingdata] = useState(null);
   const onEditUser = (record) => {
     setIsEditing(true);
-    setEditingUser({ ...record });
-  };
-  const resetEditing = () => {
-    setIsEditing(false);
-    setEditingUser(null);
-  };
-  const onEditStatus = (record1) => {
-    setEditingUser({ ...record1 });
+    setEditingdata({ ...record });
   };
 
   const [isModalOpen1, setIsModalOpen1] = useState(false);
@@ -249,7 +237,17 @@ const ManageUser = () => {
             <Button type="primary" size="large" onClick={showModal1}>
               ManageStatus
             </Button>
-            <Usermem onSuccess={getAllUser} />
+            <EditUser
+              value={editingData}
+              openEdit={isEditing}
+              onCancel={() => {
+                setIsEditing(false);
+              }}
+              onSuccess={() => {
+                setIsEditing(false);
+                getAllUser();
+              }}
+            />
           </Space>
         </Col>
       </Row>
@@ -371,127 +369,6 @@ const ManageUser = () => {
             pagination={false}
           ></Table>
         </header>
-      </Modal>
-      <Modal
-        title="Edit Users"
-        open={isEditing}
-        okText="Save"
-        onCancel={() => {
-          resetEditing();
-        }}
-        onOk={() => {
-          setDataSource((pre) => {
-            return pre.map((users) => {
-              if (users.id === editingUser.id) {
-                return editingUser;
-              } else {
-                return users;
-              }
-            });
-          });
-          resetEditing();
-        }}
-      >
-        <Form
-          labelCol={{
-            span: 4,
-          }}
-          wrapperCol={{
-            span: 14,
-          }}
-          layout="horizontal"
-          initialValues={{
-            size: componentSize,
-          }}
-          onValuesChange={onFormLayoutChange}
-          size={componentSize}
-        >
-          <Form.Item label="Username">
-            <Input
-              placeholder="Username"
-              value={editingUser?.username}
-              onChange={(e) => {
-                setEditingUser((pre) => {
-                  return { ...pre, username: e.target.value };
-                });
-              }}
-            />
-          </Form.Item>
-          <Form.Item label="Name">
-            <Input
-              placeholder="Name"
-              value={editingUser?.name}
-              onChange={(e) => {
-                setEditingUser((pre) => {
-                  return { ...pre, name: e.target.value };
-                });
-              }}
-            />
-          </Form.Item>
-          <Form.Item label="Lastname">
-            <Input
-              placeholder="Lastname"
-              value={editingUser?.email}
-              onChange={(e) => {
-                setEditingUser((pre) => {
-                  return { ...pre, email: e.target.value };
-                });
-              }}
-            />
-          </Form.Item>
-          <Form.Item label="E-mail">
-            <Input
-              placeholder="E-mail"
-              value={editingUser?.email}
-              onChange={(e) => {
-                setEditingUser((pre) => {
-                  return { ...pre, email: e.target.value };
-                });
-              }}
-            />
-          </Form.Item>
-          <Form.Item label="Password">
-            <Input.Password
-              value={editingUser?.pass}
-              onChange={(e) => {
-                setEditingUser((pre) => {
-                  return { ...pre, pass: e.target.value };
-                });
-              }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Status"
-            value={editingUser?.status}
-            onChange={(e) => {
-              setEditingUser((pre) => {
-                return { ...pre, status: e.target.value };
-              });
-            }}
-          >
-            <Select placeholder="Select a Status">
-              <Select.Option value="student">Student</Select.Option>
-              <Select.Option value="teacher">Teacher</Select.Option>
-              <Select.Option value="athlete">Athlete</Select.Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Role"
-            value={editingUser?.role}
-            onChange={(e) => {
-              setEditingUser((pre) => {
-                return { ...pre, role: e.target.value };
-              });
-            }}
-          >
-            <Select placeholder="Select a Role">
-              <Select.Option value="user">User</Select.Option>
-              <Select.Option value="admin">Admin</Select.Option>
-            </Select>
-          </Form.Item>
-        </Form>
       </Modal>
     </div>
   );
