@@ -11,13 +11,18 @@ import axios from "axios";
 const { Title } = Typography;
 
 const { Search } = Input;
-const onSearch = (value) => console.log(value);
+const onSearch = (value) => {
+  console.log(value);
+};
+const handleChange = (value) => {
+  console.log(`selected ${value}`);
+};
 
 const ManageRoom = ({ onSuccess }) => {
   const onChangeorg = (orgID) => {
     console.log(`selected ${orgID}`);
     getBuildingInOrgID(orgID);
-    getRoomtpye(orgID);
+    getRoomtype(orgID);
   };
   const onChangebuild = (buildingID) => {
     console.log(`selected ${buildingID}`);
@@ -40,11 +45,11 @@ const ManageRoom = ({ onSuccess }) => {
       setBuildingList(response.data);
     });
   }
-  const [roomsList, setRoomsList] = useState([]);
-  function getRoomtpye(id) {
-    axios.get("/org/roomtype/" + id, { crossdomain: true }).then((response) => {
+  const [RoomtypeList, setRoomtypeList] = useState([]);
+  function getRoomtype(id) {
+    axios.get("/org/room/" + id, { crossdomain: true }).then((response) => {
       console.log(response);
-      setRoomsList(response.data);
+      setRoomtypeList(response.data);
     });
   }
   function getManageRooms() {
@@ -61,8 +66,16 @@ const ManageRoom = ({ onSuccess }) => {
       );
     });
   }
+  const [SearchroomsList, setSearchRoomsList] = useState([]);
+  function getSearchRoom(id) {
+    axios.get("/rooms/search/" + id, { crossdomain: true }).then((response) => {
+      console.log(response);
+      setSearchRoomsList(response.data);
+    });
+  }
   useEffect(() => {
     getManageRooms();
+    getSearchRoom();
     getOrg();
   }, []);
 
@@ -73,6 +86,10 @@ const ManageRoom = ({ onSuccess }) => {
     setEditingdata({ ...record });
   };
 
+  const [selectedItems, setSelectedItems] = useState([]);
+  const filteredOptions = SearchroomsList.filter(
+    (o) => !selectedItems.includes(o)
+  );
   const [dataSource, setDataSource] = useState([]);
   const columns = [
     {
@@ -228,7 +245,7 @@ const ManageRoom = ({ onSuccess }) => {
                 (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
               }
               fieldNames={{ label: "name", value: "_id" }}
-              options={roomsList}
+              options={RoomtypeList}
             />
           </Form.Item>
 
@@ -236,7 +253,14 @@ const ManageRoom = ({ onSuccess }) => {
             <Search
               placeholder="Search Room"
               allowClear
-              onSearch={onSearch}
+              // onSearch={onSearch}
+              value={selectedItems}
+              onChange={setSelectedItems}
+              // options={getManageRooms}
+              options={filteredOptions.map((item) => ({
+                value: item._id,
+                label: item.Name,
+              }))}
               style={{
                 width: 200,
               }}

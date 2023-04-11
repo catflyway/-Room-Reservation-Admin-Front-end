@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from "react";
 import AddReq from "./AddReq";
 import HistoryReq from "./Historyreq";
-import { Modal, Table, Space, Select, Row, Col, Typography, Button } from "antd";
+import {
+  Modal,
+  Table,
+  Space,
+  Select,
+  Row,
+  Col,
+  Typography,
+  Button,
+} from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 
@@ -117,7 +126,7 @@ const ManageReq = () => {
               <Select.Option value="Pending">Pending</Select.Option>
               <Select.Option value="Approved">Approved</Select.Option>
               <Select.Option value="Rejected">Rejected</Select.Option>
-              <Select.Option value="Cancled ">Cancled</Select.Option>
+              {/* <Select.Option value="Cancled ">Cancled</Select.Option> */}
             </Select>
           </>
         );
@@ -164,40 +173,39 @@ const ManageReq = () => {
         </Col>
 
         <Space wrap>
-        <Col>
-        <HistoryReq/>
-        </Col>
-        <Col>
-          <Button
-            className="button-user"
-            type="primary"
-            size="large"
-            onClick={showAddReq}
-          >
-            AddReservation
-          </Button>
-        </Col>
+          <Col>
+            <HistoryReq />
+          </Col>
+          <Col>
+            <Button
+              className="button-user"
+              type="primary"
+              size="large"
+              onClick={showAddReq}
+            >
+              AddReservation
+            </Button>
+          </Col>
         </Space>
-        </Row>
+      </Row>
 
-
-        <div className="managestatus">
-          <Modal
-            title="AddReq"
-            open={isAddOpen}
-            //  footer={null}
-            onOk={handleSubmit}
-            onCancel={handCancelAddReq}
-          >
-            <AddReq
-              details={data}
-              onChange={(value) => {
-                console.log("Set data =>", value);
-                setData(value);
-              }}
-            />
-          </Modal>
-        </div>
+      <div className="managestatus">
+        <Modal
+          title="AddReq"
+          open={isAddOpen}
+          //  footer={null}
+          onOk={handleSubmit}
+          onCancel={handCancelAddReq}
+        >
+          <AddReq
+            details={data}
+            onChange={(value) => {
+              console.log("Set data =>", value);
+              setData(value);
+            }}
+          />
+        </Modal>
+      </div>
 
       <div className="User-list">
         <header className="User-list-heard-req">

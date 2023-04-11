@@ -6,7 +6,10 @@ import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClic
 import listPlugin from "@fullcalendar/list";
 import axios from "axios";
 
-import { Row, Col, Modal, Select } from "antd";
+import { Row, Col, Modal, Select, Form, Typography, Button, Space } from "antd";
+// import { Title } from "chart.js";
+
+const { Title } = Typography;
 
 function Calendar() {
   const [events, setIsevents] = useState([]);
@@ -27,28 +30,62 @@ function Calendar() {
     });
   }
 
+  const [OrgLoading, setOrgLoading] = useState(false);
   const [orgList, setOrgList] = useState([]);
   function getOrg() {
-    axios.get("/org").then((response) => {
-      console.log(response);
-      setOrgList(response.data);
-    });
+    setOrgLoading(true);
+    axios
+      .get("/org")
+      .then((response) => {
+        setOrgLoading(false);
+        console.log(response);
+        setOrgList(response.data);
+      })
+      .catch((err) => {
+        setOrgLoading(false);
+      });
   }
 
+  const [BuildLoading, setBuildLoading] = useState(false);
   const [buildingList, setBuildingList] = useState([]);
   function getBuildingInOrgID(id) {
-    axios.get("/org/building/" + id).then((response) => {
-      console.log(response);
-      setBuildingList(response.data);
-    });
+    setBuildLoading(true);
+    axios
+      .get("/org/building/" + id)
+      .then((response) => {
+        setBuildLoading(false);
+        console.log(response);
+        setBuildingList(
+          response.data.map((item) => {
+            return {
+              ...item,
+              buildingname: item.name,
+            };
+          })
+        );
+        form.resetFields(["buildingname"]);
+        form.resetFields(["Name"]);
+      })
+      .catch((err) => {
+        setBuildLoading(false);
+      });
   }
 
+  const [RoomLoading, setRoomLoading] = useState(false);
   const [roomsList, setRoomsList] = useState([]);
   function getRoomsInOrgID(id) {
-    axios.get("/rooms/buildingroom/" + id).then((response) => {
-      console.log(response);
-      setRoomsList(response.data);
-    });
+    setRoomLoading(true);
+    axios
+      .get("/rooms/buildingroom/" + id)
+      .then((response) => {
+        setRoomLoading(false);
+        console.log(response);
+        setRoomsList(response.data);
+        form.resetFields(["Name"]);
+      })
+      .catch((err) => {
+        setRoomLoading(false);
+      });
   }
 
   const onChangeorg = (orgID) => {
@@ -65,6 +102,7 @@ function Calendar() {
     getManageCalendar();
     getOrg();
   }, []);
+  const [form] = Form.useForm();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [values, setValues] = useState({
@@ -88,93 +126,132 @@ function Calendar() {
     <div>
       <Row justify="center">
         <Col span={24}>
-        <Row justify="center">
-          <h5 style={{ color: " #3F478D" }}>Dashboard</h5>
+          <Row justify="center">
+            <Title style={{ color: " #3F478D", fontSize: "56px" }}>
+              Dashboard
+            </Title>
           </Row>
 
           <Row justify="center" gutter={[16, 16]}>
-            <Col>
+            <Col span={4} offset={2}>
               <button className="col-1-1">
-                <h5>1</h5>
-                คำขอที่ยังไม่ได้ดำเนินการ
+                <Title style={{ color: " #FFF", fontSize: "20px" }}>1</Title>
+                <Title style={{ color: " #FFF", fontSize: "12px" }}>
+                  คำขอที่ยังไม่ได้ดำเนินการ
+                </Title>
+              </button>
+            </Col>
+            <Col span={4} offset={2}>
+              <button className="col-1-1">
+                <Title style={{ color: " #FFF", fontSize: "20px" }}>1</Title>
+                <Title style={{ color: " #FFF", fontSize: "12px" }}>
+                  คำขอที่อนุมัติแล้ว
+                </Title>
               </button>
             </Col>
 
             <Col span={4} offset={2}>
               <button className="col-1-1">
-                <h5>1</h5>
-                คำขอที่อนุมัติแล้ว
-              </button>
-            </Col>
-
-            <Col span={4} offset={2}>
-              <button className="col-1-1">
-                <h5>1</h5>
-                คำขอที่สำเร็จแล้ว
+                <Title style={{ color: " #FFF", fontSize: "20px" }}>1</Title>
+                <Title style={{ color: " #FFF", fontSize: "12px" }}>
+                  คำขอที่สำเร็จแล้ว
+                </Title>
               </button>
             </Col>
           </Row>
 
-          <Row justify="center" gutter={[16, 16]} style={{ paddingTop: "24px" }}>
-            <Col>
-              Organization:{" "}
-              <Select
-                style={{
-                  width: "200px",
-                }}
-                showSearch
-                placeholder="หน่วยงาน"
-                optionFilterProp="children"
-                onChange={onChangeorg}
-                filterOption={(input, option) =>
-                  (option?.name ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-                fieldNames={{ label: "name", value: "_id" }}
-                options={orgList}
-              />
-            </Col>
+          <Row
+            justify="center"
+            gutter={[16, 16]}
+            style={{ paddingTop: "24px" }}
+          >
+            <Form
+              form={form}
+              labelCol={{
+                span: 7,
+              }}
+              wrapperCol={{
+                span: 19,
+              }}
+            >
+              <Form.Item
+                name="name"
+                // rules={[{ required: true }]}
+                label="Organization: "
+              >
+                <Col>
+                  <Select
+                    style={{
+                      width: "200px",
+                    }}
+                    showSearch
+                    placeholder="หน่วยงาน"
+                    optionFilterProp="children"
+                    onChange={onChangeorg}
+                    filterOption={(input, option) =>
+                      (option?.name ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    fieldNames={{ label: "name", value: "_id" }}
+                    options={orgList}
+                    loadin={OrgLoading}
+                  />
+                </Col>
+              </Form.Item>
 
-            <Col>
-              Building:{" "}
-              <Select
-                style={{
-                  width: "200px",
-                }}
-                showSearch
-                placeholder="อาคาร/สถานที่"
-                optionFilterProp="children"
-                onChange={onChangebuild}
-                filterOption={(input, option) =>
-                  (option?.name ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-                fieldNames={{ label: "name", value: "_id" }}
-                options={buildingList}
-              />
-            </Col>
+              <Form.Item
+                name="buildingname"
+                // rules={[{ required: true }]}
+                label=" Building: "
+              >
+                <Col>
+                  <Select
+                    style={{
+                      width: "200px",
+                    }}
+                    showSearch
+                    placeholder="อาคาร/สถานที่"
+                    optionFilterProp="children"
+                    onChange={onChangebuild}
+                    filterOption={(input, option) =>
+                      (option?.name ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    fieldNames={{ label: "name", value: "_id" }}
+                    options={buildingList}
+                    loadin={BuildLoading}
+                  />
+                </Col>
+              </Form.Item>
 
-            <Col>
-              Room:{" "}
-              <Select
-                style={{
-                  width: "200px",
-                }}
-                showSearch
-                placeholder="ห้อง"
-                optionFilterProp="children"
-                // onChange={value => onChange({ ...details, Room: value })}
-                filterOption={(input, option) =>
-                  (option?.Name ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-                fieldNames={{ label: "Name", value: "_id" }}
-                options={roomsList}
-              />
-            </Col>
+              <Form.Item
+                name="Name"
+                // rules={[{ required: true }]}
+                label=" Room: "
+              >
+                <Col>
+                  <Select
+                    style={{
+                      width: "200px",
+                    }}
+                    showSearch
+                    placeholder="ห้อง"
+                    optionFilterProp="children"
+                    // onChange={value => onChange({ ...details, Room: value })}
+                    filterOption={(input, option) =>
+                      (option?.Name ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    fieldNames={{ label: "Name", value: "_id" }}
+                    options={roomsList}
+                    loading={RoomLoading}
+                  />
+                </Col>
+              </Form.Item>
+            </Form>
           </Row>
         </Col>
       </Row>
