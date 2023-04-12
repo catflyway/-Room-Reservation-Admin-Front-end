@@ -7,11 +7,11 @@ import listPlugin from "@fullcalendar/list";
 import axios from "axios";
 
 import { Row, Col, Modal, Select, Form, Typography, Button, Space } from "antd";
-// import { Title } from "chart.js";
 
 const { Title } = Typography;
 
 function Calendar() {
+  const [form] = Form.useForm();
   const [events, setIsevents] = useState([]);
 
   function getManageCalendar() {
@@ -20,7 +20,7 @@ function Calendar() {
       setIsevents(
         response.data.map((item) => {
           return {
-            title: item.Room + "   " + item.Purpose,
+            title: item.Room.name + "   " + item.Purpose,
             start: item.startTime,
             end: item.endTime,
             allDay: item.allDay,
@@ -102,7 +102,6 @@ function Calendar() {
     getManageCalendar();
     getOrg();
   }, []);
-  const [form] = Form.useForm();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [values, setValues] = useState({
@@ -174,12 +173,13 @@ function Calendar() {
                 span: 19,
               }}
             >
-              <Form.Item
-                name="name"
-                // rules={[{ required: true }]}
-                label="Organization: "
-              >
-                <Col>
+              {" "}
+              <Space wrap>
+                <Form.Item
+                  name="name"
+                  // rules={[{ required: true }]}
+                  label="Organization: "
+                >
                   <Select
                     style={{
                       width: "200px",
@@ -197,15 +197,13 @@ function Calendar() {
                     options={orgList}
                     loadin={OrgLoading}
                   />
-                </Col>
-              </Form.Item>
+                </Form.Item>
 
-              <Form.Item
-                name="buildingname"
-                // rules={[{ required: true }]}
-                label=" Building: "
-              >
-                <Col>
+                <Form.Item
+                  name="buildingname"
+                  // rules={[{ required: true }]}
+                  label=" Building: "
+                >
                   <Select
                     style={{
                       width: "200px",
@@ -223,15 +221,13 @@ function Calendar() {
                     options={buildingList}
                     loadin={BuildLoading}
                   />
-                </Col>
-              </Form.Item>
+                </Form.Item>
 
-              <Form.Item
-                name="Name"
-                // rules={[{ required: true }]}
-                label=" Room: "
-              >
-                <Col>
+                <Form.Item
+                  name="Name"
+                  // rules={[{ required: true }]}
+                  label=" Room: "
+                >
                   <Select
                     style={{
                       width: "200px",
@@ -249,8 +245,8 @@ function Calendar() {
                     options={roomsList}
                     loading={RoomLoading}
                   />
-                </Col>
-              </Form.Item>
+                </Form.Item>
+              </Space>
             </Form>
           </Row>
         </Col>
