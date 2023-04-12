@@ -17,9 +17,7 @@ import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 
 const { Title } = Typography;
-
 const { Search } = Input;
-const { Option } = Select;
 
 const ManageUser = () => {
   const [formData, setFormData] = useState({
@@ -44,6 +42,31 @@ const ManageUser = () => {
   useEffect(() => {
     getOrg();
   }, []);
+
+  function getManageUsers(option) {
+    let query = [];
+    for (const [key, value] of Object.entries(option || {})) {
+      if (value) {
+        query.push(`${key}=${value}`);
+      }
+    }
+    query = query.join("&");
+
+    axios
+      .get("/users/searchby?" + query, { crossdomain: true })
+      .then((response) => {
+        console.log(response);
+        setDataUsers(
+          response.data.map((item) => {
+            return {
+              ...item,
+              Rolename: item.role,
+              statusName: item.status?.name,
+            };
+          })
+        );
+      });
+  }
   const [idOrg, setIdorg] = useState();
   const onChangeorg = (value) => {
     console.log(`selected ${value}`);
@@ -61,21 +84,9 @@ const ManageUser = () => {
     setComponentSize(size);
   };
 
-  function getAllUser() {
-    axios.get("/users", { crossdomain: true }).then((response) => {
-      console.log("users", response.data);
-      setDataUsers(
-        response.data.map((value) => ({
-          ...value,
-          statusName: value.status?.name,
-        }))
-      );
-    });
-  }
   useEffect(() => {
-    getAllUser();
+    getManageUsers();
   }, []);
-  const [dataSource, setDataSource] = useState([]);
   const columns = [
     {
       key: "1",
@@ -178,15 +189,10 @@ const ManageUser = () => {
       title: "Are you sure, you want to delete this user record?",
       okText: "Yes",
       okType: "danger",
-      onOk: () => {
-        setDataSource((pre) => {
-          return pre.filter((users) => users.id !== record.id);
-        });
-      },
+      onOk: () => {},
     });
   };
   const [isEditing, setIsEditing] = useState(false);
-  // const [editingUser, setEditingUser] = useState(null);
   const [editingData, setEditingdata] = useState(null);
   const onEditUser = (record) => {
     setIsEditing(true);
@@ -225,6 +231,25 @@ const ManageUser = () => {
       .catch((err) => console.log(err));
     setIsAddStatusUser(false);
   };
+  const onChangestatus = (buildingID) => {
+    console.log(`selected ${buildingID}`);
+  };
+
+  const [SearchUserList, setSearchUserList] = useState([]);
+  function getSearchuser(id) {
+    axios.get("/users/search/" + id, { crossdomain: true }).then((response) => {
+      console.log(response);
+      setSearchUserList(response.data);
+    });
+  }
+  const [selectedItems, setSelectedItems] = useState([]);
+  const filteredOptions = SearchUserList.filter(
+    (o) => !selectedItems.includes(o)
+  );
+  const onFilterChange = (changedValues, allValues) => {
+    console.log(changedValues, allValues);
+    getManageUsers(allValues);
+  };
 
   return (
     <div className="ManageUser">
@@ -245,7 +270,7 @@ const ManageUser = () => {
               }}
               onSuccess={() => {
                 setIsEditing(false);
-                getAllUser();
+                getManageUsers();
               }}
             />
           </Space>
@@ -253,46 +278,101 @@ const ManageUser = () => {
       </Row>
 
       <br />
-      <Row justify="center">
-        <Space wrap>
-          <Form.Item label="Organization">
-            <Select placeholder="Select a Building">
-              <Option value="student">ECC</Option>
-              <Option value="teacher">โรงแอล</Option>
-              <Option value="athlete">ห้องประชุมพันปี</Option>
-            </Select>
-          </Form.Item>
+      <Row justify="center" gutter={[16, 16]}>
+        <Form onValuesChange={onFilterChange}>
+          <Space wrap>
+            <Form.Item label="Organization" name="org">
+              <Select
+                style={{
+                  width: "200px",
+                }}
+                allowClear
+                showSearch
+                placeholder="Organization"
+                optionFilterProp="children"
+                onChange={onChangeorg}
+                filterOption={(input, option) =>
+                  (option?.name ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                fieldNames={{ label: "name", value: "_id" }}
+                options={orgList}
+              />
+            </Form.Item>
 
-          <Form.Item label="Status">
-            <Select placeholder="Select a Status">
-              <Option value="student">Student</Option>
-              <Option value="teacher">Teacher</Option>
-              <Option value="athlete">Athlete</Option>
-            </Select>
-          </Form.Item>
+            <Form.Item label="Status" name="status">
+              <Select
+                style={{
+                  width: "200px",
+                }}
+                allowClear
+                showSearch
+                placeholder="Status"
+                optionFilterProp="children"
+                onChange={onChangestatus}
+                filterOption={(input, option) =>
+                  (option?.name ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                fieldNames={{ label: "name", value: "_id" }}
+                options={status}
+              />
+            </Form.Item>
 
-          <Form.Item label="Role">
-            <Select placeholder="Select a Role">
-              <Select.Option value="User">User</Select.Option>
-              <Select.Option value="Room Contributor">
-                Room Contributor
-              </Select.Option>
-              <Select.Option value="Contributor">Contributor</Select.Option>
-              <Select.Option value="Administrator">Administrator</Select.Option>
-            </Select>
-          </Form.Item>
+            <Form.Item label="Role" name="role">
+              <Select
+                style={{
+                  width: "200px",
+                }}
+                allowClear
+                showSearch
+                placeholder="Role"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.value ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                options={[
+                  {
+                    value: "User",
+                    label: "User",
+                  },
+                  {
+                    value: "Room Contributor",
+                    label: "Room Contributor",
+                  },
+                  {
+                    value: "Contributor",
+                    label: "Contributor",
+                  },
+                  {
+                    value: "Administrator",
+                    label: "Administrator",
+                  },
+                ]}
+              />
+            </Form.Item>
 
-          <Form.Item>
-            <Search
-              placeholder="Search Users"
-              allowClear
-              onSearch={onSearch}
-              style={{
-                width: 200,
-              }}
-            />
-          </Form.Item>
-        </Space>
+            <Form.Item name="email">
+              <Search
+                placeholder="Search Email"
+                allowClear
+                value={selectedItems}
+                onChange={setSelectedItems}
+                options={filteredOptions.map((item) => ({
+                  value: item._id,
+                  label: item.email,
+                }))}
+                style={{
+                  width: 200,
+                }}
+              />
+            </Form.Item>
+          </Space>
+        </Form>
       </Row>
 
       <br />
