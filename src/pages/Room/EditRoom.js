@@ -13,7 +13,7 @@ import {
   Button,
   Space,
 } from "antd";
-import ImgCrop from 'antd-img-crop';
+import ImgCrop from "antd-img-crop";
 import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 
@@ -49,7 +49,7 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
     });
   }
   const [roomsList, setRoomsList] = useState([]);
-  function getRoomtpye(id) {
+  function getRoomtype(id) {
     axios.get("/org/roomtype/" + id, { crossdomain: true }).then((response) => {
       console.log("roomsList", response.data);
       setRoomsList(response.data);
@@ -110,7 +110,7 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
   const onChangeorg = (orgID) => {
     console.log(`selected ${orgID}`);
     getBuildingInOrgID(orgID);
-    getRoomtpye(orgID);
+    getRoomtype(orgID);
     getUsersInOrgID(orgID);
   };
   useEffect(() => {

@@ -36,14 +36,6 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
     formRef.current = form;
   }, [form]);
 
-  //   const [orgList, setOrgList] = useState([]);
-  //   function getOrg() {
-  //     axios.get("/org").then((response) => {
-  //       console.log("orgList", response.data);
-  //       setOrgList(response.data);
-  //     });
-  //   }
-
   const [orgList, setOrgList] = useState([]);
   const [orgLoading, setOrgLoading] = useState(false);
   function getOrg() {
@@ -70,33 +62,12 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
         console.log(response);
         setstatus(response.data);
 
-        //   form.resetFields(["status"])
+        form.resetFields(["status"]);
       })
       .catch((err) => {
         setUserStatusLoading(false);
       });
   }
-  //   const [buildingList, setBuildingList] = useState([]);
-  //   function getBuildingInOrgID(id) {
-  //     axios.get("/org/building/" + id).then((response) => {
-  //       console.log("buildingList", response.data);
-  //       setBuildingList(response.data);
-  //     });
-  //   }
-  //   const [roomsList, setRoomsList] = useState([]);
-  //   function getRoomtpye(id) {
-  //     axios.get("/org/roomtype/" + id, { crossdomain: true }).then((response) => {
-  //       console.log("roomsList", response.data);
-  //       setRoomsList(response.data);
-  //     });
-  //   }
-  //   const [usersList, setUsersList] = useState([]);
-  //   function getUsersInOrgID(id) {
-  //     axios.get("/org/user/" + id).then((response) => {
-  //       console.log("usersList", response.data);
-  //       setUsersList(response.data);
-  //     });
-  //   }
   const beforeUpload = (file) => {
     const isLt10M = file.size / 1024 / 1024 < 10;
 
@@ -118,12 +89,6 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
     }
     return e?.fileList;
   };
-  //   const onChangebuild = (buildingID) => {
-  //     console.log(`selected ${buildingID}`);
-  //   };
-  //   const onChangeroomtype = (roomtypeID) => {
-  //     console.log(`selected ${roomtypeID}`);
-  //   };
 
   const onAddUser = (e) => {
     form.submit();
@@ -145,9 +110,6 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
   const onChangeorg = (orgID) => {
     console.log(`selected ${orgID}`);
     getStatus(orgID);
-    // getBuildingInOrgID(orgID);
-    // getRoomtpye(orgID);
-    // getUsersInOrgID(orgID);
   };
 
   const onChangestatus = (statusID) => {
@@ -169,26 +131,19 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
     formRef.current.resetFields();
     if (value) {
       setImageUrl(value.image.url);
-      //   const dimention = value.Size.match(/(\d+) x (\d+)/);
       formRef.current.setFieldsValue({
         ...value,
         org: value.org?.id,
         status: value.status?.id,
-        // role: value.role?.id,
-        // RoomType: value.RoomType?.id,
-        // Contributor: value.Contributor?.id,
         image: [
           {
             originFileObj: null,
           },
         ],
         password: null,
-        // width: Number(dimention[1]),
-        // long: Number(dimention[2]),
       });
 
-      if (value.org)
-        onChangeorg(value.org.id);
+      if (value.org) onChangeorg(value.org.id);
     }
   }, [value]);
 
@@ -196,13 +151,8 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
     formValue = {
       ...formValue,
       image: formValue.image[0].originFileObj,
-      //   Size: formValue.width + " x " + formValue.long + " เมตร",
       password: formValue.password === "" ? null : formValue.password,
     };
-
-    // delete formValue.width;
-    // delete formValue.long;
-
     console.log("Finish", formValue);
 
     setLoading(true);
@@ -317,7 +267,6 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
             label="Username"
             name="username"
             rules={[{ min: 6, max: 12, required: true, whitespace: true }]}
-            // hasFeedback
           >
             <Input placeholder="Username" />
           </Form.Item>
@@ -338,7 +287,6 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
           <Form.Item
             label="E-mail"
             name="email"
-            // validateFirst={true}
             rules={[
               {
                 min: 6,
@@ -347,21 +295,7 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
                 type: "email",
                 whitespace: true,
               },
-              // {
-              //   validator: (_, value) => {
-              //     console.log(value)
-              //     return new Promise((resolve) => {
-              //       setTimeout(() => {
-              //         console.log(value, "ok")
-              //         resolve();
-              //       }, 1000);
-              //     })
-              //   },
-
-              //   message: "มีคนใช้แล้ว นะจ่ะ"
-              // },
             ]}
-            // hasFeedback
           >
             <Input placeholder="E-mail" />
           </Form.Item>
@@ -418,153 +352,6 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
               <Select.Option value="Administrator">Administrator</Select.Option>
             </Select>
           </Form.Item>
-
-          {/* <Form.Item
-            label="หน่วยงาน"
-            name="Org"
-            rules={[{ required: true, whitespace: true }]}
-          >
-            <Select
-              showSearch
-              placeholder="หน่วยงาน"
-              optionFilterProp="children"
-              onChange={onChangeorg}
-              filterOption={(input, option) =>
-                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
-              }
-              fieldNames={{ label: "name", value: "_id" }}
-              options={orgList}
-            />
-          </Form.Item>
-          <Form.Item
-            label="อาคาร/สถานที่"
-            name="Building"
-            rules={[{ required: true, whitespace: true }]}
-          >
-            <Select
-              showSearch
-              placeholder="อาคาร/สถานที่"
-              optionFilterProp="children"
-              onChange={onChangebuild}
-              filterOption={(input, option) =>
-                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
-              }
-              fieldNames={{ label: "name", value: "_id" }}
-              options={buildingList}
-            />
-          </Form.Item>
-          <Form.Item
-            label="ประเภทห้อง"
-            name="RoomType"
-            rules={[{ required: true, whitespace: true }]}
-          >
-            <Select
-              showSearch
-              placeholder="ประเภทห้อง"
-              optionFilterProp="children"
-              onChange={onChangeroomtype}
-              filterOption={(input, option) =>
-                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
-              }
-              fieldNames={{ label: "name", value: "_id" }}
-              options={roomsList}
-            />
-          </Form.Item>
-          <Form.Item
-            label="ชื่อห้อง"
-            name="Name"
-            rules={[{ min: 4, max: 25, required: true, whitespace: true }]}
-          >
-            <Input placeholder="ชื่อห้อง" />
-          </Form.Item>
-          <Form.Item
-            label="ความจุห้อง"
-            name="Seat"
-            rules={[{ type: "integer", min: 1, required: true }]}
-          >
-            <InputNumber
-              placeholder="ความจุห้อง"
-              addonAfter="ที่นั่ง"
-              type="number"
-              min={1}
-            />
-          </Form.Item>
-          <Form.Item label="ขนาดของห้อง" required={true}>
-            <Space.Compact>
-              <Form.Item
-                name="width"
-                style={{ marginBottom: 0 }}
-                rules={[{ type: "number", min: 0.01, required: true }]}
-              >
-                <InputNumber
-                  addonAfter="x"
-                  placeholder="ความกว้าง"
-                  type="number"
-                  min={0.01}
-                />
-              </Form.Item>
-              <Form.Item
-                name="long"
-                style={{ marginBottom: 0 }}
-                rules={[{ type: "number", min: 0.01, required: true }]}
-              >
-                <InputNumber
-                  addonAfter="เมตร"
-                  placeholder="ความยาว"
-                  type="number"
-                  min={0.01}
-                />
-              </Form.Item>
-            </Space.Compact>
-          </Form.Item>
-          <Form.Item label="อุปกรณ์ภายในห้อง" name="Object">
-            <Checkbox.Group
-              style={{
-                width: "100%",
-              }}
-            >
-              <Row>
-                <Col span={12}>
-                  <Checkbox value="พัดลม/แอร์">พัดลม/แอร์</Checkbox>
-                </Col>
-                <Col span={12}>
-                  <Checkbox value="ปลั๊กไฟ">ปลั๊กไฟ</Checkbox>
-                </Col>
-                <Col span={12}>
-                  <Checkbox value="เครื่องเสียง/ไมค์">
-                    เครื่องเสียง/ไมค์
-                  </Checkbox>
-                </Col>
-                <Col span={12}>
-                  <Checkbox value="คอมพิวเตอร์">คอมพิวเตอร์</Checkbox>
-                </Col>
-                <Col span={12}>
-                  <Checkbox value="โปรเจคเตอร์">โปรเจคเตอร์</Checkbox>
-                </Col>
-              </Row>
-            </Checkbox.Group>
-          </Form.Item>
-          <Form.Item label="รายละเอียด" name="Detail">
-            <Input.TextArea placeholder="รายละเอียด" />
-          </Form.Item>
-          <Form.Item
-            label="Room Contributor"
-            name="Contributor"
-            rules={[{ required: true, whitespace: true }]}
-          >
-            <Select
-              showSearch
-              placeholder="ผู้ดูแล"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.email ?? "")
-                  .toLowerCase()
-                  .includes(input.toLowerCase())
-              }
-              fieldNames={{ label: "email", value: "_id" }}
-              options={usersList}
-            />
-          </Form.Item> */}
         </Form>
       </Modal>
     </React.Fragment>

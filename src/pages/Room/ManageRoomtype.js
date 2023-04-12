@@ -3,7 +3,7 @@ import { Button, Modal, Table, Input, Form, Select, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 
-const ManageRoomtpye = () => {
+const ManageRoomtype = () => {
   const [orgList, setOrgList] = useState([]);
   const [orgLoading, setOrgLoading] = useState(false);
   function getOrg() {
@@ -27,7 +27,7 @@ const ManageRoomtpye = () => {
   //   });
   // }
   const [dataSource, setDataSource] = useState([]);
-  function getRoomtpye(id) {
+  function getRoomtype(id) {
     axios.get("/org/roomtype/" + id, { crossdomain: true }).then((response) => {
       console.log(response);
       setDataSource(response.data);
@@ -42,14 +42,14 @@ const ManageRoomtpye = () => {
     console.log(`selected ${value}`);
     setFormData({ ...formData, org: value });
     setIdorg(value);
-    getRoomtpye(value);
+    getRoomtype(value);
   };
   const handleSubmit = () => {
     console.log(formData);
     axios
       .post("/rooms/roomtype", formData)
       .then((res) => {
-        getRoomtpye(idOrg);
+        getRoomtype(idOrg);
       })
       .catch((err) => console.log(err));
     setIsModalOpen(false);
@@ -173,11 +173,11 @@ const ManageRoomtpye = () => {
         onClick={showModal2}
         size="large"
       >
-        ManageRoomtpye
+        ManageRoomtype
       </Button>
       <div className="managestatus">
         <Modal
-          title="ManageRoomtpye"
+          title="ManageRoomtype"
           open={isModalOpen2}
           onOk={handleOk2}
           onCancel={handleCancel2}
@@ -266,4 +266,4 @@ const ManageRoomtpye = () => {
     </React.Fragment>
   );
 };
-export default ManageRoomtpye;
+export default ManageRoomtype;
