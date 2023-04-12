@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import EditRoom from "./EditRoom";
 import ManageBuilding from "./ManageBuilding";
-import ManageRoomtpye from "./ManageRoomtype";
+import ManageRoomtype from "./ManageRoomtype";
 import { Col, Row, Image } from "antd";
 
 import { Modal, Table, Input, Form, Select, Space, Typography } from "antd";
@@ -11,14 +11,9 @@ import axios from "axios";
 const { Title } = Typography;
 
 const { Search } = Input;
-const onSearch = (value) => {
-  console.log(value);
-};
-const handleChange = (value) => {
-  console.log(`selected ${value}`);
-};
 
-const ManageRoom = ({ onSuccess }) => {
+const ManageRoom = () => {
+  const [dataSource, setDataSource] = useState([]);
   const onChangeorg = (orgID) => {
     console.log(`selected ${orgID}`);
     getBuildingInOrgID(orgID);
@@ -47,24 +42,34 @@ const ManageRoom = ({ onSuccess }) => {
   }
   const [RoomtypeList, setRoomtypeList] = useState([]);
   function getRoomtype(id) {
-    axios.get("/org/room/" + id, { crossdomain: true }).then((response) => {
+    axios.get("/org/roomtype/" + id, { crossdomain: true }).then((response) => {
       console.log(response);
       setRoomtypeList(response.data);
     });
   }
-  function getManageRooms() {
-    axios.get("/rooms/room", { crossdomain: true }).then((response) => {
-      console.log(response);
-      setDataSource(
-        response.data.map((item) => {
-          return {
-            ...item,
-            BuildingName: item.Building.name,
-            RoomTypeName: item.RoomType.name,
-          };
-        })
-      );
-    });
+  function getManageRooms(option) {
+    let query = [];
+    for (const [key, value] of Object.entries(option || {})) {
+      if (value) {
+        query.push(`${key}=${value}`);
+      }
+    }
+    query = query.join("&");
+
+    axios
+      .get("/rooms/searchby?" + query, { crossdomain: true })
+      .then((response) => {
+        console.log(response);
+        setDataSource(
+          response.data.map((item) => {
+            return {
+              ...item,
+              BuildingName: item.Building.name,
+              RoomTypeName: item.RoomType.name,
+            };
+          })
+        );
+      });
   }
   const [SearchroomsList, setSearchRoomsList] = useState([]);
   function getSearchRoom(id) {
@@ -75,7 +80,7 @@ const ManageRoom = ({ onSuccess }) => {
   }
   useEffect(() => {
     getManageRooms();
-    getSearchRoom();
+    // getSearchRoom();
     getOrg();
   }, []);
 
@@ -90,7 +95,7 @@ const ManageRoom = ({ onSuccess }) => {
   const filteredOptions = SearchroomsList.filter(
     (o) => !selectedItems.includes(o)
   );
-  const [dataSource, setDataSource] = useState([]);
+
   const columns = [
     {
       key: "2",
@@ -165,6 +170,11 @@ const ManageRoom = ({ onSuccess }) => {
     });
   };
 
+  const onFilterChange = (changedValues, allValues) => {
+    console.log(changedValues, allValues);
+    getManageRooms(allValues);
+  };
+
   return (
     <div>
       <Row justify="space-between" align="middle">
@@ -176,8 +186,8 @@ const ManageRoom = ({ onSuccess }) => {
             {/* ButtonManageBuilding */}
             <ManageBuilding />
 
-            {/* ButtonManageRoomtpye */}
-            <ManageRoomtpye />
+            {/* ButtonManageRoomtype */}
+            <ManageRoomtype />
 
             {/* ButtonAddRoom */}
             <EditRoom
@@ -197,76 +207,85 @@ const ManageRoom = ({ onSuccess }) => {
 
       <br />
       <Row justify="center" gutter={[16, 16]}>
-        <Space wrap>
-          <Form.Item label="Organization">
-            <Select
-              style={{
-                width: "200px",
-              }}
-              showSearch
-              placeholder="หน่วยงาน"
-              optionFilterProp="children"
-              onChange={onChangeorg}
-              filterOption={(input, option) =>
-                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
-              }
-              fieldNames={{ label: "name", value: "_id" }}
-              options={orgList}
-            />
-          </Form.Item>
+        <Form onValuesChange={onFilterChange}>
+          <Space wrap>
+            <Form.Item label="Organization" name="OrgID">
+              <Select
+                style={{
+                  width: "200px",
+                }}
+                allowClear
+                showSearch
+                placeholder="หน่วยงาน"
+                optionFilterProp="children"
+                onChange={onChangeorg}
+                filterOption={(input, option) =>
+                  (option?.name ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                fieldNames={{ label: "name", value: "_id" }}
+                options={orgList}
+              />
+            </Form.Item>
 
-          <Form.Item label="Building">
-            <Select
-              style={{
-                width: "200px",
-              }}
-              showSearch
-              placeholder="อาคาร/สถานที่"
-              optionFilterProp="children"
-              onChange={onChangebuild}
-              filterOption={(input, option) =>
-                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
-              }
-              fieldNames={{ label: "name", value: "_id" }}
-              options={buildingList}
-            />
-          </Form.Item>
+            <Form.Item label="Building" name="BuildingID">
+              <Select
+                style={{
+                  width: "200px",
+                }}
+                allowClear
+                showSearch
+                placeholder="อาคาร/สถานที่"
+                optionFilterProp="children"
+                onChange={onChangebuild}
+                filterOption={(input, option) =>
+                  (option?.name ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                fieldNames={{ label: "name", value: "_id" }}
+                options={buildingList}
+              />
+            </Form.Item>
 
-          <Form.Item label="Roomtype">
-            <Select
-              style={{
-                width: "200px",
-              }}
-              showSearch
-              placeholder="ประเภทห้อง"
-              optionFilterProp="children"
-              onChange={onChangeroomtype}
-              filterOption={(input, option) =>
-                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
-              }
-              fieldNames={{ label: "name", value: "_id" }}
-              options={RoomtypeList}
-            />
-          </Form.Item>
+            <Form.Item label="Roomtype" name="RoomTypeID">
+              <Select
+                style={{
+                  width: "200px",
+                }}
+                allowClear
+                showSearch
+                placeholder="ประเภทห้อง"
+                optionFilterProp="children"
+                onChange={onChangeroomtype}
+                filterOption={(input, option) =>
+                  (option?.name ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                fieldNames={{ label: "name", value: "_id" }}
+                options={RoomtypeList}
+              />
+            </Form.Item>
 
-          <Form.Item>
-            <Search
-              placeholder="Search Room"
-              allowClear
-              // onSearch={onSearch}
-              value={selectedItems}
-              onChange={setSelectedItems}
-              // options={getManageRooms}
-              options={filteredOptions.map((item) => ({
-                value: item._id,
-                label: item.Name,
-              }))}
-              style={{
-                width: 200,
-              }}
-            />
-          </Form.Item>
-        </Space>
+            <Form.Item name="Name">
+              <Search
+                placeholder="Search Room"
+                allowClear
+                value={selectedItems}
+                onChange={setSelectedItems}
+                options={filteredOptions.map((item) => ({
+                  value: item._id,
+                  label: item.Name,
+                }))}
+                style={{
+                  width: 200,
+                }}
+              />
+            </Form.Item>
+          </Space>
+        </Form>
       </Row>
 
       <br />
