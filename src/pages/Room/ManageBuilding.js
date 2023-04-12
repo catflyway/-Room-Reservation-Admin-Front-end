@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Modal, Table, Input, Form, Select } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { useForm } from "antd/es/form/Form";
 
 const ManageBuilding = () => {
   const [dataSource, setDataSource] = useState([]);
@@ -35,7 +36,7 @@ const ManageBuilding = () => {
   const showModal = () => {
     setIsModalOpen(true);
   };
-  const handleCancel = () => {
+  const onAddCancel = () => {
     setIsModalOpen(false);
   };
   const [isModalOpen1, setIsModalOpen1] = useState(false);
@@ -49,13 +50,12 @@ const ManageBuilding = () => {
   const handleCancel1 = () => {
     setIsModalOpen1(false);
   };
-  const [isEditingBuild, setIsEditingbuild] = useState(false);
-  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
     org: "",
   });
-  const handleSubmit = () => {
+  const onAddOk = () => {
     console.log(formData);
     axios
       .post("/rooms/building", formData)
@@ -65,7 +65,39 @@ const ManageBuilding = () => {
       .catch((err) => console.log(err));
     setIsModalOpen(false);
   };
+
+  const [editForm] = Form.useForm();
   const [editingDatabuild, setEditingDatabuild] = useState(null);
+  const [isEditingBuild, setIsEditingbuild] = useState(false);
+  const [isEditingLoading, setIsEditingLoading] = useState(false);
+  const onEditBuild = (record) => {
+    console.log("edit data", record);
+    setIsEditingbuild(true);
+    setEditingDatabuild(record);
+    editForm.setFieldsValue(record);
+  };
+  const onCancelEditingBuild = () => {
+    setIsEditingbuild(false);
+    setEditingDatabuild(null);
+  };
+  const onEditFinish = (formData) => {
+    console.log(formData, editingDatabuild);
+
+    setIsEditingLoading(true);
+    axios
+      .put("/rooms/building/" + editingDatabuild._id, formData)
+      .then((res) => {
+        console.log("/rooms/building/", res.data);
+        getBuildtype(idOrg);
+        setIsEditingLoading(false);
+        setIsEditingbuild(false);
+      })
+      .catch((err) => {
+        console.log("/rooms/building/", err);
+        setIsEditingLoading(false);
+      });
+  };
+
   const columnsEdit = [
     {
       key: "1",
@@ -107,14 +139,6 @@ const ManageBuilding = () => {
       },
     });
   };
-  const onEditBuild = (record1) => {
-    setIsEditingbuild(true);
-    setEditingDatabuild({ ...record1 });
-  };
-  const resetEditingbuild = () => {
-    setIsEditingbuild(false);
-    setEditingDatabuild(null);
-  };
   return (
     <React.Fragment>
       <Button
@@ -136,12 +160,24 @@ const ManageBuilding = () => {
           className="button-submit1"
           key="submit"
           type="primary"
-          loading={loading}
           disabled={dataSource.length > 20 ? true : false}
           onClick={showModal}
         >
           AddBuild
         </button>
+        <Modal
+          title="AddBuild"
+          open={isModalOpen}
+          onOk={onAddOk}
+          onCancel={onAddCancel}
+        >
+          <Input
+            placeholder="AddBuild"
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            value={formData.name}
+          />
+        </Modal>
+
         <Form.Item label="หน่วยงาน">
           <Select
             showSearch
@@ -156,22 +192,12 @@ const ManageBuilding = () => {
             options={dataOrg}
           />
         </Form.Item>
-        <Modal
-          title="AddBuild"
-          open={isModalOpen}
-          onOk={handleSubmit}
-          onCancel={handleCancel}
-        >
-          <Input
-            placeholder="AddBuild"
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            value={formData.name}
-          />
-        </Modal>
+
         <Table
           columns={columnsEdit}
           dataSource={dataSource}
           pagination={false}
+          key={(record) => record._id}
         ></Table>
       </Modal>
 
@@ -180,30 +206,22 @@ const ManageBuilding = () => {
         open={isEditingBuild}
         okText="Save"
         onCancel={() => {
-          resetEditingbuild();
+          onCancelEditingBuild();
         }}
         onOk={() => {
-          setDataSource((pre) => {
-            return pre.map((student) => {
-              if (student._id === editingDatabuild._id) {
-                return editingDatabuild;
-              } else {
-                return student;
-              }
-            });
-          });
-          resetEditingbuild();
+          editForm.submit();
         }}
+        okButtonProps={{ loading: isEditingLoading }}
       >
-        <Input
-          placeholder="Buildiding"
-          value={editingDatabuild?.name}
-          onChange={(e) => {
-            setEditingDatabuild((pre) => {
-              return { ...pre, name: e.target.value };
-            });
-          }}
-        />
+        <Form
+          form={editForm}
+          onFinish={onEditFinish}
+          disabled={isEditingLoading}
+        >
+          <Form.Item name="name" rules={[{ required: true, whitespace: true }]}>
+            <Input placeholder="Buildiding" />
+          </Form.Item>
+        </Form>
       </Modal>
     </React.Fragment>
   );
