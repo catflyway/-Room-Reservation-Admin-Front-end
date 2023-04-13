@@ -61,8 +61,7 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
         setUserStatusLoading(false);
         console.log(response);
         setstatus(response.data);
-
-        form.resetFields(["status"]);
+        // form.resetFields(["status"]);
       })
       .catch((err) => {
         setUserStatusLoading(false);

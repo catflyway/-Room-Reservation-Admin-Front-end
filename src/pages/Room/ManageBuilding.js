@@ -65,6 +65,11 @@ const ManageBuilding = () => {
       .catch((err) => console.log(err));
     setIsModalOpen(false);
   };
+  function deleteBuild(id) {
+    axios.delete("/rooms/building/" + id).then((res) => {
+      getBuildtype();
+    });
+  }
 
   const [editForm] = Form.useForm();
   const [editingDatabuild, setEditingDatabuild] = useState(null);
@@ -107,18 +112,18 @@ const ManageBuilding = () => {
     {
       key: "2",
       title: "Actions",
-      render: (record1) => {
+      render: (record) => {
         return (
           <>
             <EditOutlined
               onClick={() => {
-                onEditBuild(record1);
+                onEditBuild(record);
               }}
               style={{ color: "blue", marginLeft: 12 }}
             />
             <DeleteOutlined
               onClick={() => {
-                onDeleteBuild(record1);
+                onDeleteBuild(record);
               }}
               style={{ color: "red", marginLeft: 12 }}
             />
@@ -127,15 +132,14 @@ const ManageBuilding = () => {
       },
     },
   ];
-  const onDeleteBuild = (record1) => {
+
+  const onDeleteBuild = (record) => {
     Modal.confirm({
       title: "Are you sure, you want to delete this build record?",
       okText: "Yes",
       okType: "danger",
       onOk: () => {
-        setDataSource((pre) => {
-          return pre.filter((name) => name._id !== record1._id);
-        });
+        deleteBuild(record._id);
       },
     });
   };

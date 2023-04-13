@@ -168,7 +168,7 @@ const ManageUser = () => {
           <>
             <EditOutlined
               onClick={() => {
-                onEditUser(record);
+                onEditstatus(record);
               }}
               style={{ color: "blue", marginLeft: 12 }}
             />
@@ -197,6 +197,37 @@ const ManageUser = () => {
   const onEditUser = (record) => {
     setIsEditing(true);
     setEditingdata({ ...record });
+  };
+  const [editForm] = Form.useForm();
+  const [editingDatastatus, setEditingDatastatus] = useState(null);
+  const [isEditingstatus, setIsEditingstatus] = useState(false);
+  const [isEditingLoading, setIsEditingLoading] = useState(false);
+  const onEditstatus = (record) => {
+    console.log("edit data", record);
+    setIsEditingstatus(true);
+    setEditingDatastatus(record);
+    editForm.setFieldsValue(record);
+  };
+  const onCancelEditingBuild = () => {
+    setIsEditingstatus(false);
+    setEditingDatastatus(null);
+  };
+  const onEditFinish = (formData) => {
+    console.log(formData, editingDatastatus);
+
+    setIsEditingLoading(true);
+    axios
+      .put("/users/status/" + editingDatastatus._id, formData)
+      .then((res) => {
+        console.log("/users/status/", res.data);
+        getStatus(idOrg);
+        setIsEditingLoading(false);
+        setIsEditingstatus(false);
+      })
+      .catch((err) => {
+        console.log("/users/status/", err);
+        setIsEditingLoading(false);
+      });
   };
 
   const [isModalOpen1, setIsModalOpen1] = useState(false);
@@ -439,6 +470,31 @@ const ManageUser = () => {
                 }
                 value={formData.name}
               />
+            </Form.Item>
+          </Form>
+        </Modal>
+        <Modal
+          title="EditStatus"
+          open={isEditingstatus}
+          okText="Save"
+          onCancel={() => {
+            onCancelEditingBuild();
+          }}
+          onOk={() => {
+            editForm.submit();
+          }}
+          okButtonProps={{ loading: isEditingLoading }}
+        >
+          <Form
+            form={editForm}
+            onFinish={onEditFinish}
+            disabled={isEditingLoading}
+          >
+            <Form.Item
+              name="name"
+              rules={[{ required: true, whitespace: true }]}
+            >
+              <Input placeholder="Status" />
             </Form.Item>
           </Form>
         </Modal>

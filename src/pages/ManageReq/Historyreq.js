@@ -20,7 +20,7 @@ function HistoryReq() {
 
   function getManageReq(idorg) {
     axios
-      .get("/org/Request/" + idorg, { crossdomain: true })
+      .get("requests/searchby?Org=" + idorg, { crossdomain: true })
       .then((response) => {
         console.log(response);
         setDataSource(

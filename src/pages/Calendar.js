@@ -14,22 +14,6 @@ function Calendar() {
   const [form] = Form.useForm();
   const [events, setIsevents] = useState([]);
 
-  function getManageCalendar() {
-    axios.get("/calendar").then((response) => {
-      console.log(response);
-      setIsevents(
-        response.data.map((item) => {
-          return {
-            title: item.Room.name + "   " + item.Purpose,
-            start: item.startTime,
-            end: item.endTime,
-            allDay: item.allDay,
-          };
-        })
-      );
-    });
-  }
-
   const [OrgLoading, setOrgLoading] = useState(false);
   const [orgList, setOrgList] = useState([]);
   function getOrg() {
@@ -98,6 +82,29 @@ function Calendar() {
     getRoomsInOrgID(buildingID);
   };
 
+  function getManageCalendar(option) {
+    let query = [];
+    for (const [key, value] of Object.entries(option || {})) {
+      if (value) {
+        query.push(`${key}=${value}`);
+      }
+    }
+    query = query.join("&");
+    axios.get("/calendar/searchby?").then((response) => {
+      console.log(response);
+      setIsevents(
+        response.data.map((item) => {
+          return {
+            title: item.Room.name + "   " + item.Purpose,
+            start: item.startTime,
+            end: item.endTime,
+            allDay: item.allDay,
+          };
+        })
+      );
+    });
+  }
+
   useEffect(() => {
     getManageCalendar();
     getOrg();
@@ -120,6 +127,10 @@ function Calendar() {
   const handleCancel = () => {
     setValues({ ...values, title: "" });
     setIsModalVisible(false);
+  };
+  const onFilterChange = (changedValues, allValues) => {
+    console.log(changedValues, allValues);
+    getManageCalendar(allValues);
   };
   return (
     <div>
@@ -165,6 +176,7 @@ function Calendar() {
             style={{ paddingTop: "24px" }}
           >
             <Form
+              onValuesChange={onFilterChange}
               form={form}
               labelCol={{
                 span: 7,
@@ -176,7 +188,7 @@ function Calendar() {
               {" "}
               <Space wrap>
                 <Form.Item
-                  name="name"
+                  name="Org"
                   // rules={[{ required: true }]}
                   label="Organization: "
                 >

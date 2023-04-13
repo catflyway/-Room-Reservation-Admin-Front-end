@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AddReq from "./AddReq";
 import HistoryReq from "./Historyreq";
+import ReqHistory from "./Reqhistory";
 import {
   Modal,
   Table,
@@ -19,31 +20,29 @@ const ManageReq = () => {
   const [dataSource, setDataSource] = useState([]);
 
   function getManageReq() {
-    axios
-      .get("/Requests/searchby?Status_Approve=Pending", { crossdomain: true })
-      .then((response) => {
-        console.log(response);
-        setDataSource(
-          response.data.map((item) => {
-            let timerev =
-              dayjs(item.startTime[0]).format("HH:mm") +
-              " - " +
-              dayjs(item.endTime[0]).format("HH:mm");
-            if (item.allDay == true) {
-              timerev = "Allday";
-            }
-            return {
-              ...item,
-              startTime: dayjs(item.startTime[0]),
-              endTime: dayjs(item.endTime[item.endTime.length - 1]),
-              timereservation: timerev,
-              Building: item.Building.name,
-              Room: item.Room.name,
-              User: item.User.username,
-            };
-          })
-        );
-      });
+    axios.get("/Requests/searchby?Status_Approve=Pending").then((response) => {
+      console.log(response);
+      setDataSource(
+        response.data.map((item) => {
+          let timerev =
+            dayjs(item.startTime[0]).format("HH:mm") +
+            " - " +
+            dayjs(item.endTime[0]).format("HH:mm");
+          if (item.allDay == true) {
+            timerev = "Allday";
+          }
+          return {
+            ...item,
+            startTime: dayjs(item.startTime[0]),
+            endTime: dayjs(item.endTime[item.endTime.length - 1]),
+            timereservation: timerev,
+            Building: item.Building.name,
+            Room: item.Room.name,
+            User: item.User.username,
+          };
+        })
+      );
+    });
   }
 
   useEffect(() => {
@@ -206,6 +205,10 @@ const ManageReq = () => {
           />
         </Modal>
       </div>
+
+      {/* <Row justify="center">
+        <ReqHistory />
+      </Row> */}
 
       <div className="User-list">
         <header className="User-list-heard-req">

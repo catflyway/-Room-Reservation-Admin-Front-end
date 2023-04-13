@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AddOrganization from "./AddOrg";
-import { Button, Modal, Table, Input, Form, Row,Col, Typography } from "antd";
+import { Button, Modal, Table, Input, Form, Row, Col, Typography } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 
@@ -16,42 +16,46 @@ const ManageOrganization = () => {
       console.log(response);
       setOrgID(
         response.data.map((item) => {
-          return { ...item, member: item.userID.length };
+          return {
+            ...item,
+            member: item.userID.length,
+            building: item.buildingID.length,
+            room: item.roomID.length,
+          };
         })
       );
     });
-  }
-  const [UserContributorOrg, setUserContributorOrg] = useState([]);
-  function getUserContributorOrg(id) {
-    axios
-      .get("users/searchby?OrgID=" + id, { crossdomain: true })
-      .then((response) => {
-        console.log(response);
-        setUserContributorOrg(response.data);
-      });
   }
   useEffect(() => {
     getOrg();
   }, []);
 
   const columns = [
-    // {
-    //   key: "1",
-    //   title: "ID",
-    //   dataIndex: "_id",
-    // },
     {
-      key: "2",
+      key: "1",
       title: "Organization Name",
       dataIndex: "name",
     },
     {
+      key: "2",
+      title: "Building",
+      dataIndex: "building",
+      align: "right",
+    },
+    {
       key: "3",
-      title: "Member",
-      dataIndex: "member",
+      title: "Room",
+      dataIndex: "room",
+      align: "right",
     },
     {
       key: "4",
+      title: "Member",
+      dataIndex: "member",
+      align: "right",
+    },
+    {
+      key: "5",
       title: "Actions",
       render: (record) => {
         return (
@@ -71,6 +75,8 @@ const ManageOrganization = () => {
           </>
         );
       },
+      fixed: "left",
+      align: "center",
     },
   ];
   const onDeleteStudent = (record) => {
@@ -96,15 +102,14 @@ const ManageOrganization = () => {
   return (
     <div>
       <Row justify="space-between" align="middle">
-      <Col>
-        <Title style={{ color: " #3F478D" }}>ManageOrganization</Title>
-      </Col>
+        <Col>
+          <Title style={{ color: " #3F478D" }}>ManageOrganization</Title>
+        </Col>
 
-       <Col>
+        <Col>
           <AddOrganization onSuccess={getOrg} />
         </Col>
       </Row>
-
 
       <div className="User-list">
         <header className="User-list-heard">

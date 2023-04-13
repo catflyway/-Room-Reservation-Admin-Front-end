@@ -159,13 +159,18 @@ const ManageRoom = () => {
       },
     },
   ];
+  function deleteRoom(id) {
+    axios.delete("/rooms/room/" + id).then((res) => {
+      getManageRooms();
+    });
+  }
   const onDeleteRoom = (record) => {
     Modal.confirm({
       title: "Are you sure, you want to delete this room record?",
       okText: "Yes",
       okType: "danger",
       onOk: () => {
-        // deleteRoom(record._id);
+        deleteRoom(record._id);
       },
     });
   };
