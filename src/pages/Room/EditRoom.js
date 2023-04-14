@@ -131,10 +131,10 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
       const dimention = value.Size.match(/(\d+) x (\d+)/);
       formRef.current.setFieldsValue({
         ...value,
-        Org: value.Org?.id,
-        Building: value.Building?.id,
-        RoomType: value.RoomType?.id,
-        Contributor: value.Contributor?.id,
+        Org: value.Org?.name,
+        Building: value.Building?.name,
+        RoomType: value.RoomType?.name,
+        Contributor: value.Contributor?.name,
         image: [
           {
             originFileObj: null,
@@ -189,6 +189,21 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
         message.error("ERROR");
       });
   };
+  const [SearchUserList, setSearchUserList] = useState([]);
+  function getSearchuser(id) {
+    axios.get("/users/search/" + id, { crossdomain: true }).then((response) => {
+      console.log(response);
+      setSearchUserList(response.data);
+    });
+  }
+  const [selectedItems, setSelectedItems] = useState([]);
+  const filteredOptions = SearchUserList.filter(
+    (o) => !selectedItems.includes(o)
+  );
+  const onFilterChange = (changedValues, allValues) => {
+    console.log(changedValues, allValues);
+    getUsersInOrgID(allValues);
+  };
 
   return (
     <React.Fragment>
@@ -218,6 +233,7 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
           layout="horizontal"
           onFinish={onFormFinish}
           disabled={loading}
+          onValuesChange={onFilterChange}
         >
           <Form.Item
             name="image"
