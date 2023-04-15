@@ -57,12 +57,12 @@ const ManageRoomtype = () => {
   useEffect(() => {
     getOrg();
   }, []);
-  useEffect(() => {
-    if (isEditingroomtype) {
-      setLoading(false);
-      setIsModalOpen(true);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (isEditingroomtype) {
+  //     setLoading(false);
+  //     setIsModalOpen(true);
+  //   }
+  // }, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
@@ -124,45 +124,53 @@ const ManageRoomtype = () => {
     });
   };
   const [isEditingroomtype, setIsEditingroomtype] = useState(false);
-  const [editingdataRoomtype, setEditingdataRoomtype] = useState(null);
-  const onEditRoomtype = (record) => {
-    setIsEditingroomtype(true);
-    setEditingdataRoomtype({ ...record });
-  };
+
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const onFormFinish = (formValue) => {
-    console.log("Finish", formValue);
+  const onAddOk = () => {
+    console.log(formData);
+    axios
+      .post("/rooms/roomtype", formData)
+      .then((res) => {
+        getRoomtype(idOrg);
+      })
+      .catch((err) => console.log(err));
+    setIsModalOpen(false);
+  };
+  const onAddCancel = () => {
+    setIsModalOpen(false);
+  };
+  const [editForm] = Form.useForm();
+  const [editingDatabuild, setEditingDatabuild] = useState(null);
+  const [isEditingBuild, setIsEditingbuild] = useState(false);
+  const [isEditingLoading, setIsEditingLoading] = useState(false);
+  const onEditRoomtype = (record) => {
+    console.log("edit data", record);
+    setIsEditingbuild(true);
+    setEditingDatabuild(record);
+    editForm.setFieldsValue(record);
+  };
+  const onCancelEditingBuild = () => {
+    setIsEditingbuild(false);
+    setEditingDatabuild(null);
+  };
+  const onEditFinish = (formData) => {
+    console.log(formData, editingDatabuild);
 
-    // setLoading(true);
-
-    // let req;
-    // if (isEditingroomtype) {
-    //   req = axios.putForm("/rooms/roomtype/" + value._id, formValue);
-    // } else {
-    //   req = axios.postForm("/rooms/roomtype/" + value._id, formValue);
-    // }
-
-    // req
-    //   .then((response) => {
-    //     console.log("res", response);
-    //     setLoading(false);
-    //     setIsModalOpen(false);
-    //     if (typeof onSuccess === "function") {
-    //       onSuccess();
-    //     }
-    //     if (isEditingroomtype) {
-    //       message.success("แก้ไขประเภทห้องสำเร็จ");
-    //     } else {
-    //       message.success("เพิ่มประเภทห้องสำเร็จ");
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log("err", err);
-    //     setLoading(false);
-    //     message.error("ERROR");
-    //   });
+    setIsEditingLoading(true);
+    axios
+      .put("/rooms/roomtype/" + editingDatabuild._id, formData)
+      .then((res) => {
+        console.log("/rooms/roomtype/", res.data);
+        getRoomtype(idOrg);
+        setIsEditingLoading(false);
+        setIsEditingbuild(false);
+      })
+      .catch((err) => {
+        console.log("/rooms/roomtype/", err);
+        setIsEditingLoading(false);
+      });
   };
 
   return (
@@ -209,6 +217,20 @@ const ManageRoomtype = () => {
               />
             </Form.Item>
             <Modal
+              title="AddBuild"
+              open={isModalOpen}
+              onOk={onAddOk}
+              onCancel={onAddCancel}
+            >
+              <Input
+                placeholder="AddBuild"
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                value={formData.name}
+              />
+            </Modal>
+            {/* <Modal
               title="AddRoomtype"
               open={isModalOpen}
               onOk={handleSubmit}
@@ -253,7 +275,7 @@ const ManageRoomtype = () => {
                   <Input placeholder="AddRoomtype" />
                 </Form.Item>
               </Form>
-            </Modal>
+            </Modal> */}
 
             <Table
               columns={columnsEdit}
@@ -261,6 +283,32 @@ const ManageRoomtype = () => {
               pagination={false}
             ></Table>
           </div>
+        </Modal>
+
+        <Modal
+          title="EditRoomtype"
+          open={isEditingBuild}
+          okText="Save"
+          onCancel={() => {
+            onCancelEditingBuild();
+          }}
+          onOk={() => {
+            editForm.submit();
+          }}
+          okButtonProps={{ loading: isEditingLoading }}
+        >
+          <Form
+            form={editForm}
+            onFinish={onEditFinish}
+            disabled={isEditingLoading}
+          >
+            <Form.Item
+              name="name"
+              rules={[{ required: true, whitespace: true }]}
+            >
+              <Input placeholder="Buildiding" />
+            </Form.Item>
+          </Form>
         </Modal>
       </div>
     </React.Fragment>
