@@ -52,31 +52,25 @@ function ShowBar() {
     ],
   });
   function getManageReq() {
-    axios
-      .get("/static", {
-        params: {
-          per_page: 5,
-        },
-      })
-      .then((response) => {
-        console.log(response);
-        setDataSource(response.data);
-        setuserData({
-          labels: response.data.map((data) => data.Name),
-          datasets: [
-            {
-              data: response.data.map((data) => data.useCount),
-              backgroundColor: [
-                "rgba(75,192,192,1)",
-                "#ecf0f1",
-                "#50AF95",
-                "#f3ba2f",
-                "#2a71d0",
-              ],
-            },
-          ],
-        });
+    axios.get("/static").then((response) => {
+      console.log(response);
+      setDataSource(response.data);
+      setuserData({
+        labels: response.data.map((data) => data.Name),
+        datasets: [
+          {
+            data: response.data.map((data) => data.useCount),
+            backgroundColor: [
+              "rgba(75,192,192,1)",
+              "#ecf0f1",
+              "#50AF95",
+              "#f3ba2f",
+              "#2a71d0",
+            ],
+          },
+        ],
       });
+    });
   }
   const onChangeorg = (orgID) => {
     console.log(`selected ${orgID}`);
@@ -124,27 +118,26 @@ function ShowBar() {
       .get("/rooms/searchby?" + query, { crossdomain: true })
       .then((response) => {
         console.log(response);
-        setDataSource(
-          response.data.map((item) => {
-            return {
-              ...item,
-              BuildingName: item.Building.name,
-              RoomTypeName: item.RoomType.name,
-            };
-          })
-        );
+        setDataSource(response.data);
+        setuserData({
+          labels: response.data.map((data) => data.Name),
+          datasets: [
+            {
+              data: response.data.map((data) => data.useCount),
+              backgroundColor: [
+                "rgba(75,192,192,1)",
+                "#ecf0f1",
+                "#50AF95",
+                "#f3ba2f",
+                "#2a71d0",
+              ],
+            },
+          ],
+        });
       });
-  }
-  const [SearchroomsList, setSearchRoomsList] = useState([]);
-  function getSearchRoom(id) {
-    axios.get("/rooms/search/" + id, { crossdomain: true }).then((response) => {
-      console.log(response);
-      setSearchRoomsList(response.data);
-    });
   }
   useEffect(() => {
     getManageRooms();
-    // getSearchRoom();
     getOrg();
   }, []);
   useEffect(() => {
@@ -155,52 +148,8 @@ function ShowBar() {
     getManageRooms(allValues);
   };
 
-  const [selectedItems, setSelectedItems] = useState([]);
-  const filteredOptions = SearchroomsList.filter(
-    (o) => !selectedItems.includes(o)
-  );
   return (
     <div className="ShowBar">
-      {/* <div className="searchgraph">
-        <div className="searchstatus">
-          Organization:{" "}
-          <Select placeholder="Select a Buildtype" onChange={handleChange}>
-            <Option value="student">โรงพยาบาล</Option>
-            <Option value="teacher">โรงเรียน</Option>
-            <Option value="athlete">อื่นๆ</Option>
-          </Select>
-        </div>
-        <div className="searchstatus">
-          Building:{" "}
-          <Select placeholder="Select a Buildtype" onChange={handleChange}>
-            <Option value="student">โรงพยาบาล</Option>
-            <Option value="teacher">โรงเรียน</Option>
-            <Option value="athlete">อื่นๆ</Option>
-          </Select>
-        </div>
-        <div className="searchstatus">
-          Roomtype:{" "}
-          <Select
-            showSearch
-            style={{
-              width: 200,
-            }}
-            placeholder="Search to Select"
-            optionFilterProp="children"
-            filterOption={(input, option) => option.children.includes(input)}
-            filterSort={(optionA, optionB) =>
-              optionA.children
-                .toLowerCase()
-                .localeCompare(optionB.children.toLowerCase())
-            }
-          >
-            <Option value="1">โรงพยาบาลA</Option>
-            <Option value="2">โรงเรียนA</Option>
-            <Option value="3">โรงเรียนB</Option>
-            <Option value="4">ตึกB</Option>
-          </Select>
-        </div>
-      </div> */}
       <Row justify="center" gutter={[16, 16]}>
         <Form onValuesChange={onFilterChange}>
           <Space wrap>
