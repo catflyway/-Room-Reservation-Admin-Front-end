@@ -8,7 +8,7 @@ const { Title } = Typography;
 
 const ManageOrganization = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editingStudent, setEditingStudent] = useState(null);
+  const [editingOrg, setEditingOrg] = useState(null);
 
   const [OrgID, setOrgID] = useState([]);
   function getOrg() {
@@ -62,7 +62,7 @@ const ManageOrganization = () => {
           <>
             <EditOutlined
               onClick={() => {
-                onEditStudent(record);
+                onEditOrg(record);
               }}
               style={{ color: "blue", marginLeft: 12 }}
             />
@@ -91,13 +91,13 @@ const ManageOrganization = () => {
       },
     });
   };
-  const onEditStudent = (record) => {
+  const onEditOrg = (record) => {
     setIsEditing(true);
-    setEditingStudent({ ...record });
+    setEditingOrg({ ...record });
   };
   const resetEditing = () => {
     setIsEditing(false);
-    setEditingStudent(null);
+    setEditingOrg(null);
   };
   return (
     <div>
@@ -107,75 +107,22 @@ const ManageOrganization = () => {
         </Col>
 
         <Col>
-          <AddOrganization onSuccess={getOrg} />
+          <AddOrganization
+            value={editingOrg}
+            openEdit={isEditing}
+            onCancel={() => {
+              setIsEditing(false);
+            }}
+            onSuccess={() => {
+              getOrg();
+              setIsEditing(false);
+            }}
+          />
         </Col>
       </Row>
 
       <div className="User-list">
-        <header className="User-list-heard">
-          <Table columns={columns} dataSource={OrgID}></Table>
-          <Modal
-            title="Edit Organization"
-            open={isEditing}
-            okText="Save"
-            onCancel={() => {
-              resetEditing();
-            }}
-            onOk={() => {
-              setOrgID((pre) => {
-                return pre.map((student) => {
-                  if (student.id === editingStudent.id) {
-                    return editingStudent;
-                  } else {
-                    return student;
-                  }
-                });
-              });
-              resetEditing();
-            }}
-          >
-            <Form
-              labelCol={{
-                span: 8,
-              }}
-              wrapperCol={{
-                span: 14,
-              }}
-              layout="horizontal"
-            >
-              <Form.Item label="Organization Name">
-                <Input
-                  value={editingStudent?.namebuilding}
-                  onChange={(e) => {
-                    setEditingStudent((pre) => {
-                      return { ...pre, namebuilding: e.target.value };
-                    });
-                  }}
-                />
-              </Form.Item>
-              <Form.Item label="E-mail Contributor">
-                <Input
-                  value={editingStudent?.email}
-                  onChange={(e) => {
-                    setEditingStudent((pre) => {
-                      return { ...pre, emai: e.target.value };
-                    });
-                  }}
-                />
-              </Form.Item>
-              <Form.Item label="Password Contributor">
-                <Input.Password
-                  value={editingStudent?.pass}
-                  onChange={(e) => {
-                    setEditingStudent((pre) => {
-                      return { ...pre, pass: e.target.value };
-                    });
-                  }}
-                />
-              </Form.Item>
-            </Form>
-          </Modal>
-        </header>
+        <Table columns={columns} dataSource={OrgID}></Table>
       </div>
     </div>
   );

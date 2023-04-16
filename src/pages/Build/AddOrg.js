@@ -1,9 +1,10 @@
 import { Form, Input, message, Button, Modal } from "antd";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
-const AddOrganization = ({ onSuccess }) => {
+const AddOrganization = ({ value, openEdit, onCancel, onSuccess }) => {
   const [form] = Form.useForm();
+  const formRef = useRef(form);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     form.resetFields();
@@ -12,24 +13,53 @@ const AddOrganization = ({ onSuccess }) => {
   };
 
   const onCancelAdd = () => {
+    if (onCancel) {
+      onCancel();
+    }
     setIsModalOpen(false);
   };
-  const onAddUser = (e) => {
+  const onAddOrg = (e) => {
     form.submit();
   };
+  useEffect(() => {
+    if (openEdit) {
+      setLoading(false);
+      setIsModalOpen(true);
+    }
+  }, [openEdit]);
+  useEffect(() => {
+    formRef.current.resetFields();
+    if (value) {
+      formRef.current.setFieldsValue({
+        ...value,
+        org: value.name?.id,
+      });
+    }
+  }, [value]);
   const [loading, setLoading] = useState(false);
-  const onFormFinish = (value) => {
-    console.log("finish", value);
+  const onFormFinish = (formValue) => {
+    console.log("Finish", formValue);
     setLoading(true);
-    axios
-      .post("/org", value)
+
+    let req;
+    if (openEdit) {
+      req = axios.putForm("/org/" + value._id, formValue);
+    } else {
+      req = axios.postForm("org", formValue);
+    }
+
+    req
       .then((response) => {
         console.log("res", response);
         setLoading(false);
         setIsModalOpen(false);
-        message.success("เพิ่มหน่วยงานสำเร็จ");
         if (typeof onSuccess === "function") {
           onSuccess();
+        }
+        if (openEdit) {
+          message.success("แก้ไขหน่วยงานสำเร็จ");
+        } else {
+          message.success("เพิ่มหน่วยงานสำเร็จ");
         }
       })
       .catch((err) => {
@@ -50,8 +80,8 @@ const AddOrganization = ({ onSuccess }) => {
         AddOrganization
       </Button>
       <Modal
-        title="AddOrganization"
-        open={isModalOpen}
+        title={openEdit ? "Edit " + value.name : "AddOrganization"}
+        open={openEdit || isModalOpen}
         onCancel={onCancelAdd}
         footer={[
           <Button className="button-back" key="back" onClick={onCancelAdd}>
@@ -63,7 +93,7 @@ const AddOrganization = ({ onSuccess }) => {
             key="submit"
             type="primary"
             loading={loading}
-            onClick={onAddUser}
+            onClick={onAddOrg}
           >
             ตกลง
           </Button>,
