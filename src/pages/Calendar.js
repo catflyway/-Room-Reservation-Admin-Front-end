@@ -90,7 +90,7 @@ function Calendar() {
       }
     }
     query = query.join("&");
-    axios.get("/calendar/searchby?").then((response) => {
+    axios.get("/calendar/searchby?" + query).then((response) => {
       console.log(response);
       setIsevents(
         response.data.map((item) => {
@@ -104,11 +104,6 @@ function Calendar() {
       );
     });
   }
-
-  useEffect(() => {
-    getManageCalendar();
-    getOrg();
-  }, []);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [values, setValues] = useState({
@@ -132,6 +127,10 @@ function Calendar() {
     console.log(changedValues, allValues);
     getManageCalendar(allValues);
   };
+  useEffect(() => {
+    getOrg();
+    getManageCalendar();
+  }, []);
   return (
     <div>
       <Row justify="center">
@@ -212,7 +211,7 @@ function Calendar() {
                 </Form.Item>
 
                 <Form.Item
-                  name="buildingname"
+                  name="Building"
                   // rules={[{ required: true }]}
                   label=" Building: "
                 >
@@ -236,7 +235,7 @@ function Calendar() {
                 </Form.Item>
 
                 <Form.Item
-                  name="Name"
+                  name="Room"
                   // rules={[{ required: true }]}
                   label=" Room: "
                 >
