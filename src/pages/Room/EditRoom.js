@@ -189,21 +189,21 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
         message.error("ERROR");
       });
   };
-  const [SearchUserList, setSearchUserList] = useState([]);
-  function getSearchuser(id) {
-    axios.get("/users/search/" + id, { crossdomain: true }).then((response) => {
-      console.log(response);
-      setSearchUserList(response.data);
-    });
-  }
-  const [selectedItems, setSelectedItems] = useState([]);
-  const filteredOptions = SearchUserList.filter(
-    (o) => !selectedItems.includes(o)
-  );
-  const onFilterChange = (changedValues, allValues) => {
-    console.log(changedValues, allValues);
-    getUsersInOrgID(allValues);
-  };
+  // const [SearchUserList, setSearchUserList] = useState([]);
+  // function getSearchuser(id) {
+  //   axios.get("/users/search/" + id, { crossdomain: true }).then((response) => {
+  //     console.log(response);
+  //     setSearchUserList(response.data);
+  //   });
+  // }
+  // const [selectedItems, setSelectedItems] = useState([]);
+  // const filteredOptions = SearchUserList.filter(
+  //   (o) => !selectedItems.includes(o)
+  // );
+  // const onFilterChange = (changedValues, allValues) => {
+  //   console.log(changedValues, allValues);
+  //   getUsersInOrgID(allValues);
+  // };
 
   return (
     <React.Fragment>
@@ -233,7 +233,7 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
           layout="horizontal"
           onFinish={onFormFinish}
           disabled={loading}
-          onValuesChange={onFilterChange}
+          // onValuesChange={onFilterChange}
         >
           <Form.Item
             name="image"
