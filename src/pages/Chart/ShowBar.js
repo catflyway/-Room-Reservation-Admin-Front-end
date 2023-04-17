@@ -14,11 +14,9 @@ const PickerWithType = ({ type, onChange }) => {
 };
 
 const { Option } = Select;
-const handleChange = (value) => {
-  console.log(`selected ${value}`);
-};
 
 function ShowBar() {
+  const [form] = Form.useForm();
   const [dataSource, setDataSource] = useState([]);
   const columns = [
     {
@@ -74,8 +72,12 @@ function ShowBar() {
   }
   const onChangeorg = (orgID) => {
     console.log(`selected ${orgID}`);
-    getBuildingInOrgID(orgID);
-    getRoomtype(orgID);
+    if (orgID) {
+      getBuildingInOrgID(orgID);
+      getRoomtype(orgID);
+    }
+    form.resetFields(["BuildingID"]);
+    form.resetFields(["RoomTypeID"]);
   };
   const onChangebuild = (buildingID) => {
     console.log(`selected ${buildingID}`);
@@ -151,15 +153,15 @@ function ShowBar() {
   return (
     <div className="ShowBar">
       <Row justify="center" gutter={[16, 16]}>
-        <Form onValuesChange={onFilterChange}>
+        <Form form={form} onValuesChange={onFilterChange}>
           <Space wrap>
             <Form.Item label="Organization" name="OrgID">
               <Select
                 style={{
                   width: "200px",
                 }}
-                allowClear
                 showSearch
+                allowClear
                 placeholder="หน่วยงาน"
                 optionFilterProp="children"
                 onChange={onChangeorg}
@@ -178,8 +180,8 @@ function ShowBar() {
                 style={{
                   width: "200px",
                 }}
-                allowClear
                 showSearch
+                allowClear
                 placeholder="อาคาร/สถานที่"
                 optionFilterProp="children"
                 onChange={onChangebuild}
@@ -198,8 +200,8 @@ function ShowBar() {
                 style={{
                   width: "200px",
                 }}
-                allowClear
                 showSearch
+                allowClear
                 placeholder="ประเภทห้อง"
                 optionFilterProp="children"
                 onChange={onChangeroomtype}
