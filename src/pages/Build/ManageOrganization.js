@@ -118,7 +118,7 @@ const ManageOrganization = () => {
       </Row>
 
       <div className="User-list">
-        <Table columns={columns} dataSource={OrgID}></Table>
+        <Table columns={columns} dataSource={OrgID} rowKey="_id"></Table>
       </div>
     </div>
   );
