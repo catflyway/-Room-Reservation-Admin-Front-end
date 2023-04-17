@@ -20,6 +20,7 @@ const { Title } = Typography;
 const { Search } = Input;
 
 const ManageUser = () => {
+  const [form] = Form.useForm();
   const [formData, setFormData] = useState({
     name: "",
     org: "",
@@ -72,7 +73,10 @@ const ManageUser = () => {
     console.log(`selected ${value}`);
     setFormData({ ...formData, org: value });
     setIdorg(value);
-    getStatus(value);
+    if (value) {
+      getStatus(value);
+    }
+    form.resetFields(["status"]);
   };
   const onSearch = (value) => {
     console.log("search:", value);
@@ -310,7 +314,7 @@ const ManageUser = () => {
 
       <br />
       <Row justify="center" gutter={[16, 16]}>
-        <Form onValuesChange={onFilterChange}>
+        <Form form={form} onValuesChange={onFilterChange}>
           <Space wrap>
             <Form.Item label="Organization" name="org">
               <Select
@@ -407,11 +411,7 @@ const ManageUser = () => {
       </Row>
 
       <br />
-      <Table
-        columns={columns}
-        dataSource={dataUsers}
-        rowKey={(record) => record._id}
-      ></Table>
+      <Table columns={columns} dataSource={dataUsers} rowKey="_id"></Table>
 
       <Modal
         title="ManageStatus"
@@ -503,6 +503,7 @@ const ManageUser = () => {
             columns={columnsstatus}
             dataSource={status}
             pagination={false}
+            rowKey="_id"
           ></Table>
         </header>
       </Modal>
