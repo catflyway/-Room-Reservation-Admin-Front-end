@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import {
   Form,
   Input,
@@ -17,6 +17,7 @@ import { UploadOutlined } from "@ant-design/icons";
 function Profile() {
   const user = useContext(UserContext);
   const [form] = Form.useForm();
+  const formRef = useRef(form);
 
   const [imageUrl, setImageUrl] = useState();
   const getBase64 = (img, callback) => {
@@ -63,9 +64,12 @@ function Profile() {
         password: null,
       });
       if (response.data.org) onChangeorg(response.data.org.id);
-      form.resetFields();
     });
   }
+  useEffect(() => {
+    formRef.current.resetFields();
+  }, [initProfile]);
+
   const onChangeorg = (orgID) => {
     console.log(`selected ${orgID}`);
     getStatus(orgID);
