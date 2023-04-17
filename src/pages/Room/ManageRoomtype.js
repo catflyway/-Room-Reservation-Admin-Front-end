@@ -281,6 +281,7 @@ const ManageRoomtype = () => {
               columns={columnsEdit}
               dataSource={dataSource}
               pagination={false}
+              rowKey="_id"
             ></Table>
           </div>
         </Modal>

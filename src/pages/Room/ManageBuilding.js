@@ -201,7 +201,7 @@ const ManageBuilding = () => {
           columns={columnsEdit}
           dataSource={dataSource}
           pagination={false}
-          key={(record) => record._id}
+          rowKey="_id"
         ></Table>
       </Modal>
 

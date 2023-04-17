@@ -13,11 +13,16 @@ const { Title } = Typography;
 const { Search } = Input;
 
 const ManageRoom = () => {
+  const [form] = Form.useForm();
   const [dataSource, setDataSource] = useState([]);
   const onChangeorg = (orgID) => {
     console.log(`selected ${orgID}`);
-    getBuildingInOrgID(orgID);
-    getRoomtype(orgID);
+    if (orgID) {
+      getBuildingInOrgID(orgID);
+      getRoomtype(orgID);
+    }
+    form.resetFields(["BuildingID"]);
+    form.resetFields(["RoomTypeID"]);
   };
   const onChangebuild = (buildingID) => {
     console.log(`selected ${buildingID}`);
@@ -79,9 +84,8 @@ const ManageRoom = () => {
     });
   }
   useEffect(() => {
-    getManageRooms();
-    // getSearchRoom();
     getOrg();
+    getManageRooms();
   }, []);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -212,7 +216,7 @@ const ManageRoom = () => {
 
       <br />
       <Row justify="center" gutter={[16, 16]}>
-        <Form onValuesChange={onFilterChange}>
+        <Form form={form} onValuesChange={onFilterChange}>
           <Space wrap>
             <Form.Item label="Organization" name="OrgID">
               <Select
@@ -294,11 +298,7 @@ const ManageRoom = () => {
       </Row>
 
       <br />
-      <Table
-        columns={columns}
-        dataSource={dataSource}
-        rowKey={(record) => record._id}
-      ></Table>
+      <Table columns={columns} dataSource={dataSource} rowKey="_id"></Table>
     </div>
   );
 };
