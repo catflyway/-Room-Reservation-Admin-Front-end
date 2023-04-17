@@ -175,11 +175,7 @@ function HistoryReq() {
           />
         </Form.Item>
         <div className="User-list">
-          <Table
-            columns={columns}
-            dataSource={dataSource}
-            rowKey={(record) => record._id}
-          ></Table>
+          <Table columns={columns} dataSource={dataSource} rowKey="_id"></Table>
         </div>
       </Modal>
     </>

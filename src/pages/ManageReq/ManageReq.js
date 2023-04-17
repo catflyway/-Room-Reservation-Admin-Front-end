@@ -155,13 +155,13 @@ const ManageReq = () => {
   });
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    axios.post("/Requests", data).then((response) => {
-      getManageReq();
-      console.log(response.data);
-    });
-    console.log(data);
-    setIsAddOpen(false);
+    // e.preventDefault();
+    // axios.post("/Requests", data).then((response) => {
+    //   getManageReq();
+    //   console.log(response.data);
+    // });
+    // console.log(data);
+    // setIsAddOpen(false);
   };
 
   return (
@@ -212,11 +212,7 @@ const ManageReq = () => {
 
       <div className="User-list">
         <header className="User-list-heard-req">
-          <Table
-            columns={columns}
-            dataSource={dataSource}
-            rowKey={(record) => record._id}
-          ></Table>
+          <Table columns={columns} dataSource={dataSource} rowKey="_id"></Table>
         </header>
       </div>
     </div>

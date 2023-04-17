@@ -230,6 +230,7 @@ function ReqHistory() {
           dataSource={historyPending}
           columns={columnshistoryPending}
           pagination={null}
+          rowKey="_id"
         />
       ),
     },
@@ -241,6 +242,7 @@ function ReqHistory() {
           dataSource={historyAppored}
           columns={columnshistoryPending}
           pagination={null}
+          rowKey="_id"
         />
       ),
     },
@@ -252,6 +254,7 @@ function ReqHistory() {
           dataSource={historyRejectOrCancel}
           columns={columnshistoryPending}
           pagination={null}
+          rowKey="_id"
         />
       ),
     },
