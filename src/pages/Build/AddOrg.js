@@ -27,12 +27,13 @@ const AddOrganization = ({ value, openEdit, onCancel, onSuccess }) => {
       setIsModalOpen(true);
     }
   }, [openEdit]);
+
   useEffect(() => {
     formRef.current.resetFields();
     if (value) {
       formRef.current.setFieldsValue({
         ...value,
-        org: value.name?.id,
+        org: value.name?._id,
       });
     }
   }, [value]);
@@ -43,9 +44,9 @@ const AddOrganization = ({ value, openEdit, onCancel, onSuccess }) => {
 
     let req;
     if (openEdit) {
-      req = axios.putForm("/org/" + value._id, formValue);
+      req = axios.put("/org/" + value._id, formValue);
     } else {
-      req = axios.postForm("org", formValue);
+      req = axios.post("org", formValue);
     }
 
     req

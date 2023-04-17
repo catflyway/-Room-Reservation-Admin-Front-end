@@ -7,8 +7,8 @@ import axios from "axios";
 const { Title } = Typography;
 
 const ManageOrganization = () => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingOrg, setEditingOrg] = useState(null);
+  const [isEditing, setIsEditing] = useState(null);
+  const [editingOrg, setEditingOrg] = useState(false);
 
   const [OrgID, setOrgID] = useState([]);
   function getOrg() {
@@ -92,12 +92,8 @@ const ManageOrganization = () => {
     });
   };
   const onEditOrg = (record) => {
-    setIsEditing(true);
-    setEditingOrg({ ...record });
-  };
-  const resetEditing = () => {
-    setIsEditing(false);
-    setEditingOrg(null);
+    setEditingOrg(true);
+    setIsEditing({ ...record });
   };
   return (
     <div>
@@ -108,14 +104,14 @@ const ManageOrganization = () => {
 
         <Col>
           <AddOrganization
-            value={editingOrg}
-            openEdit={isEditing}
+            value={isEditing}
+            openEdit={editingOrg}
             onCancel={() => {
-              setIsEditing(false);
+              setEditingOrg(false);
             }}
             onSuccess={() => {
               getOrg();
-              setIsEditing(false);
+              setEditingOrg(false);
             }}
           />
         </Col>
