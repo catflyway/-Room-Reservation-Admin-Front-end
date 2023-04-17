@@ -74,12 +74,18 @@ function Calendar() {
 
   const onChangeorg = (orgID) => {
     console.log(`selected ${orgID}`);
-    getBuildingInOrgID(orgID);
+    if (orgID) {
+      getBuildingInOrgID(orgID);
+    }
+    form.resetFields(["Building"]);
   };
 
   const onChangebuild = (buildingID) => {
     console.log(`selected ${buildingID}`);
-    getRoomsInOrgID(buildingID);
+    if (buildingID) {
+      getRoomsInOrgID(buildingID);
+    }
+    form.resetFields(["Room"]);
   };
 
   function getManageCalendar(option) {
@@ -196,6 +202,7 @@ function Calendar() {
                       width: "200px",
                     }}
                     showSearch
+                    allowClear
                     placeholder="หน่วยงาน"
                     optionFilterProp="children"
                     onChange={onChangeorg}
@@ -220,6 +227,7 @@ function Calendar() {
                       width: "200px",
                     }}
                     showSearch
+                    allowClear
                     placeholder="อาคาร/สถานที่"
                     optionFilterProp="children"
                     onChange={onChangebuild}
@@ -244,9 +252,9 @@ function Calendar() {
                       width: "200px",
                     }}
                     showSearch
+                    allowClear
                     placeholder="ห้อง"
                     optionFilterProp="children"
-                    // onChange={value => onChange({ ...details, Room: value })}
                     filterOption={(input, option) =>
                       (option?.Name ?? "")
                         .toLowerCase()
@@ -265,7 +273,7 @@ function Calendar() {
       <Row justify="center">
         <Col span={22}>
           <Row justify="center">
-            <Col span={16} offset={2}>
+            <Col span={16}>
               <div>
                 <label>
                   <h2>ตารางการใช้งานห้อง</h2>
@@ -294,7 +302,7 @@ function Calendar() {
                 ></Modal>
               </div>
             </Col>
-            <Col span={5} offset={1}>
+            <Col span={6} offset={1}>
               <h2>รายละเอียดการจอง</h2>
               <FullCalendar
                 plugins={[listPlugin]}
