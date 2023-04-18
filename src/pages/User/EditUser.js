@@ -272,7 +272,7 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
           <Form.Item
             label="Firstname"
             name="firstname"
-            rules={[{ min: 4, max: 25, required: true, whitespace: true }]}
+            rules={[{ min: 6, max: 25, required: true, whitespace: true }]}
           >
             <Input placeholder="Firstname" />
           </Form.Item>

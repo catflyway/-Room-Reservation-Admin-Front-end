@@ -78,25 +78,27 @@ function ShowBar() {
   }
 
   function getManageRooms(option) {
-    axios.get("/static/searchby", { params: option }).then((response) => {
-      console.log("/static/searchby", option, response.data);
-      setDataSource(response.data);
-      setuserData({
-        labels: response.data.map((data) => data.Name),
-        datasets: [
-          {
-            data: response.data.map((data) => data.useCount),
-            backgroundColor: [
-              "rgba(75,192,192,1)",
-              "#ecf0f1",
-              "#50AF95",
-              "#f3ba2f",
-              "#2a71d0",
-            ],
-          },
-        ],
+    axios
+      .get("/static/searchby?limit=10", { params: option })
+      .then((response) => {
+        console.log("/static/searchby?limit=10", option, response.data);
+        setDataSource(response.data);
+        setuserData({
+          labels: response.data.map((data) => data.Name),
+          datasets: [
+            {
+              data: response.data.map((data) => data.useCount),
+              backgroundColor: [
+                "rgba(75,192,192,1)",
+                "#ecf0f1",
+                "#50AF95",
+                "#f3ba2f",
+                "#2a71d0",
+              ],
+            },
+          ],
+        });
       });
-    });
   }
 
   const onFilterChange = (changedValues, allValues) => {
