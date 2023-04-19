@@ -173,48 +173,33 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
 
     setLoading(true);
 
-    // let req;
-    // if (openEdit) {
-    //   req = axios.putForm("/rooms/room/" + value._id, formValue);
-    // } else {
-    //   req = axios.postForm("/rooms/room", formValue);
-    // }
+    let req;
+    if (openEdit) {
+      req = axios.putForm("/rooms/room/" + value._id, formValue);
+    } else {
+      req = axios.postForm("/rooms/room", formValue);
+    }
 
-    // req
-    //   .then((response) => {
-    //     console.log("res", response);
-    //     setLoading(false);
-    //     setIsModalOpen(false);
-    //     if (typeof onSuccess === "function") {
-    //       onSuccess();
-    //     }
-    //     if (openEdit) {
-    //       message.success("แก้ไขห้องสำเร็จ");
-    //     } else {
-    //       message.success("เพิ่มห้องสำเร็จ");
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log("err", err);
-    //     setLoading(false);
-    //     message.error("ERROR");
-    //   });
+    req
+      .then((response) => {
+        console.log("res", response);
+        setLoading(false);
+        setIsModalOpen(false);
+        if (typeof onSuccess === "function") {
+          onSuccess();
+        }
+        if (openEdit) {
+          message.success("แก้ไขห้องสำเร็จ");
+        } else {
+          message.success("เพิ่มห้องสำเร็จ");
+        }
+      })
+      .catch((err) => {
+        console.log("err", err);
+        setLoading(false);
+        message.error("ERROR");
+      });
   };
-  // const [SearchUserList, setSearchUserList] = useState([]);
-  // function getSearchuser(id) {
-  //   axios.get("/users/search/" + id).then((response) => {
-  //     console.log(response);
-  //     setSearchUserList(response.data);
-  //   });
-  // }
-  // const [selectedItems, setSelectedItems] = useState([]);
-  // const filteredOptions = SearchUserList.filter(
-  //   (o) => !selectedItems.includes(o)
-  // );
-  // const onFilterChange = (changedValues, allValues) => {
-  //   console.log(changedValues, allValues);
-  //   getUsersInOrgID(allValues);
-  // };
 
   return (
     <React.Fragment>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import AddReq from "./AddReq";
 import HistoryReq from "./Historyreq";
-import ReqHistory from "./Reqhistory";
 import {
   Modal,
   Table,
@@ -215,10 +214,6 @@ const ManageReq = () => {
           />
         </Modal>
       </div>
-
-      {/* <Row justify="center">
-        <ReqHistory />
-      </Row> */}
 
       <div className="User-list">
         <header className="User-list-heard-req">
