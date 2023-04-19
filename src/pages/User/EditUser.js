@@ -114,8 +114,38 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
   const onChangestatus = (statusID) => {
     console.log(`selected ${statusID}`);
   };
+  let userRoleOption = [
+    {
+      value: "User",
+      label: "User",
+    },
+    {
+      value: "Room Contributor",
+      label: "Room Contributor",
+    },
+    {
+      value: "Contributor",
+      label: "Contributor",
+    },
+  ];
+  if (user.role == "Administrator") {
+    userRoleOption.push({
+      value: "Administrator",
+      label: "Administrator",
+    });
+  }
 
+  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
+    user.role
+  );
+  let initialValues = {};
+  if (canNotChangeOrg) {
+    initialValues["org"] = user.org.id;
+  }
   useEffect(() => {
+    if (canNotChangeOrg) {
+      onChangeorg(user.org.id);
+    }
     getOrg();
   }, []);
 
@@ -212,6 +242,7 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
           layout="horizontal"
           onFinish={onFormFinish}
           disabled={loading}
+          initialValues={initialValues}
         >
           <Form.Item
             name="image"
@@ -260,6 +291,7 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
               fieldNames={{ label: "name", value: "_id" }}
               options={orgList}
               loading={orgLoading}
+              disabled={canNotChangeOrg}
             />
           </Form.Item>
           <Form.Item
@@ -340,16 +372,24 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
             label="Role"
             name="role"
             rules={[{ required: true, whitespace: true }]}
-            disabled={["Contributor"].includes(user.role)}
+            // disabled={["Contributor"].includes(user.role)}
           >
-            <Select placeholder="Select a Role">
-              <Select.Option value="User">User</Select.Option>
-              <Select.Option value="Room Contributor">
-                Room Contributor
-              </Select.Option>
-              <Select.Option value="Contributor">Contributor</Select.Option>
-              <Select.Option value="Administrator">Administrator</Select.Option>
-            </Select>
+            <Select
+              style={{
+                width: "200px",
+              }}
+              allowClear
+              showSearch
+              placeholder="Role"
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                (option?.value ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              // disabled={["Contributor"].includes(user.role)}
+              options={userRoleOption}
+            />
           </Form.Item>
         </Form>
       </Modal>

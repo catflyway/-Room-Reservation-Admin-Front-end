@@ -202,7 +202,7 @@ function ReqHistory() {
 
   const [dataOrg, setDataOrg] = useState([]);
   function getOrg() {
-    axios.get("/org", { crossdomain: true }).then((response) => {
+    axios.get("/org").then((response) => {
       console.log(response);
       setDataOrg(response.data);
     });

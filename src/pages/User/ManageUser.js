@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   Modal,
   Table,
@@ -15,11 +15,13 @@ import {
 import EditUser from "./EditUser";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { UserContext } from "../../user-context";
 
 const { Title } = Typography;
 const { Search } = Input;
 
 const ManageUser = () => {
+  const user = useContext(UserContext);
   const [form] = Form.useForm();
   const [formData, setFormData] = useState({
     name: "",
@@ -35,38 +37,62 @@ const ManageUser = () => {
   const [dataUsers, setDataUsers] = useState([]);
   const [status, setstatus] = useState([]);
   function getStatus(id) {
-    axios.get("/org/status/" + id, { crossdomain: true }).then((response) => {
+    axios.get("/org/status/" + id).then((response) => {
       console.log("org", "status", id, response.data);
       setstatus(response.data);
     });
   }
+  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
+    user.role
+  );
+  let initialValues = {};
+  if (canNotChangeOrg) {
+    initialValues["org"] = user.org.id;
+  }
+  let userRoleOption = [
+    {
+      value: "User",
+      label: "User",
+    },
+    {
+      value: "Room Contributor",
+      label: "Room Contributor",
+    },
+    {
+      value: "Contributor",
+      label: "Contributor",
+    },
+  ];
+  if (user.role == "Administrator") {
+    userRoleOption.push({
+      value: "Administrator",
+      label: "Administrator",
+    });
+  }
   useEffect(() => {
     getOrg();
+    if (canNotChangeOrg) {
+      onChangeorg(user.org.id);
+      form.setFieldValue("org", user.org.id);
+      getManageUsers({ org: user.org.id });
+    } else {
+      getManageUsers();
+    }
   }, []);
 
   function getManageUsers(option) {
-    let query = [];
-    for (const [key, value] of Object.entries(option || {})) {
-      if (value) {
-        query.push(`${key}=${value}`);
-      }
-    }
-    query = query.join("&");
-
-    axios
-      .get("/users/searchby?" + query, { crossdomain: true })
-      .then((response) => {
-        console.log(response);
-        setDataUsers(
-          response.data.map((item) => {
-            return {
-              ...item,
-              Rolename: item.role,
-              statusName: item.status?.name,
-            };
-          })
-        );
-      });
+    axios.get("/users/searchby", { params: option }).then((response) => {
+      console.log(response);
+      setDataUsers(
+        response.data.map((item) => {
+          return {
+            ...item,
+            Rolename: item.role,
+            statusName: item.status?.name,
+          };
+        })
+      );
+    });
   }
   const [idOrg, setIdorg] = useState();
   const onChangeorg = (value) => {
@@ -88,9 +114,6 @@ const ManageUser = () => {
     setComponentSize(size);
   };
 
-  useEffect(() => {
-    getManageUsers();
-  }, []);
   const columns = [
     {
       key: "1",
@@ -272,7 +295,7 @@ const ManageUser = () => {
 
   const [SearchUserList, setSearchUserList] = useState([]);
   function getSearchuser(id) {
-    axios.get("/users/search/" + id, { crossdomain: true }).then((response) => {
+    axios.get("/users/search/" + id).then((response) => {
       console.log(response);
       setSearchUserList(response.data);
     });
@@ -333,6 +356,7 @@ const ManageUser = () => {
                 }
                 fieldNames={{ label: "name", value: "_id" }}
                 options={orgList}
+                disabled={canNotChangeOrg}
               />
             </Form.Item>
 
@@ -370,24 +394,8 @@ const ManageUser = () => {
                     .toLowerCase()
                     .includes(input.toLowerCase())
                 }
-                options={[
-                  {
-                    value: "User",
-                    label: "User",
-                  },
-                  {
-                    value: "Room Contributor",
-                    label: "Room Contributor",
-                  },
-                  {
-                    value: "Contributor",
-                    label: "Contributor",
-                  },
-                  {
-                    value: "Administrator",
-                    label: "Administrator",
-                  },
-                ]}
+                // disabled={["Contributor"].includes(user.role)}
+                options={userRoleOption}
               />
             </Form.Item>
 
@@ -428,20 +436,22 @@ const ManageUser = () => {
         >
           AddStatus
         </button>
-        <Form.Item label="หน่วยงาน">
-          <Select
-            showSearch
-            placeholder="หน่วยงาน"
-            optionFilterProp="children"
-            onChange={onChangeorg}
-            onSearch={onSearch}
-            filterOption={(input, option) =>
-              (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
-            }
-            fieldNames={{ label: "name", value: "_id" }}
-            options={orgList}
-          />
-        </Form.Item>
+        <Form initialValues={initialValues}>
+          <Form.Item name="org" label="หน่วยงาน">
+            <Select
+              showSearch
+              placeholder="หน่วยงาน"
+              optionFilterProp="children"
+              onChange={onChangeorg}
+              filterOption={(input, option) =>
+                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
+              }
+              fieldNames={{ label: "name", value: "_id" }}
+              options={orgList}
+              disabled={canNotChangeOrg}
+            />
+          </Form.Item>
+        </Form>
         <Modal
           title="AddStatus"
           open={AddStatusU}

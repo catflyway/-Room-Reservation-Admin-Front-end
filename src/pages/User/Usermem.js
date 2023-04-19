@@ -10,11 +10,11 @@ const getBase64 = (img, callback) => {
 };
 
 function delay(fn, ms) {
-  let timer = 0
-  return function(...args) {
-    clearTimeout(timer)
-    timer = setTimeout(fn.bind(this, ...args), ms || 0)
-  }
+  let timer = 0;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(fn.bind(this, ...args), ms || 0);
+  };
 }
 
 const Usermem = ({ onSuccess }) => {
@@ -44,13 +44,13 @@ const Usermem = ({ onSuccess }) => {
   function getStatus(id) {
     setUserStatusLoading(true);
     axios
-      .get("/org/status/" + id, { crossdomain: true })
+      .get("/org/status/" + id)
       .then((response) => {
         setUserStatusLoading(false);
         console.log(response);
         setstatus(response.data);
 
-        form.resetFields(["status"])
+        form.resetFields(["status"]);
       })
       .catch((err) => {
         setUserStatusLoading(false);
@@ -117,7 +117,7 @@ const Usermem = ({ onSuccess }) => {
         setLoading(false);
         setIsModalOpen(false);
         message.success("เพิ่มผู้ใช้สำเร็จ");
-        if (typeof onSuccess === 'function') {
+        if (typeof onSuccess === "function") {
           onSuccess();
         }
       })
@@ -130,11 +130,7 @@ const Usermem = ({ onSuccess }) => {
 
   return (
     <React.Fragment>
-      <Button
-        type="primary"
-        size="large"
-        onClick={showModal}
-      >
+      <Button type="primary" size="large" onClick={showModal}>
         AddUser
       </Button>
 
@@ -260,16 +256,16 @@ const Usermem = ({ onSuccess }) => {
               },
               {
                 validator: (_, value) => {
-                  console.log(value)
+                  console.log(value);
                   return new Promise((resolve) => {
                     setTimeout(() => {
-                      console.log(value, "ok")
+                      console.log(value, "ok");
                       resolve();
                     }, 1000);
-                  })
+                  });
                 },
 
-                message: "มีคนใช้แล้ว นะจ่ะ"
+                message: "มีคนใช้แล้ว นะจ่ะ",
               },
             ]}
             hasFeedback
@@ -309,7 +305,9 @@ const Usermem = ({ onSuccess }) => {
           >
             <Select placeholder="Select a Role">
               <Select.Option value="User">User</Select.Option>
-              <Select.Option value="Room Contributor">Room Contributor</Select.Option>
+              <Select.Option value="Room Contributor">
+                Room Contributor
+              </Select.Option>
               <Select.Option value="Contributor">Contributor</Select.Option>
               <Select.Option value="Administrator">Administrator</Select.Option>
             </Select>

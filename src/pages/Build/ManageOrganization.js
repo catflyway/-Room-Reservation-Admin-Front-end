@@ -12,7 +12,7 @@ const ManageOrganization = () => {
 
   const [OrgID, setOrgID] = useState([]);
   function getOrg() {
-    axios.get("/org", { crossdomain: true }).then((response) => {
+    axios.get("/org").then((response) => {
       console.log(response);
       setOrgID(
         response.data.map((item) => {

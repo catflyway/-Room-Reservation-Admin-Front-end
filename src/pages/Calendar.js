@@ -89,14 +89,7 @@ function Calendar() {
   };
 
   function getManageCalendar(option) {
-    let query = [];
-    for (const [key, value] of Object.entries(option || {})) {
-      if (value) {
-        query.push(`${key}=${value}`);
-      }
-    }
-    query = query.join("&");
-    axios.get("/calendar/searchby?" + query).then((response) => {
+    axios.get("/calendar/searchby", { params: option }).then((response) => {
       console.log(response);
       setIsevents(
         response.data.map((item) => {

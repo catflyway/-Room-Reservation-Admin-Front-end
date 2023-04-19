@@ -78,7 +78,7 @@ function Profile() {
   // const [statuslist, setstatuslist] = useState([]);
   // function getStatus() {
   //   axios
-  //     .get("/org/status/" + user.org.id, { crossdomain: true })
+  //     .get("/org/status/" + user.org.id)
   //     .then((response) => {
   //       console.log("/org/status/", response.data);
   //       setstatuslist(response.data);
