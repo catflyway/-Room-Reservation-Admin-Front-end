@@ -1,15 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import BarChart from "./components/BarChart";
 import { Row, Col, Select, Button, Form, Space } from "antd";
 import { Divider, Table } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
+import { UserContext } from "../../user-context";
 
 import { DatePicker } from "antd";
 
 const { Option } = Select;
 
 function ShowBar() {
+  const user = useContext(UserContext);
   const [form] = Form.useForm();
   const formRef = useRef(form);
 
@@ -71,34 +73,32 @@ function ShowBar() {
   }
   const [RoomtypeList, setRoomtypeList] = useState([]);
   function getRoomtype(id) {
-    axios.get("/org/roomtype/" + id, { crossdomain: true }).then((response) => {
+    axios.get("/org/roomtype/" + id).then((response) => {
       console.log("/org/roomtype/" + id, response.data);
       setRoomtypeList(response.data);
     });
   }
 
   function getManageRooms(option) {
-    axios
-      .get("/static/searchby?limit=10", { params: option })
-      .then((response) => {
-        console.log("/static/searchby?limit=10", option, response.data);
-        setDataSource(response.data);
-        setuserData({
-          labels: response.data.map((data) => data.Name),
-          datasets: [
-            {
-              data: response.data.map((data) => data.useCount),
-              backgroundColor: [
-                "rgba(75,192,192,1)",
-                "#ecf0f1",
-                "#50AF95",
-                "#f3ba2f",
-                "#2a71d0",
-              ],
-            },
-          ],
-        });
+    axios.get("/static/searchby", { params: option }).then((response) => {
+      console.log("/static/searchby", option, response.data);
+      setDataSource(response.data);
+      setuserData({
+        labels: response.data.map((data) => data.Name),
+        datasets: [
+          {
+            data: response.data.map((data) => data.useCount),
+            backgroundColor: [
+              "rgba(75,192,192,1)",
+              "#ecf0f1",
+              "#50AF95",
+              "#f3ba2f",
+              "#2a71d0",
+            ],
+          },
+        ],
       });
+    });
   }
 
   const onFilterChange = (changedValues, allValues) => {
@@ -131,9 +131,19 @@ function ShowBar() {
     console.log(fillter);
     getManageRooms(fillter);
   };
-
+  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
+    user.role
+  );
   useEffect(() => {
-    onFilterChange({}, formRef.current.getFieldValue());
+    if (canNotChangeOrg) {
+      onChangeorg(user.org.id);
+      form.setFieldValue("OrgID", user.org.id);
+      onFilterChange({ OrgID: user.org.id }, formRef.current.getFieldValue());
+      // getManageRooms({ OrgID: user.org.id });
+    } else {
+      onFilterChange({}, formRef.current.getFieldValue());
+    }
+    // onFilterChange({}, formRef.current.getFieldValue());
     getOrg();
   }, []);
 
@@ -158,6 +168,7 @@ function ShowBar() {
                 }
                 fieldNames={{ label: "name", value: "_id" }}
                 options={orgList}
+                disabled={canNotChangeOrg}
               />
             </Form.Item>
           </Col>
@@ -214,7 +225,7 @@ function ShowBar() {
                 </Select>
               </Form.Item>
               <Form.Item name="dateValue" initialValue={dayjs()}>
-                <DatePicker picker={dateType} />
+                <DatePicker picker={dateType} allowClear={false} />
               </Form.Item>
             </Space>
           </Col>

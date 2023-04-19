@@ -1,14 +1,16 @@
 import { Table, Modal, Select, Button, Form } from "antd";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
+import { UserContext } from "../../user-context";
 
 function HistoryReq() {
+  const user = useContext(UserContext);
   const [dataSource, setDataSource] = useState([]);
 
   const [dataOrg, setDataOrg] = useState([]);
   function getOrg() {
-    axios.get("/org", { crossdomain: true }).then((response) => {
+    axios.get("/org").then((response) => {
       console.log(response);
       setDataOrg(response.data);
     });
@@ -18,52 +20,61 @@ function HistoryReq() {
     getManageReq(value);
   };
 
-  function getManageReq(idorg) {
-    axios
-      .get("requests/searchby?Org=" + idorg, { crossdomain: true })
-      .then((response) => {
-        console.log(response);
-        setDataSource(
-          response.data.map((item) => {
-            let timerev =
-              dayjs(item.startTime[0]).format("HH:mm") +
-              " - " +
-              dayjs(item.endTime[0]).format("HH:mm");
-            if (item.allDay == true) {
-              timerev = "Allday";
-            }
-            return {
-              ...item,
-              startTime: dayjs(item.startTime[0]),
-              endTime: dayjs(item.endTime[item.endTime.length - 1]),
-              timereservation: timerev,
-              Building: item.Building.name,
-              Room: item.Room.name,
-              User: item.User.username,
-            };
-          })
-        );
-      });
-  }
-
-  // useEffect(() => {
-
-  // }, []);
-
-  function onChangeStatus(request, status) {
-    let data = {
-      Status_Approve: status,
+  function getManageReq(OrgID) {
+    let option = {
+      Status_Approve: ["Approved", "Rejected", "Cancled"],
+      // Status_Approve: "Approved",
     };
-    axios.put("/Requests/" + request._id, data).then((response) => {
-      getManageReq();
-      console.log(response.data);
+    option["OrgID"] = OrgID;
+    axios.get("requests/searchby", { params: option }).then((response) => {
+      console.log(response);
+      setDataSource(
+        response.data.map((item) => {
+          let timerev =
+            dayjs(item.startTime[0]).format("HH:mm") +
+            " - " +
+            dayjs(item.endTime[0]).format("HH:mm");
+          if (item.allDay == true) {
+            timerev = "Allday";
+          }
+          return {
+            ...item,
+            startTime: dayjs(item.startTime[0]),
+            endTime: dayjs(item.endTime[item.endTime.length - 1]),
+            timereservation: timerev,
+            Building: item.Building.name,
+            Room: item.Room.name,
+            User: item.User.username,
+          };
+        })
+      );
     });
-    console.log("Change", request, status);
   }
+
+  // function onChangeStatus(request, status) {
+  //   let data = {
+  //     Status_Approve: status,
+  //   };
+  //   axios.put("/Requests/" + request._id, data).then((response) => {
+  //     getManageReq();
+  //     console.log(response.data);
+  //   });
+  //   console.log("Change", request, status);
+  // }
   const [isAddOpen, setIsAddOpen] = useState(false);
 
+  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
+    user.role
+  );
+  let initialValues = {};
+  if (canNotChangeOrg) {
+    initialValues["org"] = user.org.id;
+  }
   const showAddReq = () => {
     setIsAddOpen(true);
+    if (canNotChangeOrg) {
+      onChangeorg(user.org.id);
+    }
     getOrg();
   };
 
@@ -131,7 +142,7 @@ function HistoryReq() {
           <>
             <Select
               value={value}
-              onChange={(newValue) => onChangeStatus(record, newValue)}
+              // onChange={(newValue) => onChangeStatus(record, newValue)}
             >
               <Select.Option value="Pending">Pending</Select.Option>
               <Select.Option value="Approved">Approved</Select.Option>
@@ -161,19 +172,22 @@ function HistoryReq() {
         footer={false}
         onCancel={handCancelAddReq}
       >
-        <Form.Item label="หน่วยงาน">
-          <Select
-            showSearch
-            placeholder="หน่วยงาน"
-            optionFilterProp="children"
-            onChange={onChangeorg}
-            filterOption={(input, option) =>
-              (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
-            }
-            fieldNames={{ label: "name", value: "_id" }}
-            options={dataOrg}
-          />
-        </Form.Item>
+        <Form initialValues={initialValues}>
+          <Form.Item label="หน่วยงาน" name="org">
+            <Select
+              showSearch
+              placeholder="หน่วยงาน"
+              optionFilterProp="children"
+              onChange={onChangeorg}
+              filterOption={(input, option) =>
+                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
+              }
+              fieldNames={{ label: "name", value: "_id" }}
+              options={dataOrg}
+              disabled={canNotChangeOrg}
+            />
+          </Form.Item>
+        </Form>
         <div className="User-list">
           <Table columns={columns} dataSource={dataSource} rowKey="_id"></Table>
         </div>

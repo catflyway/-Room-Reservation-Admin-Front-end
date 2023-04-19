@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Button, Modal, Table, Input, Form, Select, message } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { UserContext } from "../../user-context";
 
 const ManageRoomtype = () => {
+  const user = useContext(UserContext);
   const [orgList, setOrgList] = useState([]);
   const [orgLoading, setOrgLoading] = useState(false);
   function getOrg() {
@@ -21,14 +23,14 @@ const ManageRoomtype = () => {
   }
   // const [dataOrg, setDataOrg] = useState([]);
   // function getOrg() {
-  //   axios.get("/org", { crossdomain: true }).then((response) => {
+  //   axios.get("/org").then((response) => {
   //     console.log(response);
   //     setDataOrg(response.data);
   //   });
   // }
   const [dataSource, setDataSource] = useState([]);
   function getRoomtype(id) {
-    axios.get("/org/roomtype/" + id, { crossdomain: true }).then((response) => {
+    axios.get("/org/roomtype/" + id).then((response) => {
       console.log(response);
       setDataSource(response.data);
     });
@@ -54,21 +56,23 @@ const ManageRoomtype = () => {
       .catch((err) => console.log(err));
     setIsModalOpen(false);
   };
+  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
+    user.role
+  );
+  const canNotusebutton = ["Room Contributor"].includes(user.role);
+  let initialValues = {};
+  if (canNotChangeOrg) {
+    initialValues["Org"] = user.org.id;
+  }
   useEffect(() => {
+    if (canNotChangeOrg) {
+      onChangeorg(user.org.id);
+    }
     getOrg();
   }, []);
-  // useEffect(() => {
-  //   if (isEditingroomtype) {
-  //     setLoading(false);
-  //     setIsModalOpen(true);
-  //   }
-  // }, []);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
   };
   const [isModalOpen2, setIsModalOpen2] = useState(false);
   const handleCancel2 = () => {
@@ -123,9 +127,6 @@ const ManageRoomtype = () => {
       },
     });
   };
-  const [isEditingroomtype, setIsEditingroomtype] = useState(false);
-
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const onAddOk = () => {
@@ -178,6 +179,7 @@ const ManageRoomtype = () => {
       <Button
         className="button-room"
         type="primary"
+        disabled={canNotusebutton}
         onClick={showModal2}
         size="large"
       >
@@ -197,86 +199,43 @@ const ManageRoomtype = () => {
               key="submit"
               type="primary"
               loading={loading}
+              disabled={canNotusebutton & (dataSource.length > 20 === false)}
               onClick={showModal}
             >
               AddRoomtype
             </button>
-            <Form.Item label="หน่วยงาน">
-              <Select
-                showSearch
-                placeholder="หน่วยงาน"
-                optionFilterProp="children"
-                onChange={onChangeorg}
-                filterOption={(input, option) =>
-                  (option?.name ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-                fieldNames={{ label: "name", value: "_id" }}
-                options={orgList}
-              />
-            </Form.Item>
+            <Form initialValues={initialValues}>
+              <Form.Item label="หน่วยงาน" name="Org">
+                <Select
+                  showSearch
+                  placeholder="หน่วยงาน"
+                  optionFilterProp="children"
+                  onChange={onChangeorg}
+                  filterOption={(input, option) =>
+                    (option?.name ?? "")
+                      .toLowerCase()
+                      .includes(input.toLowerCase())
+                  }
+                  fieldNames={{ label: "name", value: "_id" }}
+                  options={orgList}
+                  disabled={canNotChangeOrg}
+                />
+              </Form.Item>
+            </Form>
             <Modal
-              title="AddBuild"
+              title="AddRoomtype"
               open={isModalOpen}
               onOk={onAddOk}
               onCancel={onAddCancel}
             >
               <Input
-                placeholder="AddBuild"
+                placeholder="AddRoomtype"
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
                 }
                 value={formData.name}
               />
             </Modal>
-            {/* <Modal
-              title="AddRoomtype"
-              open={isModalOpen}
-              onOk={handleSubmit}
-              onCancel={handleCancel}
-            >
-              <Form
-                labelCol={{
-                  span: 6,
-                }}
-                wrapperCol={{
-                  span: 14,
-                }}
-                layout="horizontal"
-                onFinish={onFormFinish}
-                disabled={loading}
-              >
-                <Form.Item
-                  label="หน่วยงาน"
-                  name="org"
-                  rules={[{ required: true, whitespace: true }]}
-                >
-                  <Select
-                    showSearch
-                    placeholder="หน่วยงาน"
-                    optionFilterProp="children"
-                    onChange={onChangeorg}
-                    filterOption={(input, option) =>
-                      (option?.name ?? "")
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }
-                    fieldNames={{ label: "name", value: "_id" }}
-                    options={orgList}
-                    loading={orgLoading}
-                  />
-                </Form.Item>
-                <Form.Item
-                  label="Roomtype"
-                  name="name"
-                  rules={[{ required: true, whitespace: true }]}
-                >
-                  <Input placeholder="AddRoomtype" />
-                </Form.Item>
-              </Form>
-            </Modal> */}
-
             <Table
               columns={columnsEdit}
               dataSource={dataSource}
@@ -307,7 +266,7 @@ const ManageRoomtype = () => {
               name="name"
               rules={[{ required: true, whitespace: true }]}
             >
-              <Input placeholder="Buildiding" />
+              <Input placeholder="EditRoomtype" />
             </Form.Item>
           </Form>
         </Modal>

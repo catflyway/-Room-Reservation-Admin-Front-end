@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import {
   Modal,
   Input,
@@ -16,6 +16,7 @@ import {
 import ImgCrop from "antd-img-crop";
 import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { UserContext } from "../../user-context";
 
 const getBase64 = (img, callback) => {
   const reader = new FileReader();
@@ -24,15 +25,12 @@ const getBase64 = (img, callback) => {
 };
 
 const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
+  const user = useContext(UserContext);
   const [form] = Form.useForm();
   const formRef = useRef(form);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState();
-
-  useEffect(() => {
-    formRef.current = form;
-  }, [form]);
 
   const [orgList, setOrgList] = useState([]);
   function getOrg() {
@@ -50,7 +48,7 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
   }
   const [roomsList, setRoomsList] = useState([]);
   function getRoomtype(id) {
-    axios.get("/org/roomtype/" + id, { crossdomain: true }).then((response) => {
+    axios.get("/org/roomtype/" + id).then((response) => {
       console.log("roomsList", response.data);
       setRoomsList(response.data);
     });
@@ -108,12 +106,25 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
   };
 
   const onChangeorg = (orgID) => {
-    console.log(`selected ${orgID}`);
+    console.log("onChangeorg", orgID);
     getBuildingInOrgID(orgID);
     getRoomtype(orgID);
     getUsersInOrgID(orgID);
   };
+
+  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
+    user.role
+  );
+  const canNotusebutton = ["Room Contributor"].includes(user.role);
+  let initialValues = {};
+  if (canNotChangeOrg) {
+    initialValues["Org"] = user.org.id;
+  }
+
   useEffect(() => {
+    if (canNotChangeOrg) {
+      onChangeorg(user.org.id);
+    }
     getOrg();
   }, []);
 
@@ -162,36 +173,36 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
 
     setLoading(true);
 
-    let req;
-    if (openEdit) {
-      req = axios.putForm("/rooms/room/" + value._id, formValue);
-    } else {
-      req = axios.postForm("/rooms/room", formValue);
-    }
+    // let req;
+    // if (openEdit) {
+    //   req = axios.putForm("/rooms/room/" + value._id, formValue);
+    // } else {
+    //   req = axios.postForm("/rooms/room", formValue);
+    // }
 
-    req
-      .then((response) => {
-        console.log("res", response);
-        setLoading(false);
-        setIsModalOpen(false);
-        if (typeof onSuccess === "function") {
-          onSuccess();
-        }
-        if (openEdit) {
-          message.success("แก้ไขห้องสำเร็จ");
-        } else {
-          message.success("เพิ่มห้องสำเร็จ");
-        }
-      })
-      .catch((err) => {
-        console.log("err", err);
-        setLoading(false);
-        message.error("ERROR");
-      });
+    // req
+    //   .then((response) => {
+    //     console.log("res", response);
+    //     setLoading(false);
+    //     setIsModalOpen(false);
+    //     if (typeof onSuccess === "function") {
+    //       onSuccess();
+    //     }
+    //     if (openEdit) {
+    //       message.success("แก้ไขห้องสำเร็จ");
+    //     } else {
+    //       message.success("เพิ่มห้องสำเร็จ");
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.log("err", err);
+    //     setLoading(false);
+    //     message.error("ERROR");
+    //   });
   };
   // const [SearchUserList, setSearchUserList] = useState([]);
   // function getSearchuser(id) {
-  //   axios.get("/users/search/" + id, { crossdomain: true }).then((response) => {
+  //   axios.get("/users/search/" + id).then((response) => {
   //     console.log(response);
   //     setSearchUserList(response.data);
   //   });
@@ -210,6 +221,7 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
       <Button
         className="button-room"
         type="primary"
+        disabled={canNotusebutton}
         onClick={showModal}
         size="large"
       >
@@ -234,6 +246,8 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
           onFinish={onFormFinish}
           disabled={loading}
           // onValuesChange={onFilterChange}
+          onValuesChange={(a, b) => console.log(a, b)}
+          initialValues={initialValues}
         >
           <Form.Item
             name="image"
@@ -273,13 +287,14 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
             <Select
               showSearch
               placeholder="หน่วยงาน"
-              optionFilterProp="children"
+              // optionFilterProp="children"
               onChange={onChangeorg}
               filterOption={(input, option) =>
                 (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
               }
               fieldNames={{ label: "name", value: "_id" }}
               options={orgList}
+              disabled={canNotChangeOrg}
             />
           </Form.Item>
           <Form.Item

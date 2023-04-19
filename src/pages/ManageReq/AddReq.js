@@ -9,11 +9,13 @@ import {
   Select,
   Segmented,
 } from "antd";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
+import { UserContext } from "../../user-context";
 
 function AddReq({ details, onChange }) {
+  const user = useContext(UserContext);
   const [form] = Form.useForm();
   const [orgList, setOrgList] = useState([]);
   function getOrg() {
@@ -43,9 +45,17 @@ function AddReq({ details, onChange }) {
       setUsersList(response.data);
     });
   }
-
+  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
+    user.role
+  );
   useEffect(() => {
-    getOrg();
+    if (canNotChangeOrg) {
+      onChangeorg(user.org.id);
+      form.setFieldValue("OrgID", user.org.id);
+      getOrg({ OrgID: user.org.id });
+    } else {
+      getOrg();
+    }
   }, []);
 
   const onChangeorg = (orgID) => {
@@ -162,7 +172,7 @@ function AddReq({ details, onChange }) {
     >
       <Form.Item
         label="หน่วยงาน"
-        name="หน่วยงาน"
+        name="OrgID"
         rules={[
           {
             required: true,
@@ -180,6 +190,7 @@ function AddReq({ details, onChange }) {
           }
           fieldNames={{ label: "name", value: "_id" }}
           options={orgList}
+          disabled={canNotChangeOrg}
         />
       </Form.Item>
       <Form.Item

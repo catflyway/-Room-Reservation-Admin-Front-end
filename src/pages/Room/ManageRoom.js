@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import EditRoom from "./EditRoom";
 import ManageBuilding from "./ManageBuilding";
 import ManageRoomtype from "./ManageRoomtype";
@@ -7,12 +7,14 @@ import { Col, Row, Image } from "antd";
 import { Modal, Table, Input, Form, Select, Space, Typography } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
+import { UserContext } from "../../user-context";
 
 const { Title } = Typography;
 
 const { Search } = Input;
 
 const ManageRoom = () => {
+  const user = useContext(UserContext);
   const [form] = Form.useForm();
   const [dataSource, setDataSource] = useState([]);
   const onChangeorg = (orgID) => {
@@ -47,45 +49,45 @@ const ManageRoom = () => {
   }
   const [RoomtypeList, setRoomtypeList] = useState([]);
   function getRoomtype(id) {
-    axios.get("/org/roomtype/" + id, { crossdomain: true }).then((response) => {
+    axios.get("/org/roomtype/" + id).then((response) => {
       console.log(response);
       setRoomtypeList(response.data);
     });
   }
   function getManageRooms(option) {
-    let query = [];
-    for (const [key, value] of Object.entries(option || {})) {
-      if (value) {
-        query.push(`${key}=${value}`);
-      }
-    }
-    query = query.join("&");
-
-    axios
-      .get("/rooms/searchby?" + query, { crossdomain: true })
-      .then((response) => {
-        console.log(response);
-        setDataSource(
-          response.data.map((item) => {
-            return {
-              ...item,
-              BuildingName: item.Building.name,
-              RoomTypeName: item.RoomType.name,
-            };
-          })
-        );
-      });
+    axios.get("/rooms/searchby", { params: option }).then((response) => {
+      console.log(response);
+      setDataSource(
+        response.data.map((item) => {
+          return {
+            ...item,
+            BuildingName: item.Building.name,
+            RoomTypeName: item.RoomType.name,
+          };
+        })
+      );
+    });
   }
   const [SearchroomsList, setSearchRoomsList] = useState([]);
   function getSearchRoom(id) {
-    axios.get("/rooms/search/" + id, { crossdomain: true }).then((response) => {
+    axios.get("/rooms/search/" + id).then((response) => {
       console.log(response);
       setSearchRoomsList(response.data);
     });
   }
+  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
+    user.role
+  );
   useEffect(() => {
     getOrg();
-    getManageRooms();
+
+    if (canNotChangeOrg) {
+      onChangeorg(user.org.id);
+      form.setFieldValue("OrgID", user.org.id);
+      getManageRooms({ OrgID: user.org.id });
+    } else {
+      getManageRooms();
+    }
   }, []);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -235,6 +237,7 @@ const ManageRoom = () => {
                 }
                 fieldNames={{ label: "name", value: "_id" }}
                 options={orgList}
+                disabled={canNotChangeOrg}
               />
             </Form.Item>
 

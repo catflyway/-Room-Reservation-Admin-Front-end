@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import AddReq from "./AddReq";
 import HistoryReq from "./Historyreq";
 import ReqHistory from "./Reqhistory";
@@ -14,13 +14,23 @@ import {
 } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
+import { UserContext } from "../../user-context";
 
 const { Title } = Typography;
 const ManageReq = () => {
+  const user = useContext(UserContext);
   const [dataSource, setDataSource] = useState([]);
 
   function getManageReq() {
-    axios.get("/Requests/searchby?Status_Approve=Pending").then((response) => {
+    let option = {
+      Status_Approve: "Pending",
+    };
+    if (user.role === "Room Contributor") {
+      option["ContributorID"] = user._id;
+    } else if (user.role === "Contributor") {
+      option["OrgID"] = user.org.id;
+    }
+    axios.get("/Requests/searchby", { params: option }).then((response) => {
       console.log(response);
       setDataSource(
         response.data.map((item) => {
@@ -44,7 +54,6 @@ const ManageReq = () => {
       );
     });
   }
-
   useEffect(() => {
     getManageReq();
   }, []);
@@ -144,6 +153,7 @@ const ManageReq = () => {
   };
 
   const [data, setData] = useState({
+    OrgID: "",
     Room: "",
     Building: "",
     UserID: "",
@@ -155,13 +165,13 @@ const ManageReq = () => {
   });
 
   const handleSubmit = (e) => {
-    // e.preventDefault();
-    // axios.post("/Requests", data).then((response) => {
-    //   getManageReq();
-    //   console.log(response.data);
-    // });
-    // console.log(data);
-    // setIsAddOpen(false);
+    e.preventDefault();
+    axios.post("/Requests", data).then((response) => {
+      getManageReq();
+      console.log(response.data);
+    });
+    console.log(data);
+    setIsAddOpen(false);
   };
 
   return (

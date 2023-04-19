@@ -1,23 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Button, Modal, Table, Input, Form, Select } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
-import { useForm } from "antd/es/form/Form";
+import { UserContext } from "../../user-context";
 
 const ManageBuilding = () => {
+  const user = useContext(UserContext);
   const [dataSource, setDataSource] = useState([]);
   function getBuildtype(id) {
-    axios.get("/org/building/" + id, { crossdomain: true }).then((response) => {
+    axios.get("/org/building/" + id).then((response) => {
       console.log(response);
       setDataSource(response.data);
     });
   }
+  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
+    user.role
+  );
+  const canNotusebutton = ["Room Contributor"].includes(user.role);
+  let initialValues = {};
+  if (canNotChangeOrg) {
+    initialValues["Org"] = user.org.id;
+  }
   useEffect(() => {
+    if (canNotChangeOrg) {
+      onChangeorg(user.org.id);
+    }
     getOrg();
   }, []);
   const [dataOrg, setDataOrg] = useState([]);
   function getOrg() {
-    axios.get("/org", { crossdomain: true }).then((response) => {
+    axios.get("/org").then((response) => {
       console.log(response);
       setDataOrg(response.data);
     });
@@ -28,9 +40,6 @@ const ManageBuilding = () => {
     setFormData({ ...formData, org: value });
     setIdorg(value);
     getBuildtype(value);
-  };
-  const onSearch = (value) => {
-    console.log("search:", value);
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -148,6 +157,7 @@ const ManageBuilding = () => {
       <Button
         className="button-room"
         type="primary"
+        disabled={canNotusebutton}
         onClick={showModal1}
         size="large"
       >
@@ -164,7 +174,8 @@ const ManageBuilding = () => {
           className="button-submit1"
           key="submit"
           type="primary"
-          disabled={dataSource.length > 20 ? true : false}
+          // disabled={dataSource.length > 20 ? true : false}
+          disabled={canNotusebutton & (dataSource.length > 20 === false)}
           onClick={showModal}
         >
           AddBuild
@@ -182,20 +193,23 @@ const ManageBuilding = () => {
           />
         </Modal>
 
-        <Form.Item label="หน่วยงาน">
-          <Select
-            showSearch
-            placeholder="หน่วยงาน"
-            optionFilterProp="children"
-            onChange={onChangeorg}
-            onSearch={onSearch}
-            filterOption={(input, option) =>
-              (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
-            }
-            fieldNames={{ label: "name", value: "_id" }}
-            options={dataOrg}
-          />
-        </Form.Item>
+        <Form initialValues={initialValues}>
+          <Form.Item label="หน่วยงาน" name="Org">
+            <Select
+              showSearch
+              placeholder="หน่วยงาน"
+              optionFilterProp="children"
+              onChange={onChangeorg}
+              // onSearch={onSearch}
+              filterOption={(input, option) =>
+                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
+              }
+              fieldNames={{ label: "name", value: "_id" }}
+              options={dataOrg}
+              disabled={canNotChangeOrg}
+            />
+          </Form.Item>
+        </Form>
 
         <Table
           columns={columnsEdit}
