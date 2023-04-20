@@ -104,9 +104,6 @@ const ManageUser = () => {
     }
     form.resetFields(["status"]);
   };
-  const onSearch = (value) => {
-    console.log("search:", value);
-  };
 
   const [componentSize, setComponentSize] = useState("default");
 
@@ -201,7 +198,7 @@ const ManageUser = () => {
             />
             <DeleteOutlined
               onClick={() => {
-                onDeleteUser(record);
+                onDeleteStatus(record);
               }}
               style={{ color: "red", marginLeft: 12 }}
             />
@@ -210,13 +207,36 @@ const ManageUser = () => {
       },
     },
   ];
+  function deleteUser(id) {
+    axios.delete("/users/" + id).then((res) => {
+      if (canNotChangeOrg) {
+        onChangeorg(user.org.id);
+        form.setFieldValue("org", user.org.id);
+        getManageUsers({ org: user.org.id });
+      } else {
+        getManageUsers();
+      }
+    });
+  }
 
   const onDeleteUser = (record) => {
     Modal.confirm({
       title: "Are you sure, you want to delete this user record?",
       okText: "Yes",
       okType: "danger",
-      onOk: () => {},
+      onOk: () => {
+        deleteUser(record._id);
+      },
+    });
+  };
+  const onDeleteStatus = (record) => {
+    Modal.confirm({
+      title: "Are you sure, you want to delete this status record?",
+      okText: "Yes",
+      okType: "danger",
+      onOk: () => {
+        deleteStatus(record._id);
+      },
     });
   };
   const [isEditing, setIsEditing] = useState(false);
@@ -289,6 +309,17 @@ const ManageUser = () => {
       .catch((err) => console.log(err));
     setIsAddStatusUser(false);
   };
+  function deleteStatus() {
+    axios.delete("/users/status").then((res) => {
+      if (canNotChangeOrg) {
+        onChangeorg(user.org.id);
+        form.setFieldValue("org", user.org.id);
+        getStatus({ org: user.org.id });
+      } else {
+        getStatus();
+      }
+    });
+  }
   const onChangestatus = (buildingID) => {
     console.log(`selected ${buildingID}`);
   };

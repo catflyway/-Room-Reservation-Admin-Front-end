@@ -115,15 +115,14 @@ const ManageRoomtype = () => {
       },
     },
   ];
+
   const onDeleteRoomtype = (record) => {
     Modal.confirm({
       title: "Are you sure, you want to delete this roomtype record?",
       okText: "Yes",
       okType: "danger",
       onOk: () => {
-        // setDatastatusSource((pre) => {
-        //   return pre.filter((student) => student.id !== record1.id);
-        // });
+        deleteRoomtype(record._id);
       },
     });
   };
@@ -139,6 +138,11 @@ const ManageRoomtype = () => {
       .catch((err) => console.log(err));
     setIsModalOpen(false);
   };
+  function deleteRoomtype(id) {
+    axios.delete("/rooms/roomtype/" + id).then((res) => {
+      getRoomtype(idOrg);
+    });
+  }
   const onAddCancel = () => {
     setIsModalOpen(false);
   };

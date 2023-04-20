@@ -76,7 +76,7 @@ const ManageBuilding = () => {
   };
   function deleteBuild(id) {
     axios.delete("/rooms/building/" + id).then((res) => {
-      getBuildtype();
+      getBuildtype(idOrg);
     });
   }
 

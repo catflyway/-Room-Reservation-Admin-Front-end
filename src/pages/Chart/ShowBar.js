@@ -120,10 +120,10 @@ function ShowBar() {
 
     let fillter = {
       ...allValues,
-      fromTime: allValues.dateValue?.startOf(dateType).toISOString(),
+      fromTime: allValues.dateValue?.startOf(allValues.dateType).toISOString(),
       toTime: allValues.dateValue
-        ?.add(1, dateType)
-        .startOf(dateType)
+        ?.add(1, allValues.dateType)
+        .startOf(allValues.dateType)
         .toISOString(),
       dateValue: undefined,
       dateType: undefined,
