@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import FullCalendar from "@fullcalendar/react"; // must go before plugins
 import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction"; // needed for dayClick
 import listPlugin from "@fullcalendar/list";
 import axios from "axios";
+import dayjs from "dayjs";
+import { UserContext } from "../user-context";
 
 import { Row, Col, Modal, Select, Form, Typography, Button, Space } from "antd";
 
 const { Title } = Typography;
 
 function Calendar() {
+  const user = useContext(UserContext);
   const [form] = Form.useForm();
   const [events, setIsevents] = useState([]);
 
@@ -28,6 +31,25 @@ function Calendar() {
       .catch((err) => {
         setOrgLoading(false);
       });
+  }
+  const [statusCount, setStatusCount] = useState([]);
+  function getStatusCount(option) {
+    option = option || {};
+    let today = dayjs();
+    option = {
+      ...option,
+      fromTime: today.startOf("month").toISOString(),
+      toTime: today.add(1, "month").startOf("month").toISOString(),
+    };
+    if (user.role === "Room Contributor") {
+      option["ContributorID"] = user._id;
+    } else if (user.role === "Contributor") {
+      option["OrgID"] = user.org.id;
+    }
+
+    axios.get("/Requests/stat", { params: option }).then((response) => {
+      setStatusCount(response.data);
+    });
   }
 
   const [BuildLoading, setBuildLoading] = useState(false);
@@ -48,7 +70,7 @@ function Calendar() {
           })
         );
         form.resetFields(["buildingname"]);
-        form.resetFields(["Name"]);
+        form.resetFields(["Room"]);
       })
       .catch((err) => {
         setBuildLoading(false);
@@ -65,7 +87,7 @@ function Calendar() {
         setRoomLoading(false);
         console.log(response);
         setRoomsList(response.data);
-        form.resetFields(["Name"]);
+        form.resetFields(["Room"]);
       })
       .catch((err) => {
         setRoomLoading(false);
@@ -103,6 +125,13 @@ function Calendar() {
       );
     });
   }
+  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
+    user.role
+  );
+  let initialValues = {};
+  if (canNotChangeOrg) {
+    initialValues["Org"] = user.org.id;
+  }
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [values, setValues] = useState({
@@ -125,10 +154,26 @@ function Calendar() {
   const onFilterChange = (changedValues, allValues) => {
     console.log(changedValues, allValues);
     getManageCalendar(allValues);
+    getStatusCount({
+      OrgID: allValues.Org,
+      BuildingID: allValues.Building,
+      RoomID: allValues.Room,
+    });
   };
   useEffect(() => {
+    if (canNotChangeOrg) {
+      onChangeorg(user.org.id);
+    }
     getOrg();
-    getManageCalendar();
+    if (canNotChangeOrg) {
+      onChangeorg(user.org.id);
+      form.setFieldValue("Org", user.org.id);
+      getManageCalendar({ Org: user.org.id });
+      getStatusCount({ OrgID: user.org.id });
+    } else {
+      getManageCalendar();
+    }
+    getStatusCount();
   }, []);
   return (
     <div>
@@ -143,7 +188,9 @@ function Calendar() {
           <Row justify="center" gutter={[16, 16]}>
             <Col span={4} offset={2}>
               <button className="col-1-1">
-                <Title style={{ color: " #FFF", fontSize: "20px" }}>1</Title>
+                <Title style={{ color: " #FFF", fontSize: "20px" }}>
+                  {statusCount.Pending}
+                </Title>
                 <Title style={{ color: " #FFF", fontSize: "12px" }}>
                   คำขอที่ยังไม่ได้ดำเนินการ
                 </Title>
@@ -151,18 +198,11 @@ function Calendar() {
             </Col>
             <Col span={4} offset={2}>
               <button className="col-1-1">
-                <Title style={{ color: " #FFF", fontSize: "20px" }}>1</Title>
+                <Title style={{ color: " #FFF", fontSize: "20px" }}>
+                  {statusCount.Approved}
+                </Title>
                 <Title style={{ color: " #FFF", fontSize: "12px" }}>
                   คำขอที่อนุมัติแล้ว
-                </Title>
-              </button>
-            </Col>
-
-            <Col span={4} offset={2}>
-              <button className="col-1-1">
-                <Title style={{ color: " #FFF", fontSize: "20px" }}>1</Title>
-                <Title style={{ color: " #FFF", fontSize: "12px" }}>
-                  คำขอที่สำเร็จแล้ว
                 </Title>
               </button>
             </Col>
@@ -176,6 +216,7 @@ function Calendar() {
             <Form
               onValuesChange={onFilterChange}
               form={form}
+              initialValues={initialValues}
               labelCol={{
                 span: 7,
               }}
@@ -301,9 +342,9 @@ function Calendar() {
                 plugins={[listPlugin]}
                 initialView="listMonth"
                 headerToolbar={{
-                  left: "",
+                  left: "prev,next",
                   center: "",
-                  right: "",
+                  right: "title",
                 }}
                 events={events}
                 height={"80%"}
