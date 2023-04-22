@@ -160,7 +160,7 @@ function HistoryReq() {
         HistoryReservation
       </Button>
       <Modal
-        width={950}
+        width={970}
         title="HistoryReservation"
         open={isAddOpen}
         footer={false}

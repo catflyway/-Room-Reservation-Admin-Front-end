@@ -49,6 +49,10 @@ function App() {
           axios.defaults.headers.common[
             "Authorization"
           ] = `Bearer ${response.data.token}`;
+
+          response.data.canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
+            response.data.role
+          );
           setUser(response.data);
         }
       })

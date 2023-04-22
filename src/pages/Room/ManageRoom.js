@@ -67,7 +67,6 @@ const ManageRoom = () => {
 
   useEffect(() => {
     getOrg();
-
     if (user.canNotChangeOrg) {
       onChangeorg(user.org.id);
       form.setFieldValue("OrgID", user.org.id);

@@ -214,6 +214,7 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
         open={openEdit || isModalOpen}
         onOk={onAddUser}
         onCancel={onCancelAdd}
+        okButtonProps={{disabled:canNotusebutton}}
         confirmLoading={loading}
       >
         <Form

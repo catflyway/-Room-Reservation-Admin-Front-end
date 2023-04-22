@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import BarChart from "./components/BarChart";
-import { Row, Col, Select, Button, Form, Space } from "antd";
+import { Row, Col, Select, Typography, Form, Space } from "antd";
 import { Divider, Table } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -9,6 +9,7 @@ import { UserContext } from "../../user-context";
 import { DatePicker } from "antd";
 
 const { Option } = Select;
+const { Title } = Typography;
 
 function ShowBar() {
   const user = useContext(UserContext);
@@ -136,16 +137,19 @@ function ShowBar() {
       onChangeorg(user.org.id);
       form.setFieldValue("OrgID", user.org.id);
       onFilterChange({ OrgID: user.org.id }, formRef.current.getFieldValue());
-      // getManageRooms({ OrgID: user.org.id });
     } else {
       onFilterChange({}, formRef.current.getFieldValue());
     }
-    // onFilterChange({}, formRef.current.getFieldValue());
     getOrg();
   }, []);
 
   return (
-    <div className="ShowBar">
+    <div>
+     <Row justify="space-between" align="middle">
+    <Col>
+          <Title style={{ color: " #3F478D" }}>Statistics</Title>
+        </Col>
+        </Row>
       <Form form={form} onValuesChange={onFilterChange}>
         <Row justify="center" gutter={[16, 16]}>
           <Col>
@@ -232,7 +236,7 @@ function ShowBar() {
       <br />
       <Row justify="center" gutter={[16, 16]} wrap={true}>
         <Col span={24} md={{ span: 16 }}>
-          <h1>สถิติการใช้งานห้อง</h1>
+          {/* <h1>สถิติการใช้งานห้อง</h1> */}
           <BarChart chartData={userData} />
         </Col>
 
