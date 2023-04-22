@@ -111,8 +111,7 @@ function ShowBar() {
         BuildingID: undefined,
         RoomTypeID: undefined,
       };
-      form.resetFields(["BuildingID"]);
-      form.resetFields(["RoomTypeID"]);
+      form.resetFields(["BuildingID", "RoomTypeID"]);
     }
     if (changedValues.dateType) {
       setDateType(allValues.dateType);

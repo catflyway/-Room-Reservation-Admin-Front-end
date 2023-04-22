@@ -213,9 +213,7 @@ const ManageReq = () => {
       </div>
 
       <div className="User-list">
-        <header className="User-list-heard-req">
-          <Table columns={columns} dataSource={dataSource} rowKey="_id"></Table>
-        </header>
+        <Table columns={columns} dataSource={dataSource} rowKey="_id"></Table>
       </div>
     </div>
   );

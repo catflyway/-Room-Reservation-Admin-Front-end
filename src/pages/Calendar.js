@@ -206,15 +206,13 @@ function Calendar() {
   return (
     <div>
       <Row justify="center">
-        <Col span={24}>
-          <Row justify="center">
-            <Title style={{ color: " #3F478D", fontSize: "56px" }}>
-              Calendar
-            </Title>
-          </Row>
+        <Title style={{ color: " #3F478D", fontSize: "56px", marginTop: "0" }}>
+          Calendar
+        </Title>
+      </Row>
 
-          <Row justify="center" gutter={[16, 16]}>
-            {/* <Col>
+      <Row justify="center" gutter={[16, 16]}>
+        {/* <Col>
               <Card
                 bordered={false}
                 bodyStyle={{ backgroundColor: "#07D064", color: "#fff" }}
@@ -226,153 +224,161 @@ function Calendar() {
                 />
               </Card>
             </Col> */}
-            <Col>
-              <button className="col-1-1">
-                <Title style={{ color: " #FFF", fontSize: "20px" }}>
-                  {statusCount.Pending}
-                </Title>
-                <Title style={{ color: " #FFF", fontSize: "12px" }}>
-                  คำขอที่ยังไม่ได้ดำเนินการ
-                </Title>
-              </button>
-            </Col>
-            <Col offset={0} md={{ offset: 2 }}>
-              <button className="col-1-1">
-                <Title style={{ color: " #FFF", fontSize: "20px" }}>
-                  {statusCount.Approved}
-                </Title>
-                <Title style={{ color: " #FFF", fontSize: "12px" }}>
-                  คำขอที่อนุมัติแล้ว
-                </Title>
-              </button>
-            </Col>
-          </Row>
-
-          <Row
-            justify="center"
-            gutter={[16, 16]}
-            style={{ paddingTop: "24px" }}
-          >
-            <Form
-              onValuesChange={onFilterChange}
-              form={form}
-              initialValues={initialValues}
-            >
-              <Space wrap>
-                <Form.Item name="Org" label="Organization">
-                  <Select
-                    style={{
-                      width: "200px",
-                    }}
-                    showSearch
-                    allowClear
-                    placeholder="หน่วยงาน"
-                    optionFilterProp="children"
-                    filterOption={(input, option) =>
-                      (option?.name ?? "")
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }
-                    fieldNames={{ label: "name", value: "_id" }}
-                    options={orgList}
-                    loading={OrgLoading}
-                  />
-                </Form.Item>
-
-                <Form.Item name="Building" label=" Building">
-                  <Select
-                    style={{
-                      width: "200px",
-                    }}
-                    showSearch
-                    allowClear
-                    placeholder="อาคาร/สถานที่"
-                    optionFilterProp="children"
-                    filterOption={(input, option) =>
-                      (option?.name ?? "")
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }
-                    fieldNames={{ label: "name", value: "_id" }}
-                    options={buildingList}
-                    loading={BuildLoading}
-                  />
-                </Form.Item>
-
-                <Form.Item name="Room" label=" Room">
-                  <Select
-                    style={{
-                      width: "200px",
-                    }}
-                    showSearch
-                    allowClear
-                    placeholder="ห้อง"
-                    optionFilterProp="children"
-                    filterOption={(input, option) =>
-                      (option?.Name ?? "")
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }
-                    fieldNames={{ label: "Name", value: "_id" }}
-                    options={roomsList}
-                    loading={RoomLoading}
-                  />
-                </Form.Item>
-              </Space>
-            </Form>
-          </Row>
+        <Col>
+          <button className="col-1-1">
+            <Title style={{ color: " #FFF", fontSize: "20px" }}>
+              {statusCount.Pending}
+            </Title>
+            <Title style={{ color: " #FFF", fontSize: "12px" }}>
+              คำขอที่ยังไม่ได้ดำเนินการ
+            </Title>
+          </button>
+        </Col>
+        <Col offset={0} md={{ offset: 2 }}>
+          <button className="col-1-1">
+            <Title style={{ color: " #FFF", fontSize: "20px" }}>
+              {statusCount.Approved}
+            </Title>
+            <Title style={{ color: " #FFF", fontSize: "12px" }}>
+              คำขอที่อนุมัติแล้ว
+            </Title>
+          </button>
         </Col>
       </Row>
-      <Row justify="center">
-        <Col span={22}>
-          <Row justify="center">
-            <Col span={16}>
-              <div>
-                <label>
-                  <h2>ตารางการใช้งานห้อง</h2>
-                </label>
-                <FullCalendar
-                  plugins={[
-                    dayGridPlugin,
-                    timeGridPlugin,
-                    interactionPlugin,
-                    listPlugin,
-                  ]}
-                  headerToolbar={{
-                    left: "prevYear,nextYear prev,next today",
-                    center: "title",
-                    right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
-                  }}
-                  events={events}
-                  dayMaxEventRows={3}
-                  datesSet={onDatesSet}
-                  // selectable={true}
-                  // select={handleSelect}
-                />
-                <Modal
-                  title="ทำการจอง"
-                  open={isModalVisible}
-                  onOk={handleOk}
-                  onCancel={handleCancel}
-                ></Modal>
-              </div>
-            </Col>
-            <Col span={6} offset={1}>
-              <h2>รายละเอียดการจอง</h2>
-              <FullCalendar
-                plugins={[listPlugin]}
-                initialView="listMonth"
-                headerToolbar={{
-                  left: "",
-                  center: "",
-                  right: "",
+
+      <br />
+
+      <Row justify="center" gutter={[16, 16]}>
+        <Form
+          onValuesChange={onFilterChange}
+          form={form}
+          initialValues={initialValues}
+        >
+          <Space wrap>
+            <Form.Item name="Org" label="Organization">
+              <Select
+                style={{
+                  width: "200px",
                 }}
-                events={events}
-                height={"90%"}
-                ref={eventListRef}
+                showSearch
+                allowClear
+                placeholder="หน่วยงาน"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.name ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                fieldNames={{ label: "name", value: "_id" }}
+                options={orgList}
+                loading={OrgLoading}
               />
-            </Col>
-          </Row>
+            </Form.Item>
+
+            <Form.Item name="Building" label=" Building">
+              <Select
+                style={{
+                  width: "200px",
+                }}
+                showSearch
+                allowClear
+                placeholder="อาคาร/สถานที่"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.name ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                fieldNames={{ label: "name", value: "_id" }}
+                options={buildingList}
+                loading={BuildLoading}
+              />
+            </Form.Item>
+
+            <Form.Item name="Room" label=" Room">
+              <Select
+                style={{
+                  width: "200px",
+                }}
+                showSearch
+                allowClear
+                placeholder="ห้อง"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.Name ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                fieldNames={{ label: "Name", value: "_id" }}
+                options={roomsList}
+                loading={RoomLoading}
+              />
+            </Form.Item>
+          </Space>
+        </Form>
+      </Row>
+
+      <Row gutter={[16, 16]}>
+        <Col xs={24} md={16}>
+          <div>
+            <label>
+              <h2>ตารางการใช้งานห้อง</h2>
+            </label>
+            <FullCalendar
+              plugins={[
+                dayGridPlugin,
+                timeGridPlugin,
+                interactionPlugin,
+                listPlugin,
+              ]}
+              headerToolbar={{
+                left: "prevYear,nextYear prev,next today",
+                center: "title",
+                right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
+              }}
+              events={events}
+              dayMaxEventRows={3}
+              datesSet={onDatesSet}
+              // selectable={true}
+              // select={handleSelect}
+            />
+            <Modal
+              title="ทำการจอง"
+              open={isModalVisible}
+              onOk={handleOk}
+              onCancel={handleCancel}
+            ></Modal>
+          </div>
+        </Col>
+        <Col xs={24} md={8}>
+          <div
+            style={{
+              minHeight: "500px",
+              display: "flex",
+              height: "100%",
+              flexFlow: "column",
+            }}
+          >
+            <div
+              style={{
+                display: "contents",
+              }}
+            >
+              <div style={{ flex: "0 1 auto" }}>
+                <h2>รายละเอียดการจอง</h2>
+              </div>
+              <div style={{ flex: "1 1 auto" }}>
+                <FullCalendar
+                  plugins={[listPlugin]}
+                  initialView="listMonth"
+                  headerToolbar={false}
+                  events={events}
+                  height={"100%"}
+                  ref={eventListRef}
+                />
+              </div>
+            </div>
+          </div>
         </Col>
       </Row>
     </div>
