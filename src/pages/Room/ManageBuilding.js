@@ -105,8 +105,8 @@ const ManageBuilding = ({ onChange = () => {}, orgList = [] }) => {
   };
 
   /********** Delete **********/
-  function deleteBuild(statusId) {
-    axios.delete(`/rooms/building/${statusId}`).then((res) => {
+  function deleteBuild(buildingId) {
+    axios.delete(`/rooms/building/${buildingId}`).then((res) => {
       onChangeBuilding();
     });
   }
@@ -178,7 +178,7 @@ const ManageBuilding = ({ onChange = () => {}, orgList = [] }) => {
                 (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
               }
               fieldNames={{ label: "name", value: "_id" }}
-              options={dataOrg}
+              options={orgList}
               disabled={user.canNotChangeOrg}
             />
           </Form.Item>

@@ -89,8 +89,11 @@ const ManageRoom = () => {
     (o) => !selectedItems.includes(o)
   );
 
-  function reloadStatus() {
+  function reloadBuilding() {
     getBuildingInOrgID(filterForm.getFieldValue("Org"));
+  }
+  function reloadRoomtype() {
+    getRoomtype(filterForm.getFieldValue("Org"));
   }
   const onFilterChange = (changedValues, allValues) => {
     if (changedValues.hasOwnProperty("OrgID")) {
@@ -190,20 +193,25 @@ const ManageRoom = () => {
         </Col>
         <Col>
           <Space wrap>
-            {/* ButtonManageBuilding */}
-            {/* <ManageBuilding /> */}
             <ManageBuilding
               onChange={(orgId) => {
                 if (orgId !== filterForm.getFieldValue("Org")) {
                   return;
                 }
-                reloadStatus();
+                reloadBuilding();
               }}
               orgList={orgList}
             />
 
-            {/* ButtonManageRoomtype */}
-            <ManageRoomtype />
+            <ManageRoomtype
+              onChange={(orgId) => {
+                if (orgId !== filterForm.getFieldValue("Org")) {
+                  return;
+                }
+                reloadRoomtype();
+              }}
+              orgList={orgList}
+            />
 
             {/* ButtonAddRoom */}
             <EditRoom
