@@ -82,7 +82,6 @@ const ManageUser = () => {
 
   function getManageUsers(option) {
     axios.get("/users/searchby", { params: option }).then((response) => {
-      console.log(response);
       setDataUsers(
         response.data.map((item) => {
           return {
@@ -327,7 +326,6 @@ const ManageUser = () => {
   const [SearchUserList, setSearchUserList] = useState([]);
   function getSearchuser(id) {
     axios.get("/users/search/" + id).then((response) => {
-      console.log(response);
       setSearchUserList(response.data);
     });
   }
@@ -430,7 +428,7 @@ const ManageUser = () => {
               />
             </Form.Item>
 
-            <Form.Item name="email">
+            <Form.Item name={""}>
               <Search
                 placeholder="Search Email"
                 allowClear
@@ -438,7 +436,7 @@ const ManageUser = () => {
                 onChange={setSelectedItems}
                 options={filteredOptions.map((item) => ({
                   value: item._id,
-                  label: item.email,
+                  label: [item.email, item.username],
                 }))}
                 style={{
                   width: 200,

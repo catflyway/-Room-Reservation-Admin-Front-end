@@ -32,7 +32,6 @@ function App() {
     axios
       .post("/auth/login", details)
       .then((response) => {
-        console.log(response);
         if (response.status !== 200) {
           throw new Error("Response not 200");
         }

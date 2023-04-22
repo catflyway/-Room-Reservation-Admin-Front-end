@@ -13,7 +13,6 @@ const ManageOrganization = () => {
   const [OrgID, setOrgID] = useState([]);
   function getOrg() {
     axios.get("/org").then((response) => {
-      console.log(response);
       setOrgID(
         response.data.map((item) => {
           return {

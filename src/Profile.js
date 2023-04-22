@@ -92,7 +92,6 @@ function Profile() {
       .get("/org")
       .then((response) => {
         setOrgLoading(false);
-        console.log(response);
         setOrgList(response.data);
       })
       .catch((err) => {
@@ -104,7 +103,6 @@ function Profile() {
     axios
       .get("/org/status/" + id)
       .then((response) => {
-        console.log(response);
         setstatus(response.data);
         form.resetFields(["status"]);
       })

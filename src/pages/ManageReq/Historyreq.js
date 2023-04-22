@@ -11,7 +11,6 @@ function HistoryReq() {
   const [dataOrg, setDataOrg] = useState([]);
   function getOrg() {
     axios.get("/org").then((response) => {
-      console.log(response);
       setDataOrg(response.data);
     });
   }
@@ -27,7 +26,6 @@ function HistoryReq() {
     };
     option["OrgID"] = OrgID;
     axios.get("requests/searchby", { params: option }).then((response) => {
-      console.log(response);
       setDataSource(
         response.data.map((item) => {
           let timerev =
@@ -57,7 +55,6 @@ function HistoryReq() {
   //   };
   //   axios.put("/Requests/" + request._id, data).then((response) => {
   //     getManageReq();
-  //     console.log(response.data);
   //   });
   //   console.log("Change", request, status);
   // }

@@ -31,7 +31,6 @@ const Usermem = ({ onSuccess }) => {
       .get("/org")
       .then((response) => {
         setOrgLoading(false);
-        console.log(response);
         setOrgList(response.data);
       })
       .catch((err) => {
@@ -47,7 +46,6 @@ const Usermem = ({ onSuccess }) => {
       .get("/org/status/" + id)
       .then((response) => {
         setUserStatusLoading(false);
-        console.log(response);
         setstatus(response.data);
 
         form.resetFields(["status"]);

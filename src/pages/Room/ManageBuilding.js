@@ -9,7 +9,6 @@ const ManageBuilding = () => {
   const [dataSource, setDataSource] = useState([]);
   function getBuildtype(id) {
     axios.get("/org/building/" + id).then((response) => {
-      console.log(response);
       setDataSource(response.data);
     });
   }
@@ -30,7 +29,6 @@ const ManageBuilding = () => {
   const [dataOrg, setDataOrg] = useState([]);
   function getOrg() {
     axios.get("/org").then((response) => {
-      console.log(response);
       setDataOrg(response.data);
     });
   }

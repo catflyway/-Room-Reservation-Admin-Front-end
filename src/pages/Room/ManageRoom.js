@@ -26,37 +26,27 @@ const ManageRoom = () => {
     form.resetFields(["BuildingID"]);
     form.resetFields(["RoomTypeID"]);
   };
-  const onChangebuild = (buildingID) => {
-    console.log(`selected ${buildingID}`);
-  };
-  const onChangeroomtype = (roomtypeID) => {
-    console.log(`selected ${roomtypeID}`);
-  };
 
   const [orgList, setOrgList] = useState([]);
   function getOrg() {
     axios.get("/org").then((response) => {
-      console.log(response);
       setOrgList(response.data);
     });
   }
   const [buildingList, setBuildingList] = useState([]);
   function getBuildingInOrgID(id) {
     axios.get("/org/building/" + id).then((response) => {
-      console.log(response);
       setBuildingList(response.data);
     });
   }
   const [RoomtypeList, setRoomtypeList] = useState([]);
   function getRoomtype(id) {
     axios.get("/org/roomtype/" + id).then((response) => {
-      console.log(response);
       setRoomtypeList(response.data);
     });
   }
   function getManageRooms(option) {
     axios.get("/rooms/searchby", { params: option }).then((response) => {
-      console.log(response);
       setDataSource(
         response.data.map((item) => {
           return {
@@ -71,7 +61,6 @@ const ManageRoom = () => {
   const [SearchroomsList, setSearchRoomsList] = useState([]);
   function getSearchRoom(id) {
     axios.get("/rooms/search/" + id).then((response) => {
-      console.log(response);
       setSearchRoomsList(response.data);
     });
   }
@@ -101,6 +90,16 @@ const ManageRoom = () => {
   const filteredOptions = SearchroomsList.filter(
     (o) => !selectedItems.includes(o)
   );
+  const onFilterChange = (changedValues, allValues) => {
+    if (changedValues.hasOwnProperty("OrgID")) {
+      onChangeorg(changedValues.OrgID);
+      allValues.BuildingID = undefined;
+      changedValues.BuildingID = undefined;
+      allValues.RoomTypeID = undefined;
+      changedValues.RoomTypeID = undefined;
+    }
+    getManageRooms(allValues);
+  };
 
   const columns = [
     {
@@ -181,11 +180,6 @@ const ManageRoom = () => {
     });
   };
 
-  const onFilterChange = (changedValues, allValues) => {
-    console.log(changedValues, allValues);
-    getManageRooms(allValues);
-  };
-
   return (
     <div>
       <Row justify="space-between" align="middle">
@@ -229,7 +223,6 @@ const ManageRoom = () => {
                 showSearch
                 placeholder="หน่วยงาน"
                 optionFilterProp="children"
-                onChange={onChangeorg}
                 filterOption={(input, option) =>
                   (option?.name ?? "")
                     .toLowerCase()
@@ -250,7 +243,6 @@ const ManageRoom = () => {
                 showSearch
                 placeholder="อาคาร/สถานที่"
                 optionFilterProp="children"
-                onChange={onChangebuild}
                 filterOption={(input, option) =>
                   (option?.name ?? "")
                     .toLowerCase()
@@ -270,7 +262,6 @@ const ManageRoom = () => {
                 showSearch
                 placeholder="ประเภทห้อง"
                 optionFilterProp="children"
-                onChange={onChangeroomtype}
                 filterOption={(input, option) =>
                   (option?.name ?? "")
                     .toLowerCase()
@@ -289,7 +280,7 @@ const ManageRoom = () => {
                 onChange={setSelectedItems}
                 options={filteredOptions.map((item) => ({
                   value: item._id,
-                  label: item.Name,
+                  label: [item.Name, item.Seat],
                 }))}
                 style={{
                   width: 200,

@@ -30,7 +30,6 @@ const ManageReq = () => {
       option["OrgID"] = user.org.id;
     }
     axios.get("/Requests/searchby", { params: option }).then((response) => {
-      console.log(response);
       setDataSource(
         response.data.map((item) => {
           let timerev =
@@ -63,7 +62,6 @@ const ManageReq = () => {
     };
     axios.put("/Requests/" + request._id, data).then((response) => {
       getManageReq();
-      console.log(response.data);
     });
     console.log("Change", request, status);
   }
@@ -167,7 +165,6 @@ const ManageReq = () => {
     e.preventDefault();
     axios.post("/Requests", data).then((response) => {
       getManageReq();
-      console.log(response.data);
     });
     console.log(data);
     setIsAddOpen(false);

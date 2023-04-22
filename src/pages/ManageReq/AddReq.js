@@ -20,28 +20,24 @@ function AddReq({ details, onChange }) {
   const [orgList, setOrgList] = useState([]);
   function getOrg() {
     axios.get("/org").then((response) => {
-      console.log(response);
       setOrgList(response.data);
     });
   }
   const [buildingList, setBuildingList] = useState([]);
   function getBuildingInOrgID(id) {
     axios.get("/org/building/" + id).then((response) => {
-      console.log(response);
       setBuildingList(response.data);
     });
   }
   const [roomsList, setRoomsList] = useState([]);
   function getRoomsInOrgID(id) {
     axios.get("/rooms/buildingroom/" + id).then((response) => {
-      console.log(response);
       setRoomsList(response.data);
     });
   }
   const [usersList, setUsersList] = useState([]);
   function getUsersInOrgID(id) {
     axios.get("/org/user/" + id).then((response) => {
-      console.log(response);
       setUsersList(response.data);
     });
   }

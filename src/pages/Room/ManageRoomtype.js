@@ -14,7 +14,6 @@ const ManageRoomtype = () => {
       .get("/org")
       .then((response) => {
         setOrgLoading(false);
-        console.log(response);
         setOrgList(response.data);
       })
       .catch((err) => {
@@ -24,14 +23,12 @@ const ManageRoomtype = () => {
   // const [dataOrg, setDataOrg] = useState([]);
   // function getOrg() {
   //   axios.get("/org").then((response) => {
-  //     console.log(response);
   //     setDataOrg(response.data);
   //   });
   // }
   const [dataSource, setDataSource] = useState([]);
   function getRoomtype(id) {
     axios.get("/org/roomtype/" + id).then((response) => {
-      console.log(response);
       setDataSource(response.data);
     });
   }
