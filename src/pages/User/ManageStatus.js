@@ -183,54 +183,6 @@ const ManageStatus = ({ onChange = () => {}, orgList = [] }) => {
           </Col>
         </Row>
 
-        <Modal
-          title="Add Status"
-          open={isOpenAddStatus}
-          onOk={AddStatusForm.submit}
-          onCancel={() => setOpenAddStatus(false)}
-        >
-          <Form
-            labelCol={{
-              span: 4,
-            }}
-            wrapperCol={{
-              span: 14,
-            }}
-            layout="horizontal"
-            form={AddStatusForm}
-            onFinish={onAddStatusFinish}
-          >
-            <Form.Item
-              label="Name"
-              name="name"
-              rules={[{ required: true, whitespace: true }]}
-            >
-              <Input placeholder="Statusname" />
-            </Form.Item>
-          </Form>
-        </Modal>
-        <Modal
-          title="EditStatus"
-          open={isEditingstatus}
-          okText="Save"
-          onCancel={() => onCancelEditingBuild()}
-          onOk={editForm.submit}
-          okButtonProps={{ loading: isEditingLoading }}
-        >
-          <Form
-            form={editForm}
-            onFinish={onEditFinish}
-            disabled={isEditingLoading}
-          >
-            <Form.Item
-              name="name"
-              rules={[{ required: true, whitespace: true }]}
-            >
-              <Input placeholder="Status" />
-            </Form.Item>
-          </Form>
-        </Modal>
-
         <br />
         <Table
           columns={columnsstatus}
@@ -238,6 +190,51 @@ const ManageStatus = ({ onChange = () => {}, orgList = [] }) => {
           pagination={false}
           rowKey="_id"
         ></Table>
+      </Modal>
+
+      <Modal
+        title="Add Status"
+        open={isOpenAddStatus}
+        onOk={AddStatusForm.submit}
+        onCancel={() => setOpenAddStatus(false)}
+      >
+        <Form
+          labelCol={{
+            span: 4,
+          }}
+          wrapperCol={{
+            span: 14,
+          }}
+          layout="horizontal"
+          form={AddStatusForm}
+          onFinish={onAddStatusFinish}
+        >
+          <Form.Item
+            label="Name"
+            name="name"
+            rules={[{ required: true, whitespace: true }]}
+          >
+            <Input placeholder="Statusname" />
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title="EditStatus"
+        open={isEditingstatus}
+        okText="Save"
+        onCancel={() => onCancelEditingBuild()}
+        onOk={editForm.submit}
+        okButtonProps={{ loading: isEditingLoading }}
+      >
+        <Form
+          form={editForm}
+          onFinish={onEditFinish}
+          disabled={isEditingLoading}
+        >
+          <Form.Item name="name" rules={[{ required: true, whitespace: true }]}>
+            <Input placeholder="Status" />
+          </Form.Item>
+        </Form>
       </Modal>
     </Fragment>
   );

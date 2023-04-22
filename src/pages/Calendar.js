@@ -206,9 +206,7 @@ function Calendar() {
   return (
     <div>
       <Row justify="center">
-        <Title style={{ color: " #3F478D", fontSize: "56px", marginTop: "0" }}>
-          Calendar
-        </Title>
+        <Title style={{ color: " #3F478D", fontSize: "56px" }}>Calendar</Title>
       </Row>
 
       <Row justify="center" gutter={[16, 16]}>

@@ -16,6 +16,7 @@ const { Search } = Input;
 const ManageRoom = () => {
   const user = useContext(UserContext);
   const [form] = Form.useForm();
+  const [filterForm] = Form.useForm();
   const [dataSource, setDataSource] = useState([]);
   const onChangeorg = (orgID) => {
     console.log(`selected ${orgID}`);
@@ -87,6 +88,10 @@ const ManageRoom = () => {
   const filteredOptions = SearchroomsList.filter(
     (o) => !selectedItems.includes(o)
   );
+
+  function reloadStatus() {
+    getBuildingInOrgID(filterForm.getFieldValue("Org"));
+  }
   const onFilterChange = (changedValues, allValues) => {
     if (changedValues.hasOwnProperty("OrgID")) {
       onChangeorg(changedValues.OrgID);
@@ -186,7 +191,16 @@ const ManageRoom = () => {
         <Col>
           <Space wrap>
             {/* ButtonManageBuilding */}
-            <ManageBuilding />
+            {/* <ManageBuilding /> */}
+            <ManageBuilding
+              onChange={(orgId) => {
+                if (orgId !== filterForm.getFieldValue("Org")) {
+                  return;
+                }
+                reloadStatus();
+              }}
+              orgList={orgList}
+            />
 
             {/* ButtonManageRoomtype */}
             <ManageRoomtype />

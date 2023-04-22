@@ -13,7 +13,7 @@ const Navbar = () => {
       // theme="dark"
       mode="horizontal"
       style={{ justifyContent: "center" }}
-      defaultSelectedKeys={[location.pathname]}
+      selectedKeys={[location.pathname]}
       items={MenuItems.map((item, _) => {
         if (!item.role.includes(user.role)) {
           return undefined;

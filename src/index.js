@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
+import { App as AntdApp } from "antd";
 import reportWebVitals from "./reportWebVitals";
 import axios from "axios";
 
@@ -11,7 +12,9 @@ axios.defaults.baseURL = "http://localhost:3001";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <AntdApp>
+      <App />
+    </AntdApp>
   </React.StrictMode>
 );
 

@@ -193,7 +193,7 @@ const ManageRoomtype = () => {
           footer={[]}
         >
           <div className="User-list">
-            <button
+            <Button
               className="button-submit1"
               key="submit"
               type="primary"
@@ -202,7 +202,7 @@ const ManageRoomtype = () => {
               onClick={showModal}
             >
               AddRoomtype
-            </button>
+            </Button>
             <Form initialValues={initialValues}>
               <Form.Item label="หน่วยงาน" name="Org">
                 <Select

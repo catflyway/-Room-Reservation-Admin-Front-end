@@ -1,16 +1,23 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Button, Modal, Table, Input, Form, Select } from "antd";
+import { Button, Modal, Table, Input, Form, Select, Row, Col } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { UserContext } from "../../user-context";
 
-const ManageBuilding = () => {
+const ManageBuilding = ({ onChange = () => {}, orgList = [] }) => {
   const user = useContext(UserContext);
-  const [dataSource, setDataSource] = useState([]);
+  const [orgForm] = Form.useForm();
+  const defaultOrg = user.canNotChangeOrg ? user.org.id : orgList[0]?._id;
+
+  const [buildingList, setBuildingList] = useState([]);
   function getBuildtype(id) {
-    axios.get("/org/building/" + id).then((response) => {
-      setDataSource(response.data);
-    });
+    if (id) {
+      axios.get("/org/building/" + id).then((response) => {
+        setBuildingList(response.data);
+      });
+    } else {
+      setBuildingList([]);
+    }
   }
 
   const canNotusebutton = ["Room Contributor"].includes(user.role);
@@ -30,77 +37,66 @@ const ManageBuilding = () => {
       setDataOrg(response.data);
     });
   }
-  const [idOrg, setIdorg] = useState();
   const onChangeorg = (value) => {
-    console.log(`selected ${value}`);
-    setFormData({ ...formData, org: value });
-    setIdorg(value);
     getBuildtype(value);
   };
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const onAddCancel = () => {
-    setIsModalOpen(false);
-  };
-  const [isModalOpen1, setIsModalOpen1] = useState(false);
 
-  const showModal1 = () => {
-    setIsModalOpen1(true);
-  };
-  const handleOk1 = () => {
-    setIsModalOpen1(false);
-  };
-  const handleCancel1 = () => {
-    setIsModalOpen1(false);
+  const [isManageBuildingOpen, setManageBuildingOpen] = useState(false);
+  function openManageBuilding() {
+    setManageBuildingOpen(true);
+    orgForm.resetFields();
+    getBuildtype(defaultOrg);
+  }
+  function onChangeBuilding() {
+    const orgId = orgForm.getFieldValue("Org");
+    onChange(orgId);
+    getBuildtype(orgId);
+  }
+  /********** Add **********/
+  const [AddBuildingForm] = Form.useForm();
+  const [isOpenAddBuilding, setOpenAddBuilding] = useState(false);
+  const openAddBuilding = () => {
+    AddBuildingForm.resetFields();
+    setOpenAddBuilding(true);
   };
 
-  const [formData, setFormData] = useState({
-    name: "",
-    org: "",
-  });
-  const onAddOk = () => {
-    console.log(formData);
+  const onAddBuildingFinish = (formData) => {
+    const data = {
+      ...formData,
+      org: orgForm.getFieldValue("Org"),
+    };
     axios
-      .post("/rooms/building", formData)
+      .post("/rooms/building", data)
       .then((res) => {
-        getBuildtype(idOrg);
+        onChangeBuilding();
+        setOpenAddBuilding(false);
       })
       .catch((err) => console.log(err));
-    setIsModalOpen(false);
   };
-  function deleteBuild(id) {
-    axios.delete("/rooms/building/" + id).then((res) => {
-      getBuildtype(idOrg);
-    });
-  }
 
+  /********** Edit **********/
   const [editForm] = Form.useForm();
-  const [editingDatabuild, setEditingDatabuild] = useState(null);
-  const [isEditingBuild, setIsEditingbuild] = useState(false);
+  const [editingDatabuilding, setEditingDatabuilding] = useState(null);
+  const [isEditingbuilding, setIsEditingbuilding] = useState(false);
   const [isEditingLoading, setIsEditingLoading] = useState(false);
-  const onEditBuild = (record) => {
-    console.log("edit data", record);
-    setIsEditingbuild(true);
-    setEditingDatabuild(record);
+  const onEditBuilding = (record) => {
+    setIsEditingbuilding(true);
+    setEditingDatabuilding(record);
     editForm.setFieldsValue(record);
   };
   const onCancelEditingBuild = () => {
-    setIsEditingbuild(false);
-    setEditingDatabuild(null);
+    setIsEditingbuilding(false);
+    setEditingDatabuilding(null);
   };
   const onEditFinish = (formData) => {
-    console.log(formData, editingDatabuild);
-
     setIsEditingLoading(true);
     axios
-      .put("/rooms/building/" + editingDatabuild._id, formData)
+      .put(`/rooms/building/${editingDatabuilding._id}`, formData)
       .then((res) => {
-        console.log("/rooms/building/", res.data);
-        getBuildtype(idOrg);
+        onChangeBuilding();
+
         setIsEditingLoading(false);
-        setIsEditingbuild(false);
+        setIsEditingbuilding(false);
       })
       .catch((err) => {
         console.log("/rooms/building/", err);
@@ -108,6 +104,12 @@ const ManageBuilding = () => {
       });
   };
 
+  /********** Delete **********/
+  function deleteBuild(statusId) {
+    axios.delete(`/rooms/building/${statusId}`).then((res) => {
+      onChangeBuilding();
+    });
+  }
   const columnsEdit = [
     {
       key: "1",
@@ -122,7 +124,7 @@ const ManageBuilding = () => {
           <>
             <EditOutlined
               onClick={() => {
-                onEditBuild(record);
+                onEditBuilding(record);
               }}
               style={{ color: "blue", marginLeft: 12 }}
             />
@@ -140,7 +142,7 @@ const ManageBuilding = () => {
 
   const onDeleteBuild = (record) => {
     Modal.confirm({
-      title: "Are you sure, you want to delete this build record?",
+      title: "Are you sure, you want to delete this building record?",
       okText: "Yes",
       okType: "danger",
       onOk: () => {
@@ -154,49 +156,24 @@ const ManageBuilding = () => {
         className="button-room"
         type="primary"
         disabled={canNotusebutton}
-        onClick={showModal1}
+        onClick={openManageBuilding}
         size="large"
       >
         ManageBuilding
       </Button>
       <Modal
         title="ManageBuilding"
-        open={isModalOpen1}
-        onOk={handleOk1}
-        onCancel={handleCancel1}
-        footer={[]}
+        open={isManageBuildingOpen}
+        onCancel={() => setManageBuildingOpen(false)}
+        footer={false}
       >
-        <button
-          className="button-submit1"
-          key="submit"
-          type="primary"
-          // disabled={dataSource.length > 20 ? true : false}
-          disabled={canNotusebutton & (dataSource.length > 20 === false)}
-          onClick={showModal}
-        >
-          AddBuild
-        </button>
-        <Modal
-          title="AddBuild"
-          open={isModalOpen}
-          onOk={onAddOk}
-          onCancel={onAddCancel}
-        >
-          <Input
-            placeholder="AddBuild"
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            value={formData.name}
-          />
-        </Modal>
-
-        <Form initialValues={initialValues}>
-          <Form.Item label="หน่วยงาน" name="Org">
+        <Form form={orgForm}>
+          <Form.Item label="หน่วยงาน" name="Org" initialValue={defaultOrg}>
             <Select
               showSearch
               placeholder="หน่วยงาน"
               optionFilterProp="children"
-              onChange={onChangeorg}
-              // onSearch={onSearch}
+              onChange={getBuildtype}
               filterOption={(input, option) =>
                 (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
               }
@@ -206,22 +183,58 @@ const ManageBuilding = () => {
             />
           </Form.Item>
         </Form>
+        <Row align={"end"}>
+          <Button
+            className="button-submit1"
+            type="primary"
+            disabled={canNotusebutton & (buildingList.length > 20 === false)}
+            onClick={openAddBuilding}
+          >
+            AddBuild
+          </Button>
+        </Row>
+        <br />
 
         <Table
           columns={columnsEdit}
-          dataSource={dataSource}
+          dataSource={buildingList}
           pagination={false}
           rowKey="_id"
         ></Table>
       </Modal>
 
       <Modal
+        title="AddBuild"
+        open={isOpenAddBuilding}
+        onOk={AddBuildingForm.submit}
+        onCancel={() => setOpenAddBuilding(false)}
+      >
+        <Form
+          labelCol={{
+            span: 4,
+          }}
+          wrapperCol={{
+            span: 14,
+          }}
+          layout="horizontal"
+          form={AddBuildingForm}
+          onFinish={onAddBuildingFinish}
+        >
+          <Form.Item
+            label="Build"
+            name="name"
+            rules={[{ required: true, whitespace: true }]}
+          >
+            <Input placeholder="AddBuild" />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
         title="EditBuilding"
-        open={isEditingBuild}
+        open={isEditingbuilding}
         okText="Save"
-        onCancel={() => {
-          onCancelEditingBuild();
-        }}
+        onCancel={() => onCancelEditingBuild()}
         onOk={() => {
           editForm.submit();
         }}
@@ -232,7 +245,11 @@ const ManageBuilding = () => {
           onFinish={onEditFinish}
           disabled={isEditingLoading}
         >
-          <Form.Item name="name" rules={[{ required: true, whitespace: true }]}>
+          <Form.Item
+            label="Build"
+            name="name"
+            rules={[{ required: true, whitespace: true }]}
+          >
             <Input placeholder="Buildiding" />
           </Form.Item>
         </Form>
