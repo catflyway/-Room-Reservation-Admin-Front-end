@@ -133,15 +133,12 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
     });
   }
 
-  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
-    user.role
-  );
   let initialValues = {};
-  if (canNotChangeOrg) {
+  if (user.canNotChangeOrg) {
     initialValues["org"] = user.org.id;
   }
   useEffect(() => {
-    if (canNotChangeOrg) {
+    if (user.canNotChangeOrg) {
       onChangeorg(user.org.id);
     }
     getOrg();
@@ -289,7 +286,7 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
               fieldNames={{ label: "name", value: "_id" }}
               options={orgList}
               loading={orgLoading}
-              disabled={canNotChangeOrg}
+              disabled={user.canNotChangeOrg}
             />
           </Form.Item>
           <Form.Item

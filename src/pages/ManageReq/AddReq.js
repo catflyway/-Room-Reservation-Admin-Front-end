@@ -41,11 +41,9 @@ function AddReq({ details, onChange }) {
       setUsersList(response.data);
     });
   }
-  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
-    user.role
-  );
+
   useEffect(() => {
-    if (canNotChangeOrg) {
+    if (user.canNotChangeOrg) {
       onChangeorg(user.org.id);
       form.setFieldValue("OrgID", user.org.id);
       getOrg({ OrgID: user.org.id });
@@ -186,7 +184,7 @@ function AddReq({ details, onChange }) {
           }
           fieldNames={{ label: "name", value: "_id" }}
           options={orgList}
-          disabled={canNotChangeOrg}
+          disabled={user.canNotChangeOrg}
         />
       </Form.Item>
       <Form.Item

@@ -60,16 +60,13 @@ function HistoryReq() {
   // }
   const [isAddOpen, setIsAddOpen] = useState(false);
 
-  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
-    user.role
-  );
   let initialValues = {};
-  if (canNotChangeOrg) {
+  if (user.canNotChangeOrg) {
     initialValues["org"] = user.org.id;
   }
   const showAddReq = () => {
     setIsAddOpen(true);
-    if (canNotChangeOrg) {
+    if (user.canNotChangeOrg) {
       onChangeorg(user.org.id);
     }
     getOrg();
@@ -181,7 +178,7 @@ function HistoryReq() {
               }
               fieldNames={{ label: "name", value: "_id" }}
               options={dataOrg}
-              disabled={canNotChangeOrg}
+              disabled={user.canNotChangeOrg}
             />
           </Form.Item>
         </Form>

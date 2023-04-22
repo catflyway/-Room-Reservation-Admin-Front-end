@@ -14,15 +14,23 @@ function App() {
   const allowRole = ["Contributor", "Room Contributor", "Administrator"];
   const [user, setUser] = useState(() => {
     let userProfle = localStorage.getItem("userData");
-    if (userProfle) {
-      let toto = JSON.parse(userProfle);
-      if (allowRole.includes(toto.role)) {
-        axios.defaults.headers.common["Authorization"] = `Bearer ${toto.token}`;
-        return toto;
-      }
-      localStorage.removeItem("userData");
+    if (!userProfle) {
+      return { email: "" };
     }
-    return { email: "" };
+    let toto = JSON.parse(userProfle);
+    if (!allowRole.includes(toto.role)) {
+      localStorage.removeItem("userData");
+      return { email: "" };
+    }
+    axios.defaults.headers.common["Authorization"] = `Bearer ${toto.token}`;
+
+    toto.canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
+      toto.role
+    );
+
+    // toto.canNotChangeOrg = true;
+
+    return toto;
   });
 
   const [error, setError] = useState("");

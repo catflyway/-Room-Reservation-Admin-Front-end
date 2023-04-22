@@ -150,11 +150,8 @@ function Calendar() {
     });
   }
 
-  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
-    user.role
-  );
   let initialValues = {};
-  if (canNotChangeOrg) {
+  if (user.canNotChangeOrg) {
     initialValues["Org"] = user.org.id;
   }
 
@@ -191,11 +188,11 @@ function Calendar() {
   };
 
   useEffect(() => {
-    if (canNotChangeOrg) {
+    if (user.canNotChangeOrg) {
       onChangeorg(user.org.id);
     }
     getOrg();
-    if (canNotChangeOrg) {
+    if (user.canNotChangeOrg) {
       onChangeorg(user.org.id);
       form.setFieldValue("Org", user.org.id);
       getManageCalendar({ Org: user.org.id });

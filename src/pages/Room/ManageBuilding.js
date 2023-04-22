@@ -12,16 +12,14 @@ const ManageBuilding = () => {
       setDataSource(response.data);
     });
   }
-  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
-    user.role
-  );
+
   const canNotusebutton = ["Room Contributor"].includes(user.role);
   let initialValues = {};
-  if (canNotChangeOrg) {
+  if (user.canNotChangeOrg) {
     initialValues["Org"] = user.org.id;
   }
   useEffect(() => {
-    if (canNotChangeOrg) {
+    if (user.canNotChangeOrg) {
       onChangeorg(user.org.id);
     }
     getOrg();
@@ -204,7 +202,7 @@ const ManageBuilding = () => {
               }
               fieldNames={{ label: "name", value: "_id" }}
               options={dataOrg}
-              disabled={canNotChangeOrg}
+              disabled={user.canNotChangeOrg}
             />
           </Form.Item>
         </Form>

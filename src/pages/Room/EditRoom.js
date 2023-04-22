@@ -112,17 +112,14 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
     getUsersInOrgID(orgID);
   };
 
-  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
-    user.role
-  );
   const canNotusebutton = ["Room Contributor"].includes(user.role);
   let initialValues = {};
-  if (canNotChangeOrg) {
+  if (user.canNotChangeOrg) {
     initialValues["Org"] = user.org.id;
   }
 
   useEffect(() => {
-    if (canNotChangeOrg) {
+    if (user.canNotChangeOrg) {
       onChangeorg(user.org.id);
     }
     getOrg();
@@ -279,7 +276,7 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
               }
               fieldNames={{ label: "name", value: "_id" }}
               options={orgList}
-              disabled={canNotChangeOrg}
+              disabled={user.canNotChangeOrg}
             />
           </Form.Item>
           <Form.Item

@@ -23,8 +23,7 @@ const ManageRoom = () => {
       getBuildingInOrgID(orgID);
       getRoomtype(orgID);
     }
-    form.resetFields(["BuildingID"]);
-    form.resetFields(["RoomTypeID"]);
+    form.resetFields(["BuildingID", "RoomTypeID"]);
   };
 
   const [orgList, setOrgList] = useState([]);
@@ -64,13 +63,11 @@ const ManageRoom = () => {
       setSearchRoomsList(response.data);
     });
   }
-  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
-    user.role
-  );
+
   useEffect(() => {
     getOrg();
 
-    if (canNotChangeOrg) {
+    if (user.canNotChangeOrg) {
       onChangeorg(user.org.id);
       form.setFieldValue("OrgID", user.org.id);
       getManageRooms({ OrgID: user.org.id });
@@ -230,7 +227,7 @@ const ManageRoom = () => {
                 }
                 fieldNames={{ label: "name", value: "_id" }}
                 options={orgList}
-                disabled={canNotChangeOrg}
+                disabled={user.canNotChangeOrg}
               />
             </Form.Item>
 

@@ -131,11 +131,9 @@ function ShowBar() {
     console.log(fillter);
     getManageRooms(fillter);
   };
-  const canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
-    user.role
-  );
+
   useEffect(() => {
-    if (canNotChangeOrg) {
+    if (user.canNotChangeOrg) {
       onChangeorg(user.org.id);
       form.setFieldValue("OrgID", user.org.id);
       onFilterChange({ OrgID: user.org.id }, formRef.current.getFieldValue());
@@ -168,7 +166,7 @@ function ShowBar() {
                 }
                 fieldNames={{ label: "name", value: "_id" }}
                 options={orgList}
-                disabled={canNotChangeOrg}
+                disabled={user.canNotChangeOrg}
               />
             </Form.Item>
           </Col>
