@@ -131,21 +131,6 @@ function HistoryReq() {
       title: "Status",
       dataIndex: "Status_Approve",
       width: 200,
-      render: (value, record) => {
-        return (
-          <>
-            <Select
-              value={value}
-              // onChange={(newValue) => onChangeStatus(record, newValue)}
-            >
-              <Select.Option value="Pending">Pending</Select.Option>
-              <Select.Option value="Approved">Approved</Select.Option>
-              <Select.Option value="Rejected">Rejected</Select.Option>
-              <Select.Option value="Cancled ">Cancled</Select.Option>
-            </Select>
-          </>
-        );
-      },
     },
   ];
 
