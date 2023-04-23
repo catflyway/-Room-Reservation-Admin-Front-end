@@ -46,6 +46,11 @@ const ManageRoom = () => {
     });
   }
   function getManageRooms(option) {
+    if (user.role === "Room Contributor") {
+      option["ContributorID"] = user._id;
+    } else if (user.role === "Contributor") {
+      option["OrgID"] = user.org.id;
+    }
     axios.get("/rooms/searchby", { params: option }).then((response) => {
       setDataSource(
         response.data.map((item) => {
@@ -64,6 +69,7 @@ const ManageRoom = () => {
       setSearchRoomsList(response.data);
     });
   }
+  const canNotusebutton = ["Room Contributor"].includes(user.role);
 
   useEffect(() => {
     getOrg();
@@ -157,12 +163,14 @@ const ManageRoom = () => {
               }}
               style={{ color: "blue", marginLeft: 12 }}
             />
-            <DeleteOutlined
-              onClick={() => {
-                onDeleteRoom(record);
-              }}
-              style={{ color: "red", marginLeft: 12 }}
-            />
+            {!canNotusebutton ? (
+              <DeleteOutlined
+                onClick={() => {
+                  onDeleteRoom(record);
+                }}
+                style={{ color: "red", marginLeft: 12 }}
+              />
+            ) : null}
           </>
         );
       },

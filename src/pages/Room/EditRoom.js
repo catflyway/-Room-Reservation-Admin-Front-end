@@ -214,7 +214,6 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
         open={openEdit || isModalOpen}
         onOk={onAddUser}
         onCancel={onCancelAdd}
-        okButtonProps={{disabled:canNotusebutton}}
         confirmLoading={loading}
       >
         <Form
@@ -277,7 +276,7 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
               }
               fieldNames={{ label: "name", value: "_id" }}
               options={orgList}
-              disabled={user.canNotChangeOrg}
+              disabled={user.canNotChangeOrg || canNotusebutton}
             />
           </Form.Item>
           <Form.Item
@@ -295,6 +294,7 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
               }
               fieldNames={{ label: "name", value: "_id" }}
               options={buildingList}
+              disabled={canNotusebutton}
             />
           </Form.Item>
           <Form.Item
@@ -407,6 +407,7 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
               }
               fieldNames={{ label: "email", value: "_id" }}
               options={usersList}
+              disabled={canNotusebutton}
             />
           </Form.Item>
         </Form>
