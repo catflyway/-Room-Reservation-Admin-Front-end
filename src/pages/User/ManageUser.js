@@ -22,6 +22,7 @@ const { Search } = Input;
 
 const ManageUser = () => {
   const user = useContext(UserContext);
+  const [form] = Form.useForm();
   const [filterForm] = Form.useForm();
 
   /********** Get data from API **********/
@@ -65,12 +66,20 @@ const ManageUser = () => {
   };
 
   const onFilterChange = (changedValues, allValues) => {
+    if (changedValues.hasOwnProperty('email')) return;
     if (changedValues.hasOwnProperty("org")) {
       onChangeOrg(changedValues.org);
       allValues.status = undefined;
       changedValues.status = undefined;
     }
     getManageUsers(allValues);
+  };
+  const onClickSearch = (field) => (value, event) => {
+    let formValue = {
+      ...form.getFieldsValue(),
+      [field]: value,
+    }
+    onFilterChange({}, formValue);
   };
 
   const [SearchUserList, setSearchUserList] = useState([]);
@@ -308,19 +317,20 @@ const ManageUser = () => {
               />
             </Form.Item>
 
-            <Form.Item name={""}>
+            <Form.Item name={"email"}>
               <Search
                 placeholder="Search Email"
                 allowClear
-                value={selectedItems}
-                onChange={setSelectedItems}
-                options={filteredOptions.map((item) => ({
-                  value: item._id,
-                  label: [item.email, item.username],
-                }))}
+                // value={selectedItems}
+                // onChange={setSelectedItems}
+                // options={filteredOptions.map((item) => ({
+                //   value: item._id,
+                //   label: [item.email, item.username],
+                // }))}
                 style={{
                   width: 200,
                 }}
+                onSearch={onClickSearch('email')}
               />
             </Form.Item>
           </Space>
