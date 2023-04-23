@@ -8,30 +8,46 @@ import {
   TimePicker,
   Select,
   Segmented,
+  Button,
+  Modal,
 } from "antd";
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
 import { UserContext } from "../../user-context";
 
-function AddReq({ details, onChange }) {
+const { RangePicker } = DatePicker;
+function AddReq({ value,openEdit, onCancel, onSuccess }) {
   const user = useContext(UserContext);
   const [form] = Form.useForm();
-  const [reqloading,setreqloading]=useState(false)
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [loading,setLoading] = useState(false)
+
+  const showAddReq = () => {
+    setIsAddOpen(true);
+    setLoading(false);
+  };
+
+  const handCancelAddReq = () => {
+    setIsAddOpen(false);
+  };
+
   const [orgList, setOrgList] = useState([]);
   function getOrg() {
     axios.get("/org").then((response) => {
       setOrgList(response.data);
     });
   }
+
   const [buildingList, setBuildingList] = useState([]);
   function getBuildingInOrgID(id) {
     axios.get("/org/building/" + id).then((response) => {
       setBuildingList(response.data);
     });
   }
+
   const [roomsList, setRoomsList] = useState([]);
-  function getRoomsInOrgID(id) {
+  function getRoomsInBuildingID(id) {
     axios.get("/rooms/buildingroom/" + id).then((response) => {
       setRoomsList(response.data);
     });
@@ -43,71 +59,49 @@ function AddReq({ details, onChange }) {
     });
   }
 
-  useEffect(() => {
-    if (user.canNotChangeOrg) {
-      onChangeorg(user.org.id);
-      form.setFieldValue("OrgID", user.org.id);
-      getOrg({ OrgID: user.org.id });
-    } else {
-      getOrg();
-    }
-  }, []);
-
   const onChangeorg = (orgID) => {
-    console.log(`selected ${orgID}`);
     getBuildingInOrgID(orgID);
     getUsersInOrgID(orgID);
-
-    onChange({ ...details, OrgID: orgID });
   };
   const onChangebuild = (buildingID) => {
-    console.log(`selected ${buildingID}`);
-    getRoomsInOrgID(buildingID);
-
-    onChange({ ...details, buildingID: buildingID });
-  };
-  const onChangeStartdate = (date) => {
-    console.log(`selected ${date}`);
-    if (date) {
-      setStartDate(date?.clone().startOf("day"));
-    }
-    form.resetFields(["endDate"]);
+    getRoomsInBuildingID(buildingID);
   };
 
-  const datOfWeekString = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
+  const [dateRangeDisable, setDateRangeDisable] = useState([false, true]);
 
-  const [isAllDay, setIsAllDay] = useState(true);
-  const [startDate, setStartDate] = useState();
-  const [endDate, setEndDate] = useState();
-  const [timeRange, setTimeRange] = useState([0, 24 * 60]);
-  const [weekDay, setWeekDay] = useState();
-  const [repeatPattern, setRepeatPattern] = useState("norepeat");
-
-  const onChangeTimeRange = (timesrt, timeString) => {
-    let startDiff = timesrt[0]?.diff(
-      timesrt[0].clone().startOf("day"),
-      "minute"
-    );
-    let stopDiff = timesrt[1]?.diff(
-      timesrt[1].clone().startOf("day"),
-      "minute"
-    );
-    setTimeRange([startDiff, stopDiff]);
-  };
-
+  const dateRange = Form.useWatch("dateRange", form);
+  const repeatDate = Form.useWatch("repeatDate", form);
   React.useEffect(() => {
-    if (startDate) {
-      setWeekDay(datOfWeekString[startDate.day()]);
+    if (!dateRange) return;
+    if (repeatDate === "norepeat") {
+      setDateRangeDisable([false, true]);
+      form.setFieldValue("dateRange", [dateRange[0], null]);
+    } else {
+      setDateRangeDisable([false, false]);
+      if (!dateRange[1]) {
+        form.setFieldValue("dateRange", [dateRange[0], dateRange[0]]);
+      }
     }
-  }, [startDate]);
+  }, [repeatDate]);
 
-  React.useEffect(() => {
-    if (isAllDay) {
-      setTimeRange([0, 24 * 60]);
+  const handleSubmit = (value) => {
+    let timeRange = [0, 24 * 60];
+
+    if (!value.allDay) {
+      let startDiff = value.timeRange[0]?.diff(
+        value.timeRange[0].clone().startOf("day"),
+        "minute"
+      );
+      let stopDiff = value.timeRange[1]?.diff(
+        value.timeRange[1].clone().startOf("day"),
+        "minute"
+      );
+      timeRange = [startDiff, stopDiff];
     }
-  }, [isAllDay]);
 
-  React.useEffect(() => {
+    const startDate = value.dateRange[0];
+    const endDate = value.dateRange[1];
+
     let getTimeRange = (day) => {
       let start = [
         day.clone().add(timeRange[0], "minute").format("YYYY-MM-DDTHH:mm:ssZ"),
@@ -135,137 +129,139 @@ function AddReq({ details, onChange }) {
     let startTime = [];
     let endTime = [];
 
-    if (startDate && timeRange && repeatPattern == "norepeat") {
+    if (startDate && value.repeatDate === "norepeat") {
       let range = getTimeRange(startDate);
       startTime = [range[0]];
       endTime = [range[1]];
-    } else if (startDate && endDate && timeRange && repeatPattern == "days") {
+    } else if (startDate && endDate && value.repeatDate === "days") {
       [startTime, endTime] = getTimeRangeInterval(1);
-    } else if (startDate && endDate && timeRange && repeatPattern == "weeks") {
+    } else if (startDate && endDate && value.repeatDate === "weeks") {
       [startTime, endTime] = getTimeRangeInterval(7);
     }
 
-    onChange({
-      ...details,
-      allDay: isAllDay,
-      repeatDate: repeatPattern,
+    value = {
+      ...value,
       startTime,
       endTime,
+      dateRange: undefined,
+      timeRange: undefined,
+      OrgID: undefined,
+      UserID: user._id,
+    };
+    setLoading(true);
+
+    axios.post("/Requests", value).then((response) => {
+      setIsAddOpen(false);
+      setLoading(false);
+      form.resetFields();
     });
-  }, [repeatPattern, startDate, endDate, timeRange]);
+  };
+
+  const datOfWeekString = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
+
+  useEffect(() => {
+    getOrg();
+  }, []);
 
   return (
-    <Form
-      form={form}
-      labelCol={{
-        span: 6,
-      }}
-      wrapperCol={{
-        span: 18,
-      }}
-      layout="horizontal"
-    >
-      <Form.Item
-        label="หน่วยงาน"
-        name="OrgID"
-        rules={[
-          {
-            required: true,
-            message: "Please input your Organization!",
-          },
-        ]}
+    <>
+      <Button
+        className="button-user"
+        type="primary"
+        size="large"
+        onClick={showAddReq}
       >
-        <Select
-          showSearch
-          placeholder="หน่วยงาน"
-          optionFilterProp="children"
-          onChange={onChangeorg}
-          filterOption={(input, option) =>
-            (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
-          }
-          fieldNames={{ label: "name", value: "_id" }}
-          options={orgList}
-          disabled={user.canNotChangeOrg}
-        />
-      </Form.Item>
-      <Form.Item
-        label="อาคาร/สถานที่"
-        name="อาคาร/สถานที่"
-        rules={[
-          {
-            required: true,
-            message: "Please input your Building!",
-          },
-        ]}
+        AddReservation
+      </Button>
+      <Modal
+        title="AddReq"
+        open={isAddOpen}
+        //  footer={null}
+        onOk={() => form.submit()}
+        confirmLoading={loading}
+        onCancel={handCancelAddReq}
       >
-        <Select
-          showSearch
-          placeholder="อาคาร/สถานที่"
-          optionFilterProp="children"
-          onChange={onChangebuild}
-          filterOption={(input, option) =>
-            (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
-          }
-          fieldNames={{ label: "name", value: "_id" }}
-          options={buildingList}
-        />
-      </Form.Item>
-      <Form.Item
-        label="ห้อง"
-        name="ห้อง"
-        rules={[
-          {
-            required: true,
-            message: "Please input your Room!",
-          },
-        ]}
-      >
-        <Select
-          showSearch
-          placeholder="ห้อง"
-          optionFilterProp="children"
-          onChange={(value) => onChange({ ...details, Room: value })}
-          // onChange={(value) => setData({ ...data, Room: value })}
-          filterOption={(input, option) =>
-            (option?.Name ?? "").toLowerCase().includes(input.toLowerCase())
-          }
-          fieldNames={{ label: "Name", value: "_id" }}
-          options={roomsList}
-        />
-      </Form.Item>
-      <Form.Item label="เวลาการจอง">
-        <Space direction="vertical">
-          <Checkbox
-            name="TimeRange"
-            checked={isAllDay}
-            onChange={(e) => setIsAllDay(e.target.checked)}
-          >
-            Allday
-          </Checkbox>
-          {!isAllDay ? (
-            <Form.Item
-              name="time"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your reservation timing!",
-                },
-              ]}
-            >
-              <TimePicker.RangePicker
-                onChange={onChangeTimeRange}
-                format="HH:mm"
-              />
-            </Form.Item>
-          ) : (
-            ""
-          )}
-        </Space>
-      </Form.Item>
-      <Form.Item label="วันจอง">
-        <Space direction="vertical">
+        <Form
+          form={form}
+          labelCol={{
+            span: 6,
+          }}
+          wrapperCol={{
+            span: 18,
+          }}
+          layout="horizontal"
+          onFinish={handleSubmit}
+          disabled={loading}
+        >
           <Form.Item
-            name="startDate"
+            label="หน่วยงาน"
+            name="OrgID"
+            rules={[
+              {
+                required: true,
+                message: "Please input your Organization!",
+              },
+            ]}
+          >
+            <Select
+              showSearch
+              placeholder="หน่วยงาน"
+              optionFilterProp="children"
+              onChange={onChangeorg}
+              filterOption={(input, option) =>
+                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
+              }
+              fieldNames={{ label: "name", value: "_id" }}
+              options={orgList}
+            />
+          </Form.Item>
+          <Form.Item
+            label="อาคาร/สถานที่"
+            name="Building"
+            rules={[
+              {
+                required: true,
+                message: "Please input your Building!",
+              },
+            ]}
+          >
+            <Select
+              showSearch
+              placeholder="อาคาร/สถานที่"
+              optionFilterProp="children"
+              onChange={onChangebuild}
+              filterOption={(input, option) =>
+                (option?.name ?? "").toLowerCase().includes(input.toLowerCase())
+              }
+              fieldNames={{ label: "name", value: "_id" }}
+              options={buildingList}
+            />
+          </Form.Item>
+          <Form.Item
+            label="ห้อง"
+            name="Room"
+            rules={[
+              {
+                required: true,
+                message: "Please input your Room!",
+              },
+            ]}
+          >
+            <Select
+              showSearch
+              placeholder="ห้อง"
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                (option?.Name ?? "").toLowerCase().includes(input.toLowerCase())
+              }
+              fieldNames={{ label: "Name", value: "_id" }}
+              options={roomsList}
+            />
+          </Form.Item>
+          <Form.Item
+            label="วันจอง"
+            name="dateRange"
+            initialValue={[dayjs().add(1, "day").startOf("day"), null]}
             rules={[
               {
                 required: true,
@@ -273,115 +269,127 @@ function AddReq({ details, onChange }) {
               },
             ]}
           >
-            <DatePicker
-              placeholder="เริ่มจอง"
-              onChange={onChangeStartdate}
-              value={startDate}
+            <RangePicker
+              allowClear={false}
+              placeholder={[
+                "เริ่ม",
+                dateRangeDisable[1]
+                  ? dateRange?.[0]?.format("YYYY-MM-DD")
+                  : "สิ้นสุด",
+              ]}
+              defaultPickerValue={[dayjs(), null]}
               disabledDate={(value) => value && value < dayjs().endOf("day")}
+              disabled={dateRangeDisable}
+              allowEmpty={dateRangeDisable}
+              cellRender={(current) => {
+                const style = {};
+                if (
+                  repeatDate === "weeks" &&
+                  current.day() === dateRange?.[0]?.day()
+                ) {
+                  style.border = "1px solid #1890ff";
+                  style.borderRadius = "50%";
+                }
+                return (
+                  <div className="ant-picker-cell-inner" style={style}>
+                    {current.date()}
+                  </div>
+                );
+              }}
             />
           </Form.Item>
-          <Radio.Group
-            value={repeatPattern}
-            onChange={(e) => setRepeatPattern(e.target.value)}
+          <Form.Item
+            label="การเกิดซ้ำ"
+            name="repeatDate"
+            initialValue="norepeat"
           >
-            <Radio.Button value="norepeat">Does not repeat</Radio.Button>
-            <Radio.Button value="days">everyday</Radio.Button>
-            <Radio.Button value="weeks">everyweek</Radio.Button>
-          </Radio.Group>
-          {repeatPattern == "days" ? (
-            <Form.Item
-              name="endDate"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your EndDate!",
-                },
-              ]}
-            >
-              <DatePicker
-                onChange={(date) =>
-                  setEndDate(date?.clone().add(1, "day").startOf("day"))
-                }
-                placeholder="วันสิ้นการจอง"
-                disabledDate={(value) => value && value < startDate}
-              />
-            </Form.Item>
-          ) : repeatPattern == "weeks" ? (
-            <>
+            <Radio.Group>
+              <Radio.Button value="norepeat">Does not repeat</Radio.Button>
+              <Radio.Button value="days">everyday</Radio.Button>
+              <Radio.Button value="weeks">everyweek</Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+          {repeatDate === "weeks" ? (
+            <Form.Item wrapperCol={{ span: 18, offset: 6 }}>
               <Segmented
                 size="large"
                 options={datOfWeekString}
-                value={weekDay}
+                value={datOfWeekString[dateRange?.[0]?.day()]}
                 disabled
               />
-              <Form.Item
-                name="endDate"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input your EndDate!",
-                  },
-                ]}
-              >
-                <DatePicker
-                  onChange={(date) =>
-                    setEndDate(date?.clone().add(1, "day").startOf("day"))
-                  }
-                  placeholder="วันสิ้นสุดสัปดาห์"
-                  disabledDate={(value) =>
-                    value &&
-                    startDate &&
-                    (value < startDate || value.day() != startDate.day())
-                  }
-                />
-              </Form.Item>
-            </>
-          ) : (
-            ""
-          )}
-        </Space>
-      </Form.Item>
-      <Form.Item
-        label="ผู้ขอจอง"
-        name="UserID"
-        rules={[
-          {
-            required: true,
-            message: "Please input your User!",
-          },
-        ]}
-      >
-        <Select
-          showSearch
-          placeholder="ผู้ขอจอง"
-          optionFilterProp="children"
-          onChange={(userID) => {
-            onChange({ ...details, UserID: userID });
-          }}
-          filterOption={(input, option) =>
-            (option?.email ?? "").toLowerCase().includes(input.toLowerCase())
-          }
-          fieldNames={{ label: "email", value: "_id" }}
-          options={usersList}
-        />
-      </Form.Item>
-      <Form.Item
-        label="วัตถุประสงค์"
-        name="วัตถุประสงค์"
-        rules={[
-          {
-            required: true,
-            message: "Please input your Purpose!",
-          },
-        ]}
-      >
-        <Input
-          placeholder="วัตถุประสงค์"
-          onChange={(e) => onChange({ ...details, Purpose: e.target.value })}
-          value={details?.Purpose}
-        />
-      </Form.Item>
-    </Form>
+            </Form.Item>
+          ) : null}
+          <Form.Item
+            label="เวลาการจอง"
+            name="allDay"
+            valuePropName="checked"
+            initialValue={true}
+            style={{ marginBottom: "0" }}
+          >
+            <Checkbox name="TimeRange">Allday</Checkbox>
+          </Form.Item>
+          <Form.Item
+            noStyle
+            shouldUpdate={(prevValues, currentValues) =>
+              prevValues.allDay !== currentValues.allDay
+            }
+          >
+            {({ getFieldValue }) =>
+              getFieldValue("allDay") !== true ? (
+                <Form.Item
+                  name="timeRange"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input your reservation timing!",
+                    },
+                  ]}
+                  wrapperCol={{ span: 18, offset: 6 }}
+                >
+                  <TimePicker.RangePicker format="HH:mm" />
+                </Form.Item>
+              ) : (
+                <div style={{ height: "24px" }}></div>
+              )
+            }
+          </Form.Item>
+          <Form.Item
+            name="email"
+            label="ผู้จอง"
+            rules={[
+              {
+                required: true,
+                message: "Please input your Useremail!",
+              },
+            ]}
+          >
+            <Select
+              showSearch
+              placeholder="ผู้ขอจอง"
+              filterOption={(input, option) =>
+                (option?.email ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+              fieldNames={{ label: "email", value: "_id" }}
+              options={usersList}
+            />
+          </Form.Item>
+          <Form.Item
+            label="วัตถุประสงค์"
+            name="Purpose"
+            rules={[
+              {
+                required: true,
+                message: "Please input your Purpose!",
+              },
+            ]}
+          >
+            <Input placeholder="วัตถุประสงค์" />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
   );
 }
 

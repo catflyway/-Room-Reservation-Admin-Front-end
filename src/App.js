@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./App.css";
 import Navbar from "./conponents/Navbar";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
@@ -11,6 +11,8 @@ import { Layout, ConfigProvider } from "antd";
 const { Header, Content, Footer } = Layout;
 
 function App() {
+  const [loading, setLoading] = useState(false);
+
   const allowRole = ["Contributor", "Room Contributor", "Administrator"];
   const [user, setUser] = useState(() => {
     let userProfle = localStorage.getItem("userData");
@@ -52,9 +54,10 @@ function App() {
             "Authorization"
           ] = `Bearer ${response.data.token}`;
 
-          response.data.canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
-            response.data.role
-          );
+          response.data.canNotChangeOrg = [
+            "Room Contributor",
+            "Contributor",
+          ].includes(response.data.role);
           setUser(response.data);
         }
       })
@@ -79,54 +82,54 @@ function App() {
           },
         }}
       >
-        {user.email !== "" ? (
-          <BrowserRouter>
-            <Layout className="layout">
-              <Header>
-                <Navbar />
-              </Header>
-              <Content
-                style={{
-                  padding: "0 50px",
-                }}
-              >
-                <div
-                  className="site-layout-content"
-                  style={{ background: "#FFF" }}
+          {user.email !== "" ? (
+            <BrowserRouter>
+              <Layout className="layout">
+                <Header>
+                  <Navbar />
+                </Header>
+                <Content
+                  style={{
+                    padding: "0 50px",
+                  }}
                 >
-                  <Routes>
-                    {MenuItems.map((item, index) => {
-                      if (!item.role.includes(user.role)) {
-                        return undefined;
-                      }
-                      return (
-                        <Route
-                          key={index}
-                          path={item.path}
-                          element={item.element}
-                        />
-                      );
-                    })}
-                    <Route
-                      path="*"
-                      element={
-                        <Navigate to={UserDefaultPage[user.role]} replace />
-                      }
-                    />
-                  </Routes>
-                </div>
-              </Content>
+                  <div
+                    className="site-layout-content"
+                    style={{ background: "#FFF" }}
+                  >
+                    <Routes>
+                      {MenuItems.map((item, index) => {
+                        if (!item.role.includes(user.role)) {
+                          return undefined;
+                        }
+                        return (
+                          <Route
+                            key={index}
+                            path={item.path}
+                            element={item.element}
+                          />
+                        );
+                      })}
+                      <Route
+                        path="*"
+                        element={
+                          <Navigate to={UserDefaultPage[user.role]} replace />
+                        }
+                      />
+                    </Routes>
+                  </div>
+                </Content>
 
-              <Footer
-                style={{
-                  textAlign: "center",
-                }}
-              ></Footer>
-            </Layout>
-          </BrowserRouter>
-        ) : (
-          <LoginForm Login={Login} error={error} />
-        )}
+                <Footer
+                  style={{
+                    textAlign: "center",
+                  }}
+                ></Footer>
+              </Layout>
+            </BrowserRouter>
+          ) : (
+            <LoginForm Login={Login} error={error} />
+          )}
       </ConfigProvider>
     </UserContext.Provider>
   );

@@ -139,14 +139,9 @@ const ManageReq = () => {
     },
   ];
 
-  const [isAddOpen, setIsAddOpen] = useState(false);
-
-  const showAddReq = () => {
-    setIsAddOpen(true);
-  };
-
-  const handCancelAddReq = () => {
-    setIsAddOpen(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const onEditRoom = (record) => {
+    setIsEditing(true);
   };
 
   const [data, setData] = useState({
@@ -161,15 +156,6 @@ const ManageReq = () => {
     repeatDate: "",
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    axios.post("/Requests", data).then((response) => {
-      getManageReq();
-    });
-    console.log(data);
-    setIsAddOpen(false);
-  };
-
   return (
     <div>
       <Row justify="space-between" align="middle">
@@ -182,35 +168,14 @@ const ManageReq = () => {
             <HistoryReq />
           </Col>
           <Col>
-            <Button
-              className="button-user"
-              type="primary"
-              size="large"
-              onClick={showAddReq}
-            >
-              AddReservation
-            </Button>
+            <AddReq
+              onSuccess={() => {
+                getManageReq();
+              }}
+            />
           </Col>
         </Space>
       </Row>
-
-      <div className="managestatus">
-        <Modal
-          title="AddReq"
-          open={isAddOpen}
-          //  footer={null}
-          onOk={handleSubmit}
-          onCancel={handCancelAddReq}
-        >
-          <AddReq
-            details={data}
-            onChange={(value) => {
-              console.log("Set data =>", value);
-              setData(value);
-            }}
-          />
-        </Modal>
-      </div>
 
       <div className="User-list">
         <Table columns={columns} dataSource={dataSource} rowKey="_id"></Table>
