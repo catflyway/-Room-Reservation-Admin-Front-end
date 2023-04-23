@@ -187,7 +187,7 @@ const ManageBuilding = ({ onChange = () => {}, orgList = [] }) => {
           <Button
             className="button-submit1"
             type="primary"
-            disabled={canNotusebutton & (buildingList.length > 20 === false)}
+            disabled={canNotusebutton & (buildingList.length > 30)}
             onClick={openAddBuilding}
           >
             AddBuild

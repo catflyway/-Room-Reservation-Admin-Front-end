@@ -174,6 +174,7 @@ const ManageStatus = ({ onChange = () => {}, orgList = [] }) => {
               className="button-submit1"
               type="primary"
               onClick={openAddStatus}
+              disabled={statusList.length > 20}
             >
               <span>
                 <PlusOutlined />

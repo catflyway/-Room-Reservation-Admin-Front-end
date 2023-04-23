@@ -190,7 +190,7 @@ const ManageRoomtype = ({ onChange = () => {}, orgList = [] }) => {
             <Button
             className="button-submit1"
               type="primary"
-              disabled={canNotusebutton & (roomtypeList.length > 20 === false)}
+              disabled={canNotusebutton && (roomtypeList.length > 20)}
               onClick={openAddRoomtype}
             >
               AddRoomtype

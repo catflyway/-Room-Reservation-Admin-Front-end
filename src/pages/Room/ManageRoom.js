@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import EditRoom from "./EditRoom";
 import ManageBuilding from "./ManageBuilding";
 import ManageRoomtype from "./ManageRoomtype";
-import { Col, Row, Image } from "antd";
+import { Col, Row, Image,Radio } from "antd";
 
 import { Modal, Table, Input, Form, Select, Space, Typography } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
@@ -298,6 +298,14 @@ const ManageRoom = () => {
               />
             </Form.Item>
 
+
+
+            <Form.Item label="Radio">
+          <Radio.Group>
+            <Radio value="apple"> Apple </Radio>
+            <Radio value="pear"> Pear </Radio>
+          </Radio.Group>
+          </Form.Item>
             <Form.Item name="Name">
               <Search
                 placeholder="Search Room"
