@@ -7,11 +7,37 @@ import LoginForm from "./conponents/LoginForm";
 import { MenuItems } from "./conponents/MenuItems";
 import axios from "axios";
 import { UserContext, UserDefaultPage } from "./user-context";
-import { Layout, ConfigProvider } from "antd";
+import { Layout, ConfigProvider, Spin, message } from "antd";
 const { Header, Content, Footer } = Layout;
 
 function App() {
-  const [loading, setLoading] = useState(false);
+  const [loadingCount, setLoadingCount] = useState(0);
+
+  useEffect(() => {
+    // Add a request interceptor
+    axios.interceptors.request.use(function (config) {
+      // Do something before request is sent
+      setLoadingCount((state, props) => (state + 1))
+      return config;
+    }, function (error) {
+      // Do something with request error
+      return Promise.reject(error);
+    });
+
+    // Add a response interceptor
+    axios.interceptors.response.use(function (response) {
+      // Any status code that lie within the range of 2xx cause this function to trigger
+      // Do something with response data
+      setLoadingCount((state, props) => (state - 1))
+      return response;
+    }, function (error) {
+      // Any status codes that falls outside the range of 2xx cause this function to trigger
+      // Do something with response error
+      setLoadingCount((state, props) => (state - 1))
+      message.error(error)
+      return Promise.reject(error);
+    });
+  }, []);
 
   const allowRole = ["Contributor", "Room Contributor", "Administrator"];
   const [user, setUser] = useState(() => {
@@ -29,10 +55,6 @@ function App() {
     toto.canNotChangeOrg = ["Room Contributor", "Contributor"].includes(
       toto.role
     );
-
-    console.log(toto);
-
-    // toto.canNotChangeOrg = true;
 
     return toto;
   });
@@ -82,6 +104,7 @@ function App() {
           },
         }}
       >
+        <Spin size="large" tip="Loading..." spinning={loadingCount !== 0}>
           {user.email !== "" ? (
             <BrowserRouter>
               <Layout className="layout">
@@ -130,6 +153,7 @@ function App() {
           ) : (
             <LoginForm Login={Login} error={error} />
           )}
+        </Spin>
       </ConfigProvider>
     </UserContext.Provider>
   );
