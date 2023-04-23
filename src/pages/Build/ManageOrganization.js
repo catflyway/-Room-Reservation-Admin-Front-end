@@ -9,22 +9,39 @@ const { Title } = Typography;
 const ManageOrganization = () => {
   const [isEditing, setIsEditing] = useState(null);
   const [editingOrg, setEditingOrg] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
   const [OrgID, setOrgID] = useState([]);
   function getOrg() {
-    axios.get("/org").then((response) => {
-      setOrgID(
-        response.data.map((item) => {
-          return {
-            ...item,
-            member: item.userID.length,
-            building: item.buildingID.length,
-            room: item.roomID.length,
-          };
-        })
-      );
+    setLoading(true);
+    axios.get("/org/stat").then((response) => {
+      setOrgID(response.data);
+      setLoading(false);
     });
   }
+
+  function deleteRoom(id) {
+    axios.delete(`/org/${id}`).then((res) => {
+      getOrg();
+    });
+  }
+
+  const onEditOrg = (record) => {
+    setEditingOrg(true);
+    setIsEditing({ ...record });
+  };
+
+  const onDeleteRoom = (record) => {
+    Modal.confirm({
+      title: "Are you sure, you want to delete this organization record?",
+      okText: "Yes",
+      okType: "danger",
+      onOk: () => {
+        deleteRoom(record._id);
+      },
+    });
+  };
+
   useEffect(() => {
     getOrg();
   }, []);
@@ -38,19 +55,19 @@ const ManageOrganization = () => {
     {
       key: "2",
       title: "Building",
-      dataIndex: "building",
+      dataIndex: "buildings",
       align: "right",
     },
     {
       key: "3",
       title: "Room",
-      dataIndex: "room",
+      dataIndex: "rooms",
       align: "right",
     },
     {
       key: "4",
       title: "Member",
-      dataIndex: "member",
+      dataIndex: "users",
       align: "right",
     },
     {
@@ -67,7 +84,7 @@ const ManageOrganization = () => {
             />
             <DeleteOutlined
               onClick={() => {
-                onDeleteStudent(record);
+                onDeleteRoom(record);
               }}
               style={{ color: "red", marginLeft: 12 }}
             />
@@ -78,22 +95,7 @@ const ManageOrganization = () => {
       align: "center",
     },
   ];
-  const onDeleteStudent = (record) => {
-    Modal.confirm({
-      title: "Are you sure, you want to delete this organization record?",
-      okText: "Yes",
-      okType: "danger",
-      onOk: () => {
-        setOrgID((pre) => {
-          return pre.filter((student) => student.id !== record.id);
-        });
-      },
-    });
-  };
-  const onEditOrg = (record) => {
-    setEditingOrg(true);
-    setIsEditing({ ...record });
-  };
+
   return (
     <div>
       <Row justify="space-between" align="middle">
@@ -117,7 +119,7 @@ const ManageOrganization = () => {
       </Row>
 
       <div className="User-list">
-        <Table columns={columns} dataSource={OrgID} rowKey="_id"></Table>
+        <Table columns={columns} dataSource={OrgID} rowKey="_id" loading={isLoading}></Table>
       </div>
     </div>
   );
