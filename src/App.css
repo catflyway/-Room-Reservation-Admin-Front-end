@@ -356,3 +356,7 @@ table{
   min-height: 280px;
   padding: 0 36px 36px;
 }
+
+.ant-collapse-ghost>.ant-collapse-item >.ant-collapse-header {
+  padding: 0;
+}

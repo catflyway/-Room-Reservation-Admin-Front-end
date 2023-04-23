@@ -91,7 +91,7 @@ const ManageOrganization = () => {
           </>
         );
       },
-      fixed: "left",
+      fixed: "right",
       align: "center",
     },
   ];

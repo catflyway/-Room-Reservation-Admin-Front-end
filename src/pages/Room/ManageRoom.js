@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import EditRoom from "./EditRoom";
 import ManageBuilding from "./ManageBuilding";
 import ManageRoomtype from "./ManageRoomtype";
-import { Col, Row, Image, Button } from "antd";
+import { Col, Row, Image, Button, Collapse } from "antd";
 
 import { Modal, Table, Input, Form, Select, Space, Typography } from "antd";
 import { EditOutlined, DeleteOutlined, DownOutlined } from "@ant-design/icons";
@@ -12,7 +12,7 @@ import { UserContext } from "../../user-context";
 const { Title } = Typography;
 
 const { Search } = Input;
-const { Option } = Select;
+const { Panel } = Collapse;
 
 const ManageRoom = () => {
   const user = useContext(UserContext);
@@ -108,6 +108,10 @@ const ManageRoom = () => {
     getRoomtype(filterForm.getFieldValue("Org"));
   }
   const onFilterChange = (changedValues, allValues) => {
+    if (changedValues.hasOwnProperty('Name')) return;
+    if (changedValues.hasOwnProperty('Seat')) return;
+    if (changedValues.hasOwnProperty('Size')) return;
+
     if (changedValues.hasOwnProperty("OrgID")) {
       onChangeorg(changedValues.OrgID);
       allValues.BuildingID = undefined;
@@ -116,6 +120,14 @@ const ManageRoom = () => {
       changedValues.RoomTypeID = undefined;
     }
     getManageRooms(allValues);
+  };
+
+  const onClickSearch = (field) => (value, event) => {
+    let formValue = {
+      ...form.getFieldsValue(),
+      [field]: value,
+    }
+    onFilterChange({}, formValue);
   };
 
   const columns = [
@@ -199,10 +211,7 @@ const ManageRoom = () => {
     });
   };
 
-  const [isopen, setisopen] = useState(false);
-  const open = () => {
-    setisopen(true);
-  };
+
   let userObjecteOption = [
     {
       value: "พัดลม/แอร์",
@@ -271,18 +280,15 @@ const ManageRoom = () => {
       </Row>
 
       <br />
-      <Row justify="center" gutter={[16, 16]}>
-        <Form form={form} onValuesChange={onFilterChange}>
-          <Space wrap>
+      <Form form={form} onValuesChange={onFilterChange} layout="horizontal" labelCol={8} >
+        <Row justify="start" gutter={16}>
+          <Col span={8}>
             <Form.Item label="Organization" name="OrgID">
               <Select
-                style={{
-                  width: "200px",
-                }}
+                style={{ width: '100%' }}
                 allowClear
                 showSearch
                 placeholder="หน่วยงาน"
-                optionFilterProp="children"
                 filterOption={(input, option) =>
                   (option?.name ?? "")
                     .toLowerCase()
@@ -293,16 +299,15 @@ const ManageRoom = () => {
                 disabled={user.canNotChangeOrg}
               />
             </Form.Item>
+          </Col>
 
+          <Col span={8}>
             <Form.Item label="Building" name="BuildingID">
               <Select
-                style={{
-                  width: "200px",
-                }}
+                style={{ width: '100%' }}
                 allowClear
                 showSearch
                 placeholder="อาคาร/สถานที่"
-                optionFilterProp="children"
                 filterOption={(input, option) =>
                   (option?.name ?? "")
                     .toLowerCase()
@@ -312,115 +317,103 @@ const ManageRoom = () => {
                 options={buildingList}
               />
             </Form.Item>
+          </Col>
 
-            {/* <Form.Item label="Roomtype" name="RoomTypeID">
-              <Select
-                style={{
-                  width: "200px",
-                }}
-                allowClear
-                showSearch
-                placeholder="ประเภทห้อง"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.name ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-                fieldNames={{ label: "name", value: "_id" }}
-                options={RoomtypeList}
-              />
-            </Form.Item> */}
-
+          <Col span={8}>
             <Form.Item name="Name">
               <Search
                 placeholder="Search Room"
                 allowClear
-                value={selectedItems}
-                onChange={setSelectedItems}
-                options={filteredOptions.map((item) => ({
-                  value: item._id,
-                  label: [item.Name, item.Seat],
-                }))}
-                style={{
-                  width: 200,
-                }}
+                // value={selectedItems}
+                // onChange={setSelectedItems}
+                // options={filteredOptions.map((item) => ({
+                //   value: item._id,
+                //   label: [item.Name, item.Seat],
+                // }))}
+                style={{ width: '100%' }}
+                onSearch={onClickSearch('Name')}
               />
             </Form.Item>
-          </Space>
-        </Form>
-        <Button type="primary" onClick={open} size="middle">
-          Search more
-        </Button>
-        <Modal open={isopen} onCancel={() => setisopen(false)}>
-          <Form
-            form={form}
-            labelCol={{
-              span: 6,
-            }}
-            wrapperCol={{
-              span: 10,
-            }}
-            layout="horizontal"
-          >
-            <Form.Item label="ContributorID" name="ContributorID">
-              <Select
-                style={{
-                  width: "200px",
-                }}
-                allowClear
-                showSearch
-                placeholder="ประเภทห้อง"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.name ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-                fieldNames={{ label: "name", value: "_id" }}
-                options={RoomtypeList}
-              />
-            </Form.Item>
-            <Form.Item label="Roomtype" name="RoomTypeID">
-              <Select
-                style={{
-                  width: "200px",
-                }}
-                allowClear
-                showSearch
-                placeholder="ประเภทห้อง"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.name ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-                fieldNames={{ label: "name", value: "_id" }}
-                options={RoomtypeList}
-              />
-            </Form.Item>
+          </Col>
+        </Row>
 
-            <Form.Item label="Object" name="Object">
-              <Select
-                style={{
-                  width: "200px",
-                }}
-                allowClear
-                showSearch
-                placeholder="ประเภทห้อง"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.value ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-                options={userObjecteOption}
-              />
-            </Form.Item>
-          </Form>
-        </Modal>
-      </Row>
+        <Collapse ghost>
+          <Panel header="Advance option" key="1">
+            <Row justify="start" gutter={16}>
+              <Col span={8}>
+                <Form.Item label="Roomtype" name="RoomTypeID">
+                  <Select
+                    style={{ width: '100%' }}
+                    allowClear
+                    showSearch
+                    placeholder="ประเภทห้อง"
+                    filterOption={(input, option) =>
+                      (option?.name ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    fieldNames={{ label: "name", value: "_id" }}
+                    options={RoomtypeList}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item label="Object" name="Object">
+                  <Select
+                    style={{ width: '100%' }}
+                    allowClear
+                    showSearch
+                    placeholder="อุปกรณ์ภายในห้อง"
+                    filterOption={(input, option) =>
+                      (option?.value ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
+                    options={userObjecteOption}
+                  />
+                </Form.Item>
+              </Col>
 
+              <Col span={8}>
+                <Form.Item label="Seat" name="Seat">
+                  <Search
+                    placeholder="Search Seat"
+                    allowClear
+                    // value={selectedItems}
+                    // onChange={setSelectedItems}
+                    // options={filteredOptions.map((item) => ({
+                    //   value: item._id,
+                    //   label: item.Seat,
+                    // }))}
+                    style={{ width: '100%' }}
+                    onSearch={onClickSearch('Seat')}
+                  />
+                </Form.Item>
+              </Col>
+
+              <Col span={8}>
+                <Form.Item label="Size" name="Size">
+                  <Search
+                    placeholder="Search Size"
+                    allowClear
+                    // value={selectedItems}
+                    // onChange={setSelectedItems}
+                    // options={filteredOptions.map((item) => ({
+                    //   value: item._id,
+                    //   label: item.Seat,
+                    // }))}
+                    // style={{
+                    //   width: 200,
+                    // }}
+                    style={{ width: '100%' }}
+                    onSearch={onClickSearch('Size')}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Panel>
+        </Collapse>
+      </Form>
       <br />
       <Table columns={columns} dataSource={dataSource} rowKey="_id"></Table>
     </div>
