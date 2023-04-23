@@ -249,7 +249,7 @@ const ManageUser = () => {
             <Form.Item
               label="Organization"
               name="org"
-              initialValue={user.canNotChangeOrg ? undefined : user.org.id}
+              initialValue={user.canNotChangeOrg ? user.org.id : null}
             >
               <Select
                 style={{

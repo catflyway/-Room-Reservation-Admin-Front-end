@@ -28,6 +28,8 @@ function App() {
       toto.role
     );
 
+    console.log(toto);
+
     // toto.canNotChangeOrg = true;
 
     return toto;
