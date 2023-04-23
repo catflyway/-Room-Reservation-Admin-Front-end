@@ -140,9 +140,6 @@ const ManageReq = () => {
   ];
 
   const [isEditing, setIsEditing] = useState(false);
-  const onEditRoom = (record) => {
-    setIsEditing(true);
-  };
 
   const [data, setData] = useState({
     OrgID: "",

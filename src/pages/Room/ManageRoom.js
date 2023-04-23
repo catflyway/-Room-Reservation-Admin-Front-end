@@ -2,16 +2,17 @@ import React, { useEffect, useState, useContext } from "react";
 import EditRoom from "./EditRoom";
 import ManageBuilding from "./ManageBuilding";
 import ManageRoomtype from "./ManageRoomtype";
-import { Col, Row, Image,Radio } from "antd";
+import { Col, Row, Image, Button } from "antd";
 
 import { Modal, Table, Input, Form, Select, Space, Typography } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, DownOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { UserContext } from "../../user-context";
 
 const { Title } = Typography;
 
 const { Search } = Input;
+const { Option } = Select;
 
 const ManageRoom = () => {
   const user = useContext(UserContext);
@@ -43,6 +44,12 @@ const ManageRoom = () => {
   function getRoomtype(id) {
     axios.get("/org/roomtype/" + id).then((response) => {
       setRoomtypeList(response.data);
+    });
+  }
+  const [ContributorList, setContributorList] = useState([]);
+  function getsetContributorList(id) {
+    axios.get("/org/roomtype/" + id).then((response) => {
+      setContributorList(response.data);
     });
   }
   function getManageRooms(option) {
@@ -192,6 +199,33 @@ const ManageRoom = () => {
     });
   };
 
+  const [isopen, setisopen] = useState(false);
+  const open = () => {
+    setisopen(true);
+  };
+  let userObjecteOption = [
+    {
+      value: "พัดลม/แอร์",
+      label: "พัดลม/แอร์",
+    },
+    {
+      value: "ปลั๊กไฟ",
+      label: "ปลั๊กไฟ",
+    },
+    {
+      value: "เครื่องเสียง/ไมค์",
+      label: "เครื่องเสียง/ไมค์",
+    },
+    {
+      value: "คอมพิวเตอร์",
+      label: "คอมพิวเตอร์",
+    },
+    {
+      value: "โปรเจคเตอร์",
+      label: "โปรเจคเตอร์",
+    },
+  ];
+
   return (
     <div>
       <Row justify="space-between" align="middle">
@@ -279,6 +313,74 @@ const ManageRoom = () => {
               />
             </Form.Item>
 
+            {/* <Form.Item label="Roomtype" name="RoomTypeID">
+              <Select
+                style={{
+                  width: "200px",
+                }}
+                allowClear
+                showSearch
+                placeholder="ประเภทห้อง"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.name ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                fieldNames={{ label: "name", value: "_id" }}
+                options={RoomtypeList}
+              />
+            </Form.Item> */}
+
+            <Form.Item name="Name">
+              <Search
+                placeholder="Search Room"
+                allowClear
+                value={selectedItems}
+                onChange={setSelectedItems}
+                options={filteredOptions.map((item) => ({
+                  value: item._id,
+                  label: [item.Name, item.Seat],
+                }))}
+                style={{
+                  width: 200,
+                }}
+              />
+            </Form.Item>
+          </Space>
+        </Form>
+        <Button type="primary" onClick={open} size="middle">
+          Search more
+        </Button>
+        <Modal open={isopen} onCancel={() => setisopen(false)}>
+          <Form
+            form={form}
+            labelCol={{
+              span: 6,
+            }}
+            wrapperCol={{
+              span: 10,
+            }}
+            layout="horizontal"
+          >
+            <Form.Item label="ContributorID" name="ContributorID">
+              <Select
+                style={{
+                  width: "200px",
+                }}
+                allowClear
+                showSearch
+                placeholder="ประเภทห้อง"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.name ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                fieldNames={{ label: "name", value: "_id" }}
+                options={RoomtypeList}
+              />
+            </Form.Item>
             <Form.Item label="Roomtype" name="RoomTypeID">
               <Select
                 style={{
@@ -298,31 +400,25 @@ const ManageRoom = () => {
               />
             </Form.Item>
 
-
-
-            <Form.Item label="Radio">
-          <Radio.Group>
-            <Radio value="apple"> Apple </Radio>
-            <Radio value="pear"> Pear </Radio>
-          </Radio.Group>
-          </Form.Item>
-            <Form.Item name="Name">
-              <Search
-                placeholder="Search Room"
-                allowClear
-                value={selectedItems}
-                onChange={setSelectedItems}
-                options={filteredOptions.map((item) => ({
-                  value: item._id,
-                  label: [item.Name, item.Seat],
-                }))}
+            <Form.Item label="Object" name="Object">
+              <Select
                 style={{
-                  width: 200,
+                  width: "200px",
                 }}
+                allowClear
+                showSearch
+                placeholder="ประเภทห้อง"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.value ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+                options={userObjecteOption}
               />
             </Form.Item>
-          </Space>
-        </Form>
+          </Form>
+        </Modal>
       </Row>
 
       <br />
