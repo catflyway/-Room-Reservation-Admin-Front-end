@@ -281,6 +281,14 @@ table{
   color: #fff;
   border: none;
 }
+.col-1-2{
+  width: 160px;
+  height: 120px;
+  border-radius: 10px;
+  background-color: #ffc700;
+  color: #fff;
+  border: none;
+}
 .Heard-ManageCa {
   width: 100%;
   display: inline-flex;

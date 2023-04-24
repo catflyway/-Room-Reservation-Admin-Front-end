@@ -223,7 +223,7 @@ function Calendar() {
               </Card>
             </Col> */}
         <Col>
-          <button className="col-1-1">
+          <button className="col-1-2">
             <Title style={{ color: " #FFF", fontSize: "20px" }}>
               {statusCount.Pending}
             </Title>
@@ -337,8 +337,8 @@ function Calendar() {
               events={events}
               dayMaxEventRows={3}
               datesSet={onDatesSet}
-              // selectable={true}
-              // select={handleSelect}
+            // selectable={true}
+            // select={handleSelect}
             />
             <Modal
               title="ทำการจอง"
