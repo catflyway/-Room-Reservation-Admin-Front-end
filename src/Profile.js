@@ -54,8 +54,8 @@ function Profile() {
       setImageUrl(response.data.image.url);
       setInitProfile({
         ...response.data,
-        org: response.data.org?.name,
-        status: response.data.status?.name,
+        org: response.data.org?.id,
+        status: response.data.status?.id,
         image: [
           {
             originFileObj: null,

@@ -155,10 +155,10 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
       const dimention = value.Size.match(/(\d+) x (\d+)/);
       setInitialValues({
         ...value,
-        Org: value.Org?.name,
-        Building: value.Building?.name,
-        RoomType: value.RoomType?.name,
-        Contributor: value.Contributor?.name,
+        Org: value.Org?.id,
+        Building: value.Building?.id,
+        RoomType: value.RoomType?.id,
+        Contributor: value.Contributor?.id,
         image: [
           {
             originFileObj: null,

@@ -326,8 +326,12 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
                 type: "email",
                 whitespace: true,
               },
+              
               {
                 validator: (_, value) => {
+                  if (openEdit) {
+                    return Promise.resolve();
+                  }
                   return new Promise((resolve, reject) => {
                     axios
                       .get("/users/searchby", { params: { email: value } })
