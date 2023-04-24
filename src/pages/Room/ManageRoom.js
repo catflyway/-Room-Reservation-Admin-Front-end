@@ -363,6 +363,7 @@ const ManageRoom = () => {
                     style={{ width: '100%' }}
                     allowClear
                     showSearch
+                    mode="multiple"
                     placeholder="อุปกรณ์ภายในห้อง"
                     filterOption={(input, option) =>
                       (option?.value ?? "")
