@@ -17,11 +17,11 @@ import dayjs from "dayjs";
 import { UserContext } from "../../user-context";
 
 const { RangePicker } = DatePicker;
-function AddReq({ value,openEdit, onCancel, onSuccess }) {
+function AddReq({ value, openEdit, onCancel, onSuccess }) {
   const user = useContext(UserContext);
   const [form] = Form.useForm();
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [loading,setLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const showAddReq = () => {
     setIsAddOpen(true);
@@ -159,7 +159,14 @@ function AddReq({ value,openEdit, onCancel, onSuccess }) {
 
   const datOfWeekString = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 
+  let initialValues = {};
+  if (user.canNotChangeOrg) {
+    initialValues["OrgID"] = user.org.id;
+  }
   useEffect(() => {
+    if (user.canNotChangeOrg) {
+      onChangeorg(user.org.id);
+    }
     getOrg();
   }, []);
 
@@ -191,6 +198,7 @@ function AddReq({ value,openEdit, onCancel, onSuccess }) {
           }}
           layout="horizontal"
           onFinish={handleSubmit}
+          initialValues={initialValues}
           disabled={loading}
         >
           <Form.Item
@@ -213,6 +221,7 @@ function AddReq({ value,openEdit, onCancel, onSuccess }) {
               }
               fieldNames={{ label: "name", value: "_id" }}
               options={orgList}
+              disabled={user.canNotChangeOrg}
             />
           </Form.Item>
           <Form.Item
