@@ -225,7 +225,7 @@ function Profile() {
             <Form.Item
               label="Firstname"
               name="firstname"
-              rules={[{ min: 4, max: 25, required: true, whitespace: true }]}
+              rules={[{ min: 6, max: 25, required: true, whitespace: true }]}
             >
               <Input placeholder="Firstname" />
             </Form.Item>
@@ -249,7 +249,7 @@ function Profile() {
                 },
               ]}
             >
-              <Input placeholder="E-mail" />
+              <Input placeholder="E-mail" disabled={form} />
             </Form.Item>
             <Form.Item
               label="Password"

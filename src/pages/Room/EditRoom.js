@@ -41,23 +41,32 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
   }
   const [buildingList, setBuildingList] = useState([]);
   function getBuildingInOrgID(id) {
+    
     axios.get("/org/building/" + id).then((response) => {
       console.log("buildingList", response.data);
       setBuildingList(response.data);
+      form.resetFields(["Building"]);
     });
   }
   const [roomsList, setRoomsList] = useState([]);
   function getRoomtype(id) {
+    
     axios.get("/org/roomtype/" + id).then((response) => {
       console.log("roomsList", response.data);
       setRoomsList(response.data);
+      form.resetFields(["RoomType"]);
     });
   }
   const [usersList, setUsersList] = useState([]);
   function getUsersInOrgID(id) {
-    axios.get("/org/user/" + id).then((response) => {
+    let option = {
+      role: ["Room Contributor","Contributor","Administrator"],
+      org:id,
+    };
+    axios.get("/users/searchby", { params: option }).then((response) => {
       console.log("usersList", response.data);
       setUsersList(response.data);
+      form.resetFields(["Contributor"]);
     });
   }
   const beforeUpload = (file) => {
@@ -113,10 +122,18 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
   };
 
   const canNotusebutton = ["Room Contributor"].includes(user.role);
-  let initialValues = {};
-  if (user.canNotChangeOrg) {
-    initialValues["Org"] = user.org.id;
-  }
+
+  const [initialValues, setInitialValues] = useState(() => {
+    let value = {};
+    if (user.canNotChangeOrg) {
+      value["Org"] = user.org.id;
+    }
+    return value;
+  });
+
+  useEffect(() => {
+    formRef.current.resetFields();
+  }, [initialValues]);
 
   useEffect(() => {
     if (user.canNotChangeOrg) {
@@ -133,11 +150,10 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
   }, [openEdit]);
 
   useEffect(() => {
-    formRef.current.resetFields();
     if (value) {
       setImageUrl(value.image.url);
       const dimention = value.Size.match(/(\d+) x (\d+)/);
-      formRef.current.setFieldsValue({
+      setInitialValues({
         ...value,
         Org: value.Org?.name,
         Building: value.Building?.name,
@@ -152,7 +168,7 @@ const EditRoom = ({ value, openEdit, onCancel, onSuccess }) => {
         long: Number(dimention[2]),
       });
 
-      onChangeorg(value.Org.id);
+      if (value.Org) onChangeorg(value.Org.id);
     }
   }, [value]);
 
