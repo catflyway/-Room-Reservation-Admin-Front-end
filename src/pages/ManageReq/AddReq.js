@@ -2,7 +2,7 @@ import {
   Form,
   Input,
   DatePicker,
-  Space,
+  message,
   Radio,
   Checkbox,
   TimePicker,
@@ -17,15 +17,16 @@ import dayjs from "dayjs";
 import { UserContext } from "../../user-context";
 
 const { RangePicker } = DatePicker;
-function AddReq({ value, openEdit, onCancel, onSuccess }) {
+function AddReq({ onSuccess }) {
   const user = useContext(UserContext);
   const [form] = Form.useForm();
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const showAddReq = () => {
     setIsAddOpen(true);
     setLoading(false);
+    form.resetFields();
   };
 
   const handCancelAddReq = () => {
@@ -33,27 +34,55 @@ function AddReq({ value, openEdit, onCancel, onSuccess }) {
   };
 
   const [orgList, setOrgList] = useState([]);
+  const [orgLoading, setOrgLoading] = useState(false);
   function getOrg() {
-    axios.get("/org").then((response) => {
-      setOrgList(response.data);
-    });
+    setOrgLoading(true);
+    axios
+      .get("/org")
+      .then((response) => {
+        setOrgLoading(false);
+        setOrgList(response.data);
+      })
+      .catch(() => {
+        setOrgLoading(false);
+      });
   }
 
   const [buildingList, setBuildingList] = useState([]);
+  const [buildingLoading, setBuildingLoading] = useState(false);
   function getBuildingInOrgID(id) {
-    axios.get("/org/building/" + id).then((response) => {
-      setBuildingList(response.data);
-    });
+    form.resetFields(["Building", "Room"]);
+    setBuildingLoading(true);
+    axios
+      .get("/org/building/" + id)
+      .then((response) => {
+        setBuildingLoading(false);
+        setBuildingList(response.data);
+      })
+      .catch(() => {
+        setBuildingLoading(false);
+      });
   }
 
   const [roomsList, setRoomsList] = useState([]);
+  const [roomLoading, setRoomLoading] = useState(false);
   function getRoomsInBuildingID(id) {
-    axios.get("/rooms/buildingroom/" + id).then((response) => {
-      setRoomsList(response.data);
-    });
+    form.resetFields(["Room"]);
+    setRoomLoading(true);
+    axios
+      .get("/rooms/buildingroom/" + id)
+      .then((response) => {
+        setRoomLoading(false);
+        setRoomsList(response.data);
+      })
+      .catch(() => {
+        setRoomLoading(false);
+      });
   }
+
   const [usersList, setUsersList] = useState([]);
   function getUsersInOrgID(id) {
+    form.resetFields(["UserID"]);
     axios.get("/org/user/" + id).then((response) => {
       setUsersList(response.data);
     });
@@ -146,15 +175,24 @@ function AddReq({ value, openEdit, onCancel, onSuccess }) {
       dateRange: undefined,
       timeRange: undefined,
       OrgID: undefined,
-      UserID: user._id,
+      Building: undefined,
     };
-    setLoading(true);
 
-    axios.post("/Requests", value).then((response) => {
-      setIsAddOpen(false);
-      setLoading(false);
-      form.resetFields();
-    });
+    setLoading(true);
+    axios
+      .post("/Requests", value)
+      .then((response) => {
+        setIsAddOpen(false);
+        setLoading(false);
+        form.resetFields();
+        if (typeof onSuccess === "function") {
+          onSuccess();
+        }
+        message.success("เพิ่มคำขอสำเร็จ");
+      })
+      .catch((err) => {
+        setLoading(false);
+      });
   };
 
   const datOfWeekString = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
@@ -221,7 +259,8 @@ function AddReq({ value, openEdit, onCancel, onSuccess }) {
               }
               fieldNames={{ label: "name", value: "_id" }}
               options={orgList}
-              disabled={user.canNotChangeOrg}
+              disabled={user.canNotChangeOrg || orgLoading}
+              loading={orgLoading}
             />
           </Form.Item>
           <Form.Item
@@ -244,6 +283,8 @@ function AddReq({ value, openEdit, onCancel, onSuccess }) {
               }
               fieldNames={{ label: "name", value: "_id" }}
               options={buildingList}
+              disabled={buildingLoading}
+              loading={buildingLoading}
             />
           </Form.Item>
           <Form.Item
@@ -265,6 +306,8 @@ function AddReq({ value, openEdit, onCancel, onSuccess }) {
               }
               fieldNames={{ label: "Name", value: "_id" }}
               options={roomsList}
+              disabled={roomLoading}
+              loading={roomLoading}
             />
           </Form.Item>
           <Form.Item
@@ -363,7 +406,7 @@ function AddReq({ value, openEdit, onCancel, onSuccess }) {
             }
           </Form.Item>
           <Form.Item
-            name="email"
+            name="UserID"
             label="ผู้จอง"
             rules={[
               {
