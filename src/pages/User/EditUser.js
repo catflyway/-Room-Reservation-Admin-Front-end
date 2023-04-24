@@ -321,6 +321,27 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
                 type: "email",
                 whitespace: true,
               },
+              {
+                  validator: (_, value) => {
+                    return new Promise((resolve, reject) => {
+                      axios
+                        .get("/users/searchby", { params: { email: value } })
+                        .then((response) => {
+                          if (response.data.filter((record) => record.email === value).length) {
+                            reject();
+                          } else {
+                            resolve();
+                          }
+                          
+                        })
+                        .catch((err) => {
+                          reject(err);
+                        });
+                    });
+                  },
+
+                  message: "มีคนใช้แล้ว",
+                },
             ]}
           >
             <Input placeholder="E-mail" />
