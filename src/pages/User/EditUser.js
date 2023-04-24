@@ -197,9 +197,9 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
           onSuccess();
         }
         if (openEdit) {
-          message.success("แก้ไขห้องสำเร็จ");
+          message.success("แก้ไขผู้ใช้สำเร็จ");
         } else {
-          message.success("เพิ่มห้องสำเร็จ");
+          message.success("เพิ่มผู้ใช้สำเร็จ");
         }
       })
       .catch((err) => {
@@ -322,26 +322,26 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
                 whitespace: true,
               },
               {
-                  validator: (_, value) => {
-                    return new Promise((resolve, reject) => {
-                      axios
-                        .get("/users/searchby", { params: { email: value } })
-                        .then((response) => {
-                          if (response.data.filter((record) => record.email === value).length) {
-                            reject();
-                          } else {
-                            resolve();
-                          }
-                          
-                        })
-                        .catch((err) => {
-                          reject(err);
-                        });
-                    });
-                  },
+                validator: (_, value) => {
+                  return new Promise((resolve, reject) => {
+                    axios
+                      .get("/users/searchby", { params: { email: value } })
+                      .then((response) => {
+                        if (response.data.filter((record) => record.email === value).length) {
+                          reject();
+                        } else {
+                          resolve();
+                        }
 
-                  message: "มีคนใช้แล้ว",
+                      })
+                      .catch((err) => {
+                        reject(err);
+                      });
+                  });
                 },
+
+                message: "มีคนใช้แล้ว",
+              },
             ]}
           >
             <Input placeholder="E-mail" />
@@ -388,7 +388,7 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
             label="Role"
             name="role"
             rules={[{ required: true, whitespace: true }]}
-            // disabled={["Contributor"].includes(user.role)}
+          // disabled={["Contributor"].includes(user.role)}
           >
             <Select
               style={{
