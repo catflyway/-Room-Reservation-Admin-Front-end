@@ -56,6 +56,7 @@ function ShowBar() {
       getBuildingInOrgID(orgID);
       getRoomtype(orgID);
     }
+    form.resetFields(["BuildingID", "RoomTypeID"]);
   };
 
   const [orgList, setOrgList] = useState([]);
@@ -105,14 +106,25 @@ function ShowBar() {
   const onFilterChange = (changedValues, allValues) => {
     console.log(changedValues, allValues);
 
-    if (changedValues.OrgID) {
+    // if (changedValues.OrgID) {
+    //   onChangeorg(changedValues.OrgID);
+    //   allValues.BuildingID = undefined;
+    //   changedValues.BuildingID = undefined;
+    //   allValues.RoomTypeID = undefined;
+    //   changedValues.RoomTypeID = undefined;
+    //   // allValues = {
+    //   //   ...allValues,
+    //   //   BuildingID: undefined,
+    //   //   RoomTypeID: undefined,
+    //   // };
+    //   form.resetFields(["BuildingID", "RoomTypeID"]);
+    // }
+    if (changedValues.hasOwnProperty("OrgID")) {
       onChangeorg(changedValues.OrgID);
-      allValues = {
-        ...allValues,
-        BuildingID: undefined,
-        RoomTypeID: undefined,
-      };
-      form.resetFields(["BuildingID", "RoomTypeID"]);
+      allValues.BuildingID = undefined;
+      changedValues.BuildingID = undefined;
+      allValues.RoomTypeID = undefined;
+      changedValues.RoomTypeID = undefined;
     }
     if (changedValues.dateType) {
       setDateType(allValues.dateType);
@@ -145,11 +157,11 @@ function ShowBar() {
 
   return (
     <div>
-     <Row justify="space-between" align="middle">
-    <Col>
+      <Row justify="space-between" align="middle">
+        <Col>
           <Title style={{ color: " #3F478D" }}>Statistics</Title>
         </Col>
-        </Row>
+      </Row>
       <Form form={form} onValuesChange={onFilterChange}>
         <Row justify="center" gutter={[16, 16]}>
           <Col>

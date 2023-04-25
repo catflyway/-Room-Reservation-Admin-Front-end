@@ -326,7 +326,6 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
                 type: "email",
                 whitespace: true,
               },
-              
               {
                 validator: (_, value) => {
                   if (openEdit) {
@@ -341,19 +340,15 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
                         } else {
                           resolve();
                         }
-
                       })
-                      .catch((err) => {
-                        reject(err);
-                      });
-                  });
-                },
-
-                message: "มีคนใช้แล้ว",
+                  })
+                }
               },
+
+
             ]}
           >
-            <Input placeholder="E-mail" disabled={openEdit}/>
+            <Input placeholder="E-mail" disabled={openEdit} />
           </Form.Item>
           {!["Room Contributor"].includes(user.role) ? (
             <Form.Item

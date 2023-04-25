@@ -82,9 +82,14 @@ function AddReq({ onSuccess }) {
 
   const [usersList, setUsersList] = useState([]);
   function getUsersInOrgID(id) {
-    form.resetFields(["UserID"]);
-    axios.get("/org/user/" + id).then((response) => {
+    let option = {
+      role: ["Room Contributor", "User"],
+      org: id,
+    };
+    axios.get("/users/searchby", { params: option }).then((response) => {
+      console.log("usersList", response.data);
       setUsersList(response.data);
+      form.resetFields(["Contributor"]);
     });
   }
 
@@ -112,6 +117,7 @@ function AddReq({ onSuccess }) {
       }
     }
   }, [repeatDate]);
+
 
   const handleSubmit = (value) => {
     let timeRange = [0, 24 * 60];
@@ -172,8 +178,8 @@ function AddReq({ onSuccess }) {
       ...value,
       startTime,
       endTime,
-      dateRange: undefined,
-      timeRange: undefined,
+      // dateRange: undefined,
+      // timeRange: undefined,
       OrgID: undefined,
       Building: undefined,
     };
@@ -193,6 +199,7 @@ function AddReq({ onSuccess }) {
       .catch((err) => {
         setLoading(false);
       });
+    console.log("req", value)
   };
 
   const datOfWeekString = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];

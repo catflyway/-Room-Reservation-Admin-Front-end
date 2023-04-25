@@ -36,7 +36,7 @@ const ManageReq = () => {
             dayjs(item.startTime[0]).format("HH:mm") +
             " - " +
             dayjs(item.endTime[0]).format("HH:mm");
-          if (item.allDay == true) {
+          if (item.allDay === true) {
             timerev = "Allday";
           }
           return {
@@ -139,19 +139,6 @@ const ManageReq = () => {
     },
   ];
 
-  const [isEditing, setIsEditing] = useState(false);
-
-  const [data, setData] = useState({
-    OrgID: "",
-    Room: "",
-    Building: "",
-    UserID: "",
-    startTime: [],
-    endTime: [],
-    allDay: false,
-    Purpose: "",
-    repeatDate: "",
-  });
 
   return (
     <div>
