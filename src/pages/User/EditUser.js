@@ -53,13 +53,13 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
   const [userStatusLoading, setUserStatusLoading] = useState(false);
   const [status, setstatus] = useState([]);
   function getStatus(id) {
+    form.resetFields(["status"]);
     setUserStatusLoading(true);
     axios
       .get("/org/status/" + id)
       .then((response) => {
         setUserStatusLoading(false);
         setstatus(response.data);
-        // form.resetFields(["status"]);
       })
       .catch((err) => {
         setUserStatusLoading(false);
@@ -133,10 +133,16 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
     });
   }
 
-  let initialValues = {};
-  if (user.canNotChangeOrg) {
-    initialValues["org"] = user.org.id;
-  }
+  const [initialValues, setInitialValues] = useState(() => {
+    let value = {};
+    if (user.canNotChangeOrg) {
+      value["org"] = user.org.id;
+    }
+    return value;
+  });
+  useEffect(() => {
+    formRef.current.resetFields();
+  }, [initialValues]);
   useEffect(() => {
     if (user.canNotChangeOrg) {
       onChangeorg(user.org.id);
@@ -152,10 +158,9 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
   }, [openEdit]);
 
   useEffect(() => {
-    formRef.current.resetFields();
     if (value) {
       setImageUrl(value.image.url);
-      formRef.current.setFieldsValue({
+      setInitialValues({
         ...value,
         org: value.org?.id,
         status: value.status?.id,
@@ -321,30 +326,29 @@ const EditUser = ({ value, openEdit, onCancel, onSuccess }) => {
                 type: "email",
                 whitespace: true,
               },
-              // {
-              //   validator: (_, value) => {
-              //     return new Promise((resolve, reject) => {
-              //       axios
-              //         .get("/users/searchby", { params: { email: value } })
-              //         .then((response) => {
-              //           if (response.data.filter((record) => record.email === value).length) {
-              //             reject();
-              //           } else {
-              //             resolve();
-              //           }
+              {
+                validator: (_, value) => {
+                  if (openEdit) {
+                    return Promise.resolve();
+                  }
+                  return new Promise((resolve, reject) => {
+                    axios
+                      .get("/users/searchby", { params: { email: value } })
+                      .then((response) => {
+                        if (response.data.filter((record) => record.email === value).length) {
+                          reject();
+                        } else {
+                          resolve();
+                        }
+                      })
+                  })
+                }
+              },
 
-              //         })
-              //         .catch((err) => {
-              //           reject(err);
-              //         });
-              //     });
-              //   },
 
-              //   message: "มีคนใช้แล้ว",
-              // },
             ]}
           >
-            <Input placeholder="E-mail" />
+            <Input placeholder="E-mail" disabled={openEdit} />
           </Form.Item>
           {!["Room Contributor"].includes(user.role) ? (
             <Form.Item

@@ -52,22 +52,14 @@ const ManageRoom = () => {
       setContributorList(response.data);
     });
   }
-  function getManageRooms(option) {
+  function getManageRooms(option = {}) {
     if (user.role === "Room Contributor") {
       option["ContributorID"] = user._id;
     } else if (user.role === "Contributor") {
       option["OrgID"] = user.org.id;
     }
     axios.get("/rooms/searchby", { params: option }).then((response) => {
-      setDataSource(
-        response.data.map((item) => {
-          return {
-            ...item,
-            BuildingName: item.Building.name,
-            RoomTypeName: item.RoomType.name,
-          };
-        })
-      );
+      setDataSource(response.data);
     });
   }
   const [SearchroomsList, setSearchRoomsList] = useState([]);
@@ -148,12 +140,12 @@ const ManageRoom = () => {
     {
       key: "3",
       title: "Building",
-      dataIndex: "BuildingName",
+      dataIndex: ["Building", "name"],
     },
     {
       key: "4",
       title: "Roomtype",
-      dataIndex: "RoomTypeName",
+      dataIndex: ["RoomType", "name"],
     },
     {
       key: "5",
@@ -363,6 +355,7 @@ const ManageRoom = () => {
                     style={{ width: '100%' }}
                     allowClear
                     showSearch
+                    mode="multiple"
                     placeholder="อุปกรณ์ภายในห้อง"
                     filterOption={(input, option) =>
                       (option?.value ?? "")
