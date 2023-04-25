@@ -117,19 +117,19 @@ function AddReq({ onSuccess }) {
     let timeRange = [0, 24 * 60];
 
     if (!value.allDay) {
-      let startDiff = value.timeRange[0]?.diff(
+      let startDiff = value.timeRange[0]?.clone().diff(
         value.timeRange[0].clone().startOf("day"),
         "minute"
       );
-      let stopDiff = value.timeRange[1]?.diff(
+      let stopDiff = value.timeRange[1]?.clone().diff(
         value.timeRange[1].clone().startOf("day"),
         "minute"
       );
       timeRange = [startDiff, stopDiff];
     }
 
-    const startDate = value.dateRange[0];
-    const endDate = value.dateRange[1];
+    const startDate = value.dateRange[0].clone().startOf("day");
+    const endDate = value.dateRange[1].clone().add(1, "day").startOf("day");
 
     let getTimeRange = (day) => {
       let start = [
@@ -337,7 +337,9 @@ function AddReq({ onSuccess }) {
                 const style = {};
                 if (
                   repeatDate === "weeks" &&
-                  current.day() === dateRange?.[0]?.day()
+                  current.day() === dateRange?.[0]?.day() &&
+                  current >= dateRange?.[0]?.startOf("day") &&
+                  current <= dateRange?.[1]?.endOf("day")
                 ) {
                   style.border = "1px solid #1890ff";
                   style.borderRadius = "50%";
