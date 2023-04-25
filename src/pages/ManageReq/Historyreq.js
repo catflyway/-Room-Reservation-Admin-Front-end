@@ -32,7 +32,7 @@ function HistoryReq() {
             dayjs(item.startTime[0]).format("HH:mm") +
             " - " +
             dayjs(item.endTime[0]).format("HH:mm");
-          if (item.allDay == true) {
+          if (item.allDay === true) {
             timerev = "Allday";
           }
           return {
