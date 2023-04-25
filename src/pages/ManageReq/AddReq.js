@@ -178,8 +178,8 @@ function AddReq({ onSuccess }) {
       ...value,
       startTime,
       endTime,
-      // dateRange: undefined,
-      // timeRange: undefined,
+      dateRange: undefined,
+      timeRange: undefined,
       OrgID: undefined,
       Building: undefined,
     };
@@ -199,7 +199,6 @@ function AddReq({ onSuccess }) {
       .catch((err) => {
         setLoading(false);
       });
-    console.log("req", value)
   };
 
   const datOfWeekString = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
