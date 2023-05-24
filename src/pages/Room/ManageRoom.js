@@ -52,7 +52,11 @@ const ManageRoom = () => {
       setContributorList(response.data);
     });
   }
-  function getManageRooms(option = {}) {
+  function getManageRooms(optionIn = {}) {
+    let option = {
+      ...form.getFieldsValue(),
+      ...optionIn,
+    }
     if (user.role === "Room Contributor") {
       option["ContributorID"] = user._id;
     } else if (user.role === "Contributor") {

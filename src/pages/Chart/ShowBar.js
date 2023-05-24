@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import BarChart from "./components/BarChart";
+import BarChart from "./BarChart";
 import { Row, Col, Select, Typography, Form, Space } from "antd";
 import { Divider, Table } from "antd";
 import axios from "axios";
