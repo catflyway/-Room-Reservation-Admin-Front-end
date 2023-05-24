@@ -25,7 +25,7 @@ const ManageRoom = () => {
       getBuildingInOrgID(orgID);
       getRoomtype(orgID);
     }
-    form.resetFields(["BuildingID", "RoomTypeID"]);
+    filterForm.resetFields(["BuildingID", "RoomTypeID"]);
   };
 
   const [orgList, setOrgList] = useState([]);
@@ -102,6 +102,9 @@ const ManageRoom = () => {
   }
   function reloadRoomtype() {
     getRoomtype(filterForm.getFieldValue("Org"));
+  }
+  function reloadRooms() {
+    getManageRooms(filterForm.getFieldsValue());
   }
   const onFilterChange = (changedValues, allValues) => {
     if (changedValues.hasOwnProperty('Name')) return;
@@ -269,6 +272,7 @@ const ManageRoom = () => {
               onSuccess={() => {
                 getManageRooms();
                 setIsEditing(false);
+                reloadRooms()
               }}
             />
           </Space>
@@ -276,10 +280,10 @@ const ManageRoom = () => {
       </Row>
 
       <br />
-      <Form form={form} onValuesChange={onFilterChange} layout="horizontal" labelCol={8} >
+      <Form form={filterForm} onValuesChange={onFilterChange} layout="horizontal" labelCol={8} >
         <Row justify="start" gutter={16}>
           <Col span={8}>
-            <Form.Item label="Organization" name="OrgID">
+            <Form.Item label="Organization" name="OrgID" initialValue={user.canNotChangeOrg ? user.org.id : null}>
               <Select
                 style={{ width: '100%' }}
                 allowClear

@@ -134,8 +134,8 @@ function AddReq({ onSuccess }) {
       timeRange = [startDiff, stopDiff];
     }
 
-    const startDate = value.dateRange[0].clone().startOf("day");
-    const endDate = value.dateRange[1].clone().add(1, "day").startOf("day");
+    const startDate = value.dateRange[0]?.clone().startOf("day");
+    const endDate = value.dateRange[1]?.clone().add(1, "day").startOf("day");
 
     let getTimeRange = (day) => {
       let start = [
